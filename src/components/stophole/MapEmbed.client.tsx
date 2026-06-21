@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
-import type { CaseFile, Verdict } from "@/data/seed";
-import { verdictFor, getCandidate } from "@/data/seed";
+import type { CaseFile } from "@/data/seed";
+import type { Verdict } from "@/components/stophole";
+import { verdictFor } from "@/data/seed";
 
 function markerIcon(verdict: Verdict): L.DivIcon {
   const color =
@@ -76,11 +77,6 @@ export default function MapEmbed({
       />
       {selected && <FlyTo lat={selected.lat} lng={selected.lng} zoom={15} />}
       {cases.map((c) => {
-        const incumbent = getCandidate(
-          // pick first incumbent of ward for marker tone
-          c.id,
-        );
-        void incumbent;
         const v: Verdict =
           c.daysOpen > 60 ? "red" : c.daysOpen > 14 ? "amber" : "green";
         return (
