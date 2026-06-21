@@ -1,11 +1,26 @@
 import { useEffect, useState, type ComponentType } from "react";
-import type { MapEmbedProps } from "./MapEmbed.client";
+
+export type MapEmbedProps = {
+  center: [number, number];
+  zoom?: number;
+  markers?: Array<{
+    id: string;
+    position: [number, number];
+    color?: string;
+    onClick?: () => void;
+  }>;
+  onMapClick?: (lat: number, lng: number) => void;
+  droppedPin?: [number, number] | null;
+};
+
+const loadClient = (): Promise<{ default: ComponentType<MapEmbedProps> }> =>
+  import(/* @vite-ignore */ `./MapEmbed.client.tsx`);
 
 export function MapEmbed(props: MapEmbedProps) {
   const [Comp, setComp] = useState<ComponentType<MapEmbedProps> | null>(null);
   useEffect(() => {
     let cancelled = false;
-    import("./MapEmbed.client").then((mod) => {
+    loadClient().then((mod) => {
       if (!cancelled) setComp(() => mod.default);
     });
     return () => {
@@ -25,5 +40,3 @@ export function MapEmbed(props: MapEmbedProps) {
   }
   return <Comp {...props} />;
 }
-
-export type { MapEmbedProps } from "./MapEmbed.client";
