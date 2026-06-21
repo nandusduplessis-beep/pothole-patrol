@@ -1,17 +1,7 @@
 import { useEffect, useState, type ComponentType } from "react";
+import type { MapEmbedProps } from "./MapEmbed.client";
 
-export type MapEmbedProps = {
-  center: [number, number];
-  zoom?: number;
-  markers?: Array<{
-    id: string;
-    position: [number, number];
-    color?: string;
-    onClick?: () => void;
-  }>;
-  onMapClick?: (lat: number, lng: number) => void;
-  droppedPin?: [number, number] | null;
-};
+export type { MapEmbedProps } from "./MapEmbed.client";
 
 const loadClient = (): Promise<{ default: ComponentType<MapEmbedProps> }> =>
   import(/* @vite-ignore */ `./MapEmbed.client.tsx`);
