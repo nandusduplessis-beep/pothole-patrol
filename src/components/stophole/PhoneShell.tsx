@@ -46,7 +46,7 @@ function StatusBar() {
 const TABS = [
   { to: "/", label: "Snap", Icon: Camera, match: (p: string) => p === "/" },
   { to: "/cases", label: "Cases", Icon: List, match: (p: string) => p.startsWith("/cases") || p.startsWith("/case/") },
-  { to: "/vote", label: "Vote", Icon: Vote, match: (p: string) => p.startsWith("/vote") },
+  { to: "/vote/$wardId", params: { wardId: "JHB_WARD102" }, label: "Vote", Icon: Vote, match: (p: string) => p.startsWith("/vote") },
   { to: "/you", label: "You", Icon: User, match: (p: string) => p.startsWith("/you") },
 ] as const;
 
@@ -56,10 +56,12 @@ function TabBar() {
     <nav className="sh-tabbar" aria-label="Primary">
       {TABS.map(({ to, label, Icon, match }) => {
         const active = match(pathname);
+        const params = (TABS.find((t) => t.to === to) as { params?: Record<string, string> })?.params;
         return (
           <Link
             key={to}
             to={to}
+            params={params as never}
             className={`sh-tab${active ? " is-active" : ""}`}
             aria-current={active ? "page" : undefined}
           >
