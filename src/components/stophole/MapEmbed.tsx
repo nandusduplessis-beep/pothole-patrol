@@ -1,10 +1,10 @@
 import { useEffect, useState, type ComponentType } from "react";
-import type { MapEmbedProps } from "./MapEmbed.client";
+import type { MapEmbedProps } from "./MapEmbedImpl";
 
-export type { MapEmbedProps } from "./MapEmbed.client";
+export type { MapEmbedProps } from "./MapEmbedImpl";
 
 const loadClient = (): Promise<{ default: ComponentType<MapEmbedProps> }> =>
-  import(/* @vite-ignore */ `./MapEmbed.client.tsx`);
+  import("./MapEmbedImpl");
 
 export function MapEmbed(props: MapEmbedProps) {
   const [Comp, setComp] = useState<ComponentType<MapEmbedProps> | null>(null);
