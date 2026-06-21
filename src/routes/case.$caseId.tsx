@@ -17,11 +17,11 @@ import {
   TopBar,
   VerdictBadge,
 } from "@/components/stophole";
-import { getCase } from "@/data/seed";
+import { getCase, type CaseFile, type Ward, type CommunityNote } from "@/data/seed";
 import { useStopholeStore } from "@/lib/stophole-store";
 
 export const Route = createFileRoute("/case/$caseId")({
-  loader: ({ params }) => {
+  loader: ({ params }): { ward: Ward; case: CaseFile } => {
     const result = getCase(params.caseId);
     if (!result) throw notFound();
     return result;
@@ -138,7 +138,7 @@ function CaseRoute() {
               <VerdictBadge verdict="red" size="sm" label="Replace" />
             </div>
             <div className="sh-signals">
-              {caseFile.ownerSignals.map((s, i) => {
+              {caseFile.ownerSignals.map((s: CaseFile["ownerSignals"][number], i: number) => {
                 const Icon =
                   s.icon === "phone"
                     ? Phone
@@ -161,7 +161,7 @@ function CaseRoute() {
             Community intel · {caseFile.reports} voices
           </span>
           <Card variant="sunken" style={{ marginTop: 10 }}>
-            {caseFile.notes.map((note, i) => (
+            {caseFile.notes.map((note: CommunityNote, i: number) => (
               <div key={i} className="sh-note">
                 <div className="sh-note__head">
                   <span>{note.author}</span>

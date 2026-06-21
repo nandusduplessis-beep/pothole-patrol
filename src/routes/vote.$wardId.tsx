@@ -7,10 +7,10 @@ import {
   Tag,
   TopBar,
 } from "@/components/stophole";
-import { daysUntilElection, getWard } from "@/data/seed";
+import { daysUntilElection, getWard, type Ward } from "@/data/seed";
 
 export const Route = createFileRoute("/vote/$wardId")({
-  loader: ({ params }) => {
+  loader: ({ params }): { ward: Ward; daysLeft: number } => {
     const ward = getWard(params.wardId);
     if (!ward) throw notFound();
     return { ward, daysLeft: daysUntilElection() };

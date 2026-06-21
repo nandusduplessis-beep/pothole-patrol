@@ -15,10 +15,11 @@ import {
   verdictFor,
   verdictLabel,
   type Candidate,
+  type Ward,
 } from "@/data/seed";
 
 export const Route = createFileRoute("/candidates/$wardId")({
-  loader: ({ params }) => {
+  loader: ({ params }): { ward: Ward; ranked: Candidate[] } => {
     const ward = getWard(params.wardId);
     if (!ward) throw notFound();
     return { ward, ranked: sortedCandidates(ward) };
@@ -81,7 +82,7 @@ function CandidatesRoute() {
         </div>
 
         <div className="sh-stack" style={{ marginTop: 16 }}>
-          {ranked.map((c, i) => (
+          {ranked.map((c: Candidate, i: number) => (
             <CandidateRow
               key={c.id}
               rank={i + 1}

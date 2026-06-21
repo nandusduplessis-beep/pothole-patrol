@@ -15,10 +15,13 @@ import {
   getCandidate,
   verdictFor,
   verdictLabel,
+  type Candidate,
+  type Signal,
+  type Ward,
 } from "@/data/seed";
 
 export const Route = createFileRoute("/candidate/$candidateId")({
-  loader: ({ params }) => {
+  loader: ({ params }): { ward: Ward; candidate: Candidate } => {
     const result = getCandidate(params.candidateId);
     if (!result) throw notFound();
     return result;
@@ -115,7 +118,7 @@ function CandidateRoute() {
             <div
               style={{ display: "flex", flexDirection: "column", gap: 14 }}
             >
-              {candidate.signals.map((s, i) => (
+              {candidate.signals.map((s: Signal, i: number) => (
                 <div key={i}>
                   <div className="sh-row sh-row--between" style={{ marginBottom: 6 }}>
                     <span
