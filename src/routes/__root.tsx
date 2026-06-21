@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useStopholeStore } from "@/lib/stophole-store";
 
 function NotFoundComponent() {
   return (
@@ -77,16 +78,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Stophole — Stop the assholes responsible for the potholes" },
+      {
+        name: "description",
+        content:
+          "Snap a pothole. Find the ward, the councillor accountable now, and the candidates standing to take the job in 2026.",
+      },
+      { name: "author", content: "Stophole" },
+      { property: "og:title", content: "Stophole — South African civic accountability" },
+      {
+        property: "og:description",
+        content:
+          "Turn a pothole into a hiring decision. See who owns the failure, then compare who's applying for the job.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "theme-color", content: "#161614" },
     ],
     links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       {
         rel: "stylesheet",
         href: appCss,
@@ -115,11 +125,16 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const theme = useStopholeStore((s) => s.theme);
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="sh-page">
+        <Outlet />
+      </div>
     </QueryClientProvider>
   );
 }
