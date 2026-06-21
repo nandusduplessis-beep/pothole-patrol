@@ -9,38 +9,134 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as YouRouteImport } from './routes/you'
+import { Route as CasesRouteImport } from './routes/cases'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VoteWardIdRouteImport } from './routes/vote.$wardId'
+import { Route as CaseCaseIdRouteImport } from './routes/case.$caseId'
+import { Route as CandidatesWardIdRouteImport } from './routes/candidates.$wardId'
+import { Route as CandidateCandidateIdRouteImport } from './routes/candidate.$candidateId'
 
+const YouRoute = YouRouteImport.update({
+  id: '/you',
+  path: '/you',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesRoute = CasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VoteWardIdRoute = VoteWardIdRouteImport.update({
+  id: '/vote/$wardId',
+  path: '/vote/$wardId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaseCaseIdRoute = CaseCaseIdRouteImport.update({
+  id: '/case/$caseId',
+  path: '/case/$caseId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidatesWardIdRoute = CandidatesWardIdRouteImport.update({
+  id: '/candidates/$wardId',
+  path: '/candidates/$wardId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateCandidateIdRoute = CandidateCandidateIdRouteImport.update({
+  id: '/candidate/$candidateId',
+  path: '/candidate/$candidateId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cases': typeof CasesRoute
+  '/you': typeof YouRoute
+  '/candidate/$candidateId': typeof CandidateCandidateIdRoute
+  '/candidates/$wardId': typeof CandidatesWardIdRoute
+  '/case/$caseId': typeof CaseCaseIdRoute
+  '/vote/$wardId': typeof VoteWardIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cases': typeof CasesRoute
+  '/you': typeof YouRoute
+  '/candidate/$candidateId': typeof CandidateCandidateIdRoute
+  '/candidates/$wardId': typeof CandidatesWardIdRoute
+  '/case/$caseId': typeof CaseCaseIdRoute
+  '/vote/$wardId': typeof VoteWardIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cases': typeof CasesRoute
+  '/you': typeof YouRoute
+  '/candidate/$candidateId': typeof CandidateCandidateIdRoute
+  '/candidates/$wardId': typeof CandidatesWardIdRoute
+  '/case/$caseId': typeof CaseCaseIdRoute
+  '/vote/$wardId': typeof VoteWardIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/cases'
+    | '/you'
+    | '/candidate/$candidateId'
+    | '/candidates/$wardId'
+    | '/case/$caseId'
+    | '/vote/$wardId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cases'
+    | '/you'
+    | '/candidate/$candidateId'
+    | '/candidates/$wardId'
+    | '/case/$caseId'
+    | '/vote/$wardId'
+  id:
+    | '__root__'
+    | '/'
+    | '/cases'
+    | '/you'
+    | '/candidate/$candidateId'
+    | '/candidates/$wardId'
+    | '/case/$caseId'
+    | '/vote/$wardId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CasesRoute: typeof CasesRoute
+  YouRoute: typeof YouRoute
+  CandidateCandidateIdRoute: typeof CandidateCandidateIdRoute
+  CandidatesWardIdRoute: typeof CandidatesWardIdRoute
+  CaseCaseIdRoute: typeof CaseCaseIdRoute
+  VoteWardIdRoute: typeof VoteWardIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/you': {
+      id: '/you'
+      path: '/you'
+      fullPath: '/you'
+      preLoaderRoute: typeof YouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases': {
+      id: '/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof CasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +144,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vote/$wardId': {
+      id: '/vote/$wardId'
+      path: '/vote/$wardId'
+      fullPath: '/vote/$wardId'
+      preLoaderRoute: typeof VoteWardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case/$caseId': {
+      id: '/case/$caseId'
+      path: '/case/$caseId'
+      fullPath: '/case/$caseId'
+      preLoaderRoute: typeof CaseCaseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidates/$wardId': {
+      id: '/candidates/$wardId'
+      path: '/candidates/$wardId'
+      fullPath: '/candidates/$wardId'
+      preLoaderRoute: typeof CandidatesWardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/$candidateId': {
+      id: '/candidate/$candidateId'
+      path: '/candidate/$candidateId'
+      fullPath: '/candidate/$candidateId'
+      preLoaderRoute: typeof CandidateCandidateIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CasesRoute: CasesRoute,
+  YouRoute: YouRoute,
+  CandidateCandidateIdRoute: CandidateCandidateIdRoute,
+  CandidatesWardIdRoute: CandidatesWardIdRoute,
+  CaseCaseIdRoute: CaseCaseIdRoute,
+  VoteWardIdRoute: VoteWardIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
