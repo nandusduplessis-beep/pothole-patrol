@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronRight, MapPin, ArrowRight, Sun, Moon } from "lucide-react";
+import { MapPin, ArrowRight, Sun, Moon } from "lucide-react";
 import {
   Button,
   Card,
@@ -57,7 +57,6 @@ function HomeRoute() {
   }
 
   return (
-    <>
       <PhoneShell>
         <div style={{ position: "relative", flex: 1, overflow: "hidden" }}>
           {/* Live OSM map */}
@@ -101,8 +100,8 @@ function HomeRoute() {
             cases={allCases}
           />
 
-          {/* Bottom sheet when a case is selected */}
-          {selected && (
+          {/* Bottom sheet — selected case OR default pothole-input prompt */}
+          {selected ? (
             <>
               <button
                 className="sh-sheet-scrim"
@@ -145,20 +144,47 @@ function HomeRoute() {
                 </Button>
               </div>
             </>
+          ) : (
+            <DefaultSheet
+              onSnap={() => {
+                // pothole input as snap → open the first case
+                openCase(allCases[0]);
+              }}
+            />
           )}
         </div>
       </PhoneShell>
-
-      {/* Below the phone: pothole input + recents in a content card */}
-      <PhoneShell hideTabBar={false}>
-        <BelowMap onSnap={() => openCase(allCases[0])} />
-      </PhoneShell>
-    </>
   );
 }
 
 function selectedVerdict(c: CaseFile): Verdict {
   return c.daysOpen > 60 ? "red" : c.daysOpen > 14 ? "amber" : "green";
+}
+
+function DefaultSheet({ onSnap }: { onSnap: () => void }) {
+  return (
+    <div className="sh-sheet" role="region" aria-label="Snap a pothole">
+      <span className="sh-sheet__grab" aria-hidden />
+      <Tag>Pothole-to-accountability</Tag>
+      <h2 className="sh-h1" style={{ margin: 0 }}>
+        Snap the <span className="sh-mark">pothole</span>.{" "}
+        <span className="sh-muted">Find the asshole.</span>
+      </h2>
+      <p
+        style={{
+          color: "var(--text-muted)",
+          fontSize: 13,
+          margin: 0,
+        }}
+      >
+        Tap any pin to see who is paid to fix it — and who's standing to replace
+        them in 2026.
+      </p>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+        <PotholeInput width={300} height={150} onSnap={onSnap} />
+      </div>
+    </div>
+  );
 }
 
 function SearchBar({
