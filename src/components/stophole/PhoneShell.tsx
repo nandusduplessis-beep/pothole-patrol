@@ -12,8 +12,8 @@ export function PhoneShell({
   return (
     <div className="sh-frame">
       <div className="sh-phone__screen">
-        {!hideTabBar && <TabBar />}
         {children}
+        {!hideTabBar && <TabBar />}
       </div>
     </div>
   );
