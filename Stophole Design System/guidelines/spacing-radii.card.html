@@ -1,0 +1,23 @@
+<!-- @dsCard group="Spacing" viewport="700x150" name="Radii & Borders" subtitle="Modest, confident rounding. 1px hairlines carry structure." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--surface-page); display: flex; gap: 18px; align-items: center; }
+  .box { width: 76px; height: 76px; background: var(--surface-card); border: 1px solid var(--border-default); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 7px; }
+  .tok { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
+  .pill { width: 120px; height: 44px; border-radius: var(--radius-pill); background: var(--charcoal-900); color: var(--white); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; }
+  .bold { border-width: 2px; border-color: var(--charcoal-900); }
+</style>
+</head>
+<body>
+  <div class="box" style="border-radius: var(--radius-xs);"><span class="tok">xs·4</span></div>
+  <div class="box" style="border-radius: var(--radius-sm);"><span class="tok">sm·6</span></div>
+  <div class="box" style="border-radius: var(--radius-md);"><span class="tok">md·10</span></div>
+  <div class="box" style="border-radius: var(--radius-lg);"><span class="tok">lg·14</span></div>
+  <div class="box bold" style="border-radius: var(--radius-md);"><span class="tok">2px bold</span></div>
+  <div class="pill">pill · 999</div>
+</body>
+</html>

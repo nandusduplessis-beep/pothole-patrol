@@ -1,0 +1,44 @@
+/* ============================================================
+   Stophole — Effects: radii, borders, shadows, motion
+   ------------------------------------------------------------
+   Premium-minimal: crisp 1px borders do most structural work;
+   shadows are soft and low. Radii are modest — confident, not
+   bubbly. Motion is quick and flat (cheap on low-end GPUs).
+   ============================================================ */
+
+:root {
+  /* ---- Radii ---- */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;   /* default card / input */
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-pill: 999px;
+
+  /* ---- Border widths ---- */
+  --border-hairline: 1px;
+  --border-bold:     2px;   /* emphatic / signage feel */
+
+  /* ---- Shadows (soft, neutral, low spread) ---- */
+  --shadow-xs:  0 1px 2px rgba(14, 14, 13, 0.06);
+  --shadow-sm:  0 1px 2px rgba(14, 14, 13, 0.05), 0 2px 6px rgba(14, 14, 13, 0.06);
+  --shadow-md:  0 2px 4px rgba(14, 14, 13, 0.05), 0 6px 16px rgba(14, 14, 13, 0.08);
+  --shadow-lg:  0 8px 28px rgba(14, 14, 13, 0.12), 0 2px 6px rgba(14, 14, 13, 0.06);
+
+  /* Yellow "press" glow for primary affordances (used sparingly) */
+  --shadow-accent: 0 2px 0 var(--yellow-700);
+
+  /* ---- Motion ---- */
+  --ease-out:   cubic-bezier(0.22, 0.61, 0.36, 1);    /* @kind other */
+  --ease-in-out: cubic-bezier(0.45, 0, 0.2, 1);       /* @kind other */
+  --dur-fast:   120ms;                                /* @kind other */
+  --dur-base:   180ms;                                /* @kind other */
+  --dur-slow:   260ms;                                /* @kind other */
+}
+
+[data-theme="dark"] {
+  --shadow-xs:  0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md:  0 4px 14px rgba(0, 0, 0, 0.55);
+  --shadow-lg:  0 10px 34px rgba(0, 0, 0, 0.65);
+}

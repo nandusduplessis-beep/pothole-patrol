@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stophole — Moving Storyboard</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ============================================================
+     STOPHOLE — MOVING STORYBOARD
+     One phone, auto-playing. Opens on a Google-Maps landing;
+     entering the address reveals the whole app, beat by beat.
+     Brand: charcoal road · hazard yellow · warm soft grey.
+     ============================================================ */
+
+  *,*::before,*::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--surface-page);
+    font-family: var(--font-body);
+    color: var(--text-body);
+    min-height: 100vh;
+    padding: 26px clamp(16px, 3vw, 40px) 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------------- Page header ---------------- */
+  .sb-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; max-width: 1340px; margin: 0 auto 22px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle);
+  }
+  .sb-brand { display: flex; align-items: center; gap: 11px; }
+  .sb-mark {
+    width: 34px; height: 34px; border-radius: 8px; background: var(--charcoal-900);
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .sb-word {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: 19px; letter-spacing: -0.02em; color: var(--text-strong);
+  }
+  .sb-word span { color: var(--charcoal-900); background: var(--accent); padding: 0 5px; border-radius: 3px; }
+  .sb-top__meta {
+    display: flex; gap: 26px; font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600;
+  }
+  .sb-top__meta .k { display: flex; flex-direction: column; gap: 3px; }
+  .sb-top__meta .k em {
+    font-style: normal; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--text-subtle); font-weight: 700;
+  }
+  .sb-top__meta .k b { color: var(--text-strong); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ---------------- Intro ---------------- */
+  .sb-intro { max-width: 1340px; margin: 0 auto 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .sb-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted);
+  }
+  .sb-eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: var(--status-flagged); box-shadow: 0 0 0 3px var(--status-flagged-bg); }
+  .sb-intro h1 {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: clamp(1.9rem, 2.6vw + 0.5rem, 2.7rem);
+    letter-spacing: -0.025em; line-height: 1.0; color: var(--text-strong);
+    margin: 12px 0 0; max-width: 20ch;
+  }
+  .sb-intro h1 .muted { color: var(--text-muted); }
+  .sb-intro h1 .mark { background: var(--accent); color: var(--charcoal-900); padding: 0 8px 2px; border-radius: 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .sb-legend { display: grid; grid-template-columns: auto auto; gap: 7px 16px; font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+  .sb-legend .sw { display: inline-flex; align-items: center; gap: 7px; }
+  .sb-legend .dot { width: 9px; height: 9px; border-radius: 999px; }
+
+  /* ---------------- Stage grid ---------------- */
+  .sb-stage {
+    max-width: 1340px; margin: 0 auto;
+    display: grid; grid-template-columns: 272px 1fr 272px; gap: 24px; align-items: stretch;
+  }
+  @media (max-width: 1120px) {
+    .sb-stage { grid-template-columns: 1fr; }
+    .sb-aside--l { order: 2; } .sb-plate { order: 1; } .sb-aside--r { order: 3; }
+    .sb-aside { flex-direction: row !important; flex-wrap: wrap; }
+    .sb-aside > * { flex: 1 1 240px; }
+  }
+
+  .sb-aside { display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
+  .sb-card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 17px 17px 18px; }
+  .sb-card__label { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-subtle); margin-bottom: 9px; display: flex; align-items: center; justify-content: space-between; }
+  .sb-card__label .pin { color: var(--text-strong); }
+  .sb-card__body { font-size: 14.5px; line-height: 1.46; color: var(--text-body); }
+  .sb-vo { font-family: var(--font-display); font-weight: 800; font-size: 19px; line-height: 1.16; letter-spacing: -0.015em; color: var(--text-strong); }
+  .sb-vo .muted { color: var(--text-muted); }
+  .sb-card--dark { background: var(--charcoal-900); border-color: var(--charcoal-900); }
+  .sb-card--dark .sb-card__label { color: var(--grey-400); }
+  .sb-card--dark .sb-card__body, .sb-card--dark .sb-vo { color: var(--grey-100); }
+  .sb-card--dark .sb-vo .muted { color: var(--grey-500); }
+  .sb-card--accent { background: var(--accent); border-color: var(--accent); }
+  .sb-card--accent .sb-card__label { color: var(--yellow-700); }
+  .sb-card--accent .sb-card__body { color: var(--charcoal-900); font-weight: 600; }
+
+  .sb-kv { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; padding: 8px 0; border-top: 1px solid var(--border-subtle); color: var(--text-muted); text-transform: uppercase; }
+  .sb-kv:first-of-type { border-top: none; padding-top: 2px; }
+  .sb-kv b { color: var(--text-strong); font-variant-numeric: tabular-nums; }
+  .sb-onscreen { font-size: 14px; line-height: 1.5; color: var(--text-body); }
+  .sb-onscreen .q { color: var(--text-strong); font-weight: 600; }
+
+  /* ---------------- Featured plate ---------------- */
+  .sb-plate {
+    position: relative; background: var(--surface-card);
+    border: 1px solid var(--border-subtle); border-radius: 20px;
+    padding: 22px 24px 18px; box-shadow: var(--shadow-md);
+    display: flex; flex-direction: column;
+  }
+  .sb-plate__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 0 4px 14px; border-bottom: 1px dashed var(--border-default); margin-bottom: 16px; }
+  .sb-frameno { font-family: var(--font-display); font-weight: 900; font-size: 40px; letter-spacing: -0.04em; line-height: 0.9; color: var(--text-strong); font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 9px; }
+  .sb-frameno sup { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-subtle); position: relative; top: -18px; }
+  .sb-scene { text-align: right; }
+  .sb-scene__t { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-strong); white-space: nowrap; }
+  .sb-scene__s { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; white-space: nowrap; }
+  .sb-tc { font-variant-numeric: tabular-nums; }
+
+  .sb-plate__stage { flex: 1; display: flex; align-items: center; justify-content: center; padding: 6px 0; }
+
+  /* corner crops */
+  .sb-crop { position: absolute; width: 14px; height: 14px; border: 2px solid var(--charcoal-900); opacity: 0.5; }
+  .sb-crop.tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+  .sb-crop.tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+  .sb-crop.bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+  .sb-crop.br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+  /* ---------------- Phone ---------------- */
+  .sb-phone { width: 332px; height: 686px; border-radius: 42px; background: var(--charcoal-950); padding: 7px; flex-shrink: 0; box-shadow: 0 30px 64px -22px rgba(14,14,13,0.5), 0 8px 20px rgba(14,14,13,0.16); position: relative; }
+  .sb-phone__notch { position: absolute; top: 7px; left: 50%; transform: translateX(-50%); width: 104px; height: 22px; background: var(--charcoal-950); border-radius: 0 0 15px 15px; z-index: 40; }
+  .sb-screen-wrap { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; position: relative; background: var(--surface-page); }
+
+  .scr { position: absolute; inset: 0; opacity: 0; pointer-events: none; display: flex; flex-direction: column; }
+  .scr.is-active { opacity: 1; pointer-events: auto; }
+
+  /* status bar */
+  .stat { display: flex; justify-content: space-between; align-items: center; padding: 13px 22px 5px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-strong); flex-shrink: 0; z-index: 6; position: relative; font-variant-numeric: tabular-nums; }
+  .stat--invert { color: #fff; }
+  .stat__ic { display: flex; align-items: center; gap: 5px; }
+
+  /* =========================================================
+     MAP LANDING (frames 01–03)
+     ========================================================= */
+  .map { position: absolute; inset: 0; overflow: hidden; background: #EBE8E1; }
+  .map__pan { position: absolute; inset: -8%; transform: scale(1); will-change: transform; }
+  .map.is-zoom .map__pan { transform: scale(1.28) translate(-4%, -6%); }
+  .map__land { position: absolute; inset: 0; background: #EBE8E1; }
+  .map__park { position: absolute; border-radius: 46% 54% 50% 50%; background: #CBE5BE; }
+  .map__water { position: absolute; background: #A9CCE3; }
+  .road { position: absolute; background: #fff; box-shadow: 0 0 0 1px rgba(60,52,40,0.07); }
+  .road.major { background: #FBE08A; box-shadow: 0 0 0 1px #E6C25A; z-index: 2; }
+  .road.hwy { background: #F6C760; box-shadow: 0 0 0 1px #E0A93F; z-index: 2; }
+  .road__lbl { position: absolute; font-family: var(--font-mono); font-size: 9px; font-weight: 700; color: #7A7264; letter-spacing: 0.04em; white-space: nowrap; z-index: 3; }
+  .poi { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 3; }
+  .poi i { width: 7px; height: 7px; border-radius: 999px; background: #C98B3B; box-shadow: 0 0 0 2px rgba(255,255,255,0.85); display: block; }
+  .poi b { font-family: var(--font-mono); font-size: 8px; font-weight: 700; color: #8A7C62; }
+  .poi.park i { background: #5FA45C; }
+
+  /* dropped pin */
+  .map-pin { position: absolute; top: 46%; left: 52%; transform: translate(-50%,-100%) scale(0); transform-origin: 50% 100%; z-index: 12; }
+  .map.is-pin .map-pin { transform: translate(-50%,-100%) scale(1); }
+  .map-pin svg { display: block; filter: drop-shadow(0 5px 6px rgba(0,0,0,0.3)); }
+  .map-pin__shadow { position: absolute; left: 50%; bottom: -3px; width: 26px; height: 9px; border-radius: 50%; background: rgba(0,0,0,0.18); transform: translateX(-50%); }
+  .map-pin__pulse { position: absolute; left: 50%; bottom: 2px; width: 30px; height: 12px; border-radius: 50%; transform: translateX(-50%); background: rgba(229,52,58,0.3); opacity: 0; }
+  .map.is-pin .map-pin__pulse { animation: pin-pulse 1.8s var(--ease-out) 0.4s infinite; }
+  @keyframes pin-pulse { 0% { transform: translateX(-50%) scale(0.5); opacity: 0.5; } 100% { transform: translateX(-50%) scale(2.1); opacity: 0; } }
+  .map-pin__cal { position: absolute; left: 50%; top: -8px; transform: translate(-50%,-100%); background: var(--charcoal-900); color: #fff; padding: 5px 9px; border-radius: 7px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; opacity: 0; }
+  .map-pin__cal::after { content: ""; position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: var(--charcoal-900); }
+  .map.is-pin .map-pin__cal { opacity: 1; }
+
+  /* google-style attribution */
+  .map__attr { position: absolute; left: 8px; bottom: 7px; font-family: var(--font-body); font-size: 10px; font-weight: 700; color: #6B6356; letter-spacing: 0.02em; z-index: 5; opacity: 0.78; }
+  .map__scale { position: absolute; right: 10px; bottom: 9px; z-index: 5; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; opacity: 0.8; }
+  .map__scale i { display: block; width: 38px; height: 5px; border: 1px solid #7A7264; border-top: 0; }
+  .map__scale b { font-family: var(--font-mono); font-size: 8px; color: #7A7264; font-weight: 700; }
+
+  /* search box (the input) */
+  .msearch { position: absolute; top: 44px; left: 14px; right: 14px; z-index: 20; }
+  .msearch__bar { display: flex; align-items: center; gap: 9px; background: #fff; border-radius: 12px; padding: 11px 13px; box-shadow: 0 4px 14px rgba(14,14,13,0.16); border: 1px solid rgba(14,14,13,0.05); }
+  .msearch__rt { width: 22px; height: 22px; border-radius: 6px; background: var(--charcoal-900); display: grid; place-items: center; flex-shrink: 0; }
+  .msearch__txt { flex: 1; min-width: 0; font-size: 14px; color: var(--text-strong); font-weight: 500; white-space: nowrap; overflow: hidden; }
+  .msearch__txt .ph { color: var(--text-subtle); font-weight: 500; }
+  .msearch__txt .cur { display: inline-block; width: 2px; height: 15px; background: var(--status-flagged); margin-left: 1px; transform: translateY(3px); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .msearch__x { width: 20px; height: 20px; flex-shrink: 0; color: var(--text-subtle); display: grid; place-items: center; }
+
+  .msearch__drop { margin-top: 8px; background: #fff; border-radius: 12px; box-shadow: 0 8px 22px rgba(14,14,13,0.18); overflow: hidden; opacity: 0; transform: translateY(-6px); pointer-events: none; }
+  .msearch.is-open .msearch__drop { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .ac { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border-bottom: 1px solid var(--grey-100); }
+  .ac:last-child { border-bottom: 0; }
+  .ac.is-sel { background: var(--accent-soft); }
+  .ac__pin { width: 26px; height: 26px; border-radius: 999px; background: var(--surface-sunken); display: grid; place-items: center; color: var(--text-muted); flex-shrink: 0; }
+  .ac.is-sel .ac__pin { background: var(--charcoal-900); color: var(--accent); }
+  .ac__t { font-size: 12.5px; font-weight: 600; color: var(--text-strong); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ac__s { font-size: 11px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ac > div:last-child { min-width: 0; }
+
+  /* rising bottom sheet = HOME */
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--surface-card); border-radius: 22px 22px 0 0; box-shadow: 0 -10px 34px rgba(14,14,13,0.18); transform: translateY(102%); display: flex; flex-direction: column; max-height: 78%; }
+  .map.is-open .sheet { transform: translateY(0); }
+  .map.is-open .map__scrim { opacity: 1; }
+  .map__scrim { position: absolute; inset: 0; z-index: 22; background: rgba(14,14,13,0.28); opacity: 0; pointer-events: none; }
+  .sheet__grab { width: 36px; height: 4px; border-radius: 999px; background: var(--grey-250); margin: 9px auto 4px; flex-shrink: 0; }
+  .sheet__body { padding: 6px 18px 20px; overflow: hidden; }
+
+  /* =========================================================
+     Shared app primitives (faithful mini-recreations)
+     ========================================================= */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 18px 10px; flex-shrink: 0; }
+  .topbar__t { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-strong); }
+  .lmark { width: 28px; height: 28px; border-radius: 7px; background: var(--charcoal-900); display: grid; place-items: center; flex-shrink: 0; }
+  .iconbtn { width: 38px; height: 38px; border-radius: 999px; border: none; background: transparent; color: var(--text-strong); display: grid; place-items: center; position: relative; cursor: pointer; }
+  .iconbtn .nd { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 999px; background: var(--status-flagged); border: 1.5px solid var(--surface-card); }
+
+  .eyebrow { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-strong); background: var(--surface-sunken); border: 1px solid var(--border-subtle); padding: 5px 10px; border-radius: 999px; }
+  .data { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+
+  .verdict { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 9px 4px 7px; border-radius: 999px; }
+  .verdict .vd { width: 8px; height: 8px; border-radius: 999px; }
+  .verdict.green { background: var(--status-verified-bg); color: var(--status-verified); } .verdict.green .vd { background: var(--status-verified); }
+  .verdict.amber { background: var(--accent-soft); color: #9A7A00; } .verdict.amber .vd { background: var(--accent); }
+  .verdict.red { background: var(--status-flagged-bg); color: var(--status-flagged); } .verdict.red .vd { background: var(--status-flagged); }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; border: none; border-radius: 999px; padding: 14px 18px; font-family: var(--font-body); font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn--primary { background: var(--accent); color: var(--charcoal-900); box-shadow: 0 2px 0 var(--yellow-700); }
+  .btn--dark { background: var(--charcoal-900); color: var(--grey-50); }
+
+  .appcard { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 15px; }
+  .appcard--sunken { background: var(--surface-sunken); border-color: transparent; }
+  .appcard--dark { background: var(--charcoal-900); border-color: var(--charcoal-900); }
+  .appcard--yellow { background: var(--accent); border-color: var(--accent); }
+
+  /* HOME content */
+  .home-h { font-family: var(--font-display); font-weight: 900; font-size: 30px; line-height: 1.0; letter-spacing: -0.025em; color: var(--text-strong); margin: 10px 0 0; }
+  .home-h .mark { background: var(--accent); color: var(--charcoal-900); padding: 0 5px 1px; border-radius: 3px; }
+  .home-h .muted { color: var(--text-muted); }
+  .pothole-input { margin-top: 16px; height: 132px; border-radius: 16px; position: relative; display: grid; place-items: center; background:
+      radial-gradient(130% 120% at 50% 26%, #3a3834 0%, #211f1c 52%, #0c0a08 100%); overflow: hidden; border: 1px solid var(--charcoal-700); }
+  .pothole-input::before { content: ""; position: absolute; inset: 0; background:
+      radial-gradient(60% 50% at 50% 50%, rgba(0,0,0,0.65) 0%, transparent 70%); border-radius: 50%; box-shadow: inset 0 8px 22px rgba(0,0,0,0.7); }
+  .pothole-input__c { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--grey-150); text-align: center; }
+  .pothole-input__cam { width: 46px; height: 46px; border-radius: 999px; background: var(--accent); color: var(--charcoal-900); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.45); }
+  .pothole-input__t { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .pill-input { margin-top: 9px; display: flex; align-items: center; gap: 8px; width: 100%; border: 1px dashed var(--border-default); background: var(--surface-sunken); border-radius: 999px; padding: 11px 15px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+
+  .recent { display: flex; align-items: center; gap: 12px; width: 100%; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 11px; text-align: left; }
+  .recent__thumb { width: 46px; height: 46px; flex-shrink: 0; border-radius: 52% 48% 56% 44% / 48% 56% 44% 52%; background: radial-gradient(120% 120% at 50% 30%, #3a3834 0%, #211f1c 50%, #0e0c0a 100%); box-shadow: inset 0 5px 12px rgba(0,0,0,0.6); position: relative; }
+  .recent__thumb i { position: absolute; top: -2px; right: -2px; width: 13px; height: 13px; border-radius: 999px; border: 2px solid var(--surface-card); }
+  .recent__t { font-size: 14px; font-weight: 700; color: var(--text-strong); letter-spacing: -0.01em; }
+  .recent__m { display: flex; align-items: center; gap: 7px; margin-top: 3px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.04em; }
+  .sep { width: 3px; height: 3px; border-radius: 999px; background: var(--grey-300); }
+
+  /* CAMERA */
+  .cam { position: absolute; inset: 0; background: #0c0b0a; display: flex; flex-direction: column; }
+  .cam__view { flex: 1; position: relative; overflow: hidden; background:
+      linear-gradient(160deg, #2a2724 0%, #141210 60%, #0a0908 100%); }
+  .cam__asphalt { position: absolute; inset: 0; background:
+      radial-gradient(70% 55% at 48% 62%, rgba(0,0,0,0.78) 0%, transparent 72%),
+      repeating-conic-gradient(from 0deg at 50% 60%, rgba(255,255,255,0.012) 0deg 8deg, transparent 8deg 16deg); }
+  .cam__hole { position: absolute; left: 50%; top: 60%; transform: translate(-50%,-50%); width: 150px; height: 96px; border-radius: 54% 46% 58% 42% / 50% 56% 44% 50%; background: radial-gradient(120% 120% at 50% 28%, #000 0%, #050403 60%); box-shadow: inset 0 10px 26px rgba(0,0,0,0.85), 0 0 30px rgba(0,0,0,0.6); }
+  .cam__hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.82); background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .cam__ret { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 180px; height: 180px; }
+  .cam__ret span { position: absolute; width: 26px; height: 26px; }
+  .cam__close { position: absolute; top: 16px; left: 16px; width: 38px; height: 38px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; display: grid; place-items: center; border: none; }
+  .cam__bar { height: 116px; background: #0c0b0a; display: grid; place-items: center; flex-shrink: 0; }
+  .cam__shutter { width: 70px; height: 70px; border-radius: 999px; background: var(--accent); color: var(--charcoal-900); display: grid; place-items: center; border: 4px solid rgba(255,255,255,0.25); box-shadow: 0 0 0 4px rgba(255,199,0,0.18); }
+  .cam__flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 30; }
+  .scr.is-active .cam__flash.fire { animation: flash 600ms var(--ease-out); }
+  @keyframes flash { 0% { opacity: 0; } 12% { opacity: 0.92; } 100% { opacity: 0; } }
+
+  /* SUCCESS */
+  .success { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px 30px 40px; gap: 13px; background: var(--surface-page); }
+  .success__check { width: 92px; height: 92px; border-radius: 999px; background: var(--status-verified-bg); color: var(--status-verified); display: grid; place-items: center; margin-bottom: 4px; position: relative; }
+  .success__check::after { content: ""; position: absolute; inset: -8px; border-radius: 999px; border: 2px solid var(--status-verified); opacity: 0.25; }
+  .success h1 { font-family: var(--font-display); font-weight: 900; font-size: 30px; line-height: 1.04; letter-spacing: -0.025em; color: var(--text-strong); margin: 8px 0 0; }
+  .success p { font-size: 14px; line-height: 1.5; color: var(--text-muted); margin: 0; max-width: 250px; }
+  .success .tag { color: var(--status-verified); background: var(--status-verified-bg); border-color: transparent; }
+
+  /* generic scroll body for case/candidates/vote */
+  .scroll { flex: 1; overflow: hidden; position: relative; }
+  .scroll__inner { padding: 4px 18px 24px; transition: transform 2600ms linear; }
+
+  .h1 { font-family: var(--font-display); font-weight: 900; font-size: 26px; line-height: 1.04; letter-spacing: -0.02em; color: var(--text-strong); margin: 9px 0 0; }
+  .h1 .muted { color: var(--text-muted); }
+  .lead { font-size: 13.5px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.45; }
+
+  /* CASE */
+  .case-hero { display: grid; grid-template-columns: 1.5fr 1fr; gap: 9px; height: 128px; margin-top: 6px; }
+  .case-photo { border-radius: 12px; position: relative; overflow: hidden; background: radial-gradient(120% 120% at 50% 30%, #3a3834 0%, #1a1815 60%, #0c0a08 100%); display: flex; align-items: flex-end; padding: 9px; }
+  .case-photo .tag { background: rgba(14,14,13,0.72); color: #fff; border-color: transparent; }
+  .case-map { border-radius: 12px; position: relative; overflow: hidden; background: #EBE8E1; }
+  .mini-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(60,52,40,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(60,52,40,0.07) 1px, transparent 1px); background-size: 18px 18px; }
+  .mini-road { position: absolute; background: #fff; box-shadow: 0 0 0 1px rgba(60,52,40,0.07); }
+  .mini-road.major { background: #FBE08A; box-shadow: 0 0 0 1px #E6C25A; }
+  .mini-pin { position: absolute; width: 18px; height: 22px; transform: translate(-50%,-100%); filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+  .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 13px; }
+  .stat-tile { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 11px 12px; }
+  .stat-tile.soft { background: var(--surface-sunken); border-color: transparent; }
+  .stat-tile__v { font-family: var(--font-mono); font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: var(--text-strong); font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat-tile__v sub { font-size: 12px; color: var(--text-muted); vertical-align: baseline; margin-left: 1px; }
+  .stat-tile__l { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; }
+  .block { margin-top: 16px; }
+  .block > .eyebrow { display: block; margin-bottom: 9px; }
+  .person { display: flex; align-items: center; gap: 11px; }
+  .avatar { width: 42px; height: 42px; border-radius: 999px; background: var(--charcoal-800); color: var(--grey-50); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; font-weight: 700; flex-shrink: 0; letter-spacing: 0.02em; }
+  .person__n { font-size: 14.5px; font-weight: 700; color: var(--text-strong); }
+  .person__r { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .signal { display: flex; align-items: center; gap: 9px; padding: 8px 0; border-top: 1px solid var(--divider); font-size: 12.5px; }
+  .signal:first-of-type { margin-top: 11px; }
+  .signal.red { color: var(--status-flagged); }
+  .note { padding: 10px 0; border-bottom: 1px solid var(--divider); }
+  .note:last-child { border-bottom: 0; }
+  .note__h { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.04em; }
+  .note__h .raw { color: var(--status-flagged); }
+  .note__t { font-size: 13px; line-height: 1.45; color: var(--text-body); margin-top: 5px; }
+  .cta-h { font-family: var(--font-display); font-weight: 900; font-size: 21px; line-height: 1.08; letter-spacing: -0.02em; color: var(--grey-50); margin: 9px 0 0; }
+  .appcard--yellow .cta-h { color: var(--charcoal-900); }
+
+  /* CANDIDATES */
+  .cand { display: block; width: 100%; text-align: left; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 13px; }
+  .cand__top { display: flex; align-items: center; gap: 10px; }
+  .cand__rank { font-family: var(--font-display); font-weight: 900; font-size: 19px; color: var(--text-subtle); width: 16px; text-align: center; flex-shrink: 0; }
+  .cand__n { font-size: 14px; font-weight: 700; color: var(--text-strong); letter-spacing: -0.01em; }
+  .cand__p { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .cand__sigs { margin-top: 11px; display: grid; gap: 7px; }
+  .cand__sig { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .cand__sig-l { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+  .dots { display: flex; gap: 4px; }
+  .dots i { width: 9px; height: 9px; border-radius: 999px; background: var(--grey-200); }
+  .dots i.on.green { background: var(--status-verified); } .dots i.on.amber { background: var(--accent); } .dots i.on.red { background: var(--status-flagged); }
+
+  /* VOTE */
+  .vote-hero { background: var(--charcoal-900); border-radius: var(--radius-lg); padding: 16px; margin-top: 6px; }
+  .vote-date { font-family: var(--font-display); font-weight: 900; font-size: 42px; letter-spacing: -0.03em; color: var(--grey-50); line-height: 0.9; }
+  .station { display: flex; align-items: flex-start; gap: 11px; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 13px; margin-top: 4px; }
+  .station__ic { width: 40px; height: 40px; border-radius: 999px; background: var(--status-verified-bg); color: var(--status-verified); display: grid; place-items: center; flex-shrink: 0; }
+
+  /* tab bar */
+  .tabbar { display: flex; border-top: 1px solid var(--border-subtle); background: var(--surface-card); flex-shrink: 0; padding-bottom: 6px; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 0 7px; border: none; background: transparent; color: var(--text-subtle); font-size: 10px; font-weight: 700; font-family: var(--font-mono); letter-spacing: 0.04em; }
+  .tab.is-active { color: var(--text-strong); }
+  .tab.is-active .ti { color: var(--charcoal-900); }
+  .ti { color: inherit; }
+
+  /* =========================================================
+     Bottom: filmstrip + transport
+     ========================================================= */
+  .sb-foot { max-width: 1340px; margin: 22px auto 0; }
+  .sb-transport { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .sb-play { width: 46px; height: 46px; border-radius: 999px; background: var(--charcoal-900); color: var(--accent); border: none; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .sb-play:hover { background: var(--charcoal-800); }
+  .sb-step { width: 40px; height: 40px; border-radius: 999px; background: var(--surface-card); border: 1px solid var(--border-default); color: var(--text-strong); display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .sb-step:hover { background: var(--surface-sunken); }
+  .sb-prog { flex: 1; height: 6px; border-radius: 999px; background: var(--surface-sunken); overflow: hidden; position: relative; }
+  .sb-prog__fill { position: absolute; inset: 0; transform-origin: left; transform: scaleX(0); background: var(--accent); border-radius: 999px; }
+  .sb-count { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sb-count b { color: var(--text-strong); }
+
+  .strip { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
+  @media (max-width: 880px) { .strip { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 480px) { .strip { grid-template-columns: repeat(2, 1fr); } }
+  .cell { text-align: left; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 8px; cursor: pointer; transition: border-color 160ms, box-shadow 160ms, transform 160ms; }
+  .cell:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .cell.is-active { border-color: var(--charcoal-900); box-shadow: 0 0 0 2px var(--charcoal-900); }
+  .cell__thumb { height: 72px; border-radius: 7px; overflow: hidden; position: relative; background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
+  .cell__no { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .cell__no b { font-family: var(--font-display); font-weight: 900; font-size: 14px; color: var(--text-strong); font-variant-numeric: tabular-nums; }
+  .cell__no .t { font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-align: right; }
+  .cell.is-active .cell__no b { color: var(--text-strong); }
+
+  /* thumb mini-graphics */
+  .tg { position: absolute; inset: 0; }
+  .tg-map { background:
+      linear-gradient(#FBE08A,#FBE08A) center/100% 7px no-repeat,
+      linear-gradient(#fff,#fff) 60% 0/6px 100% no-repeat,
+      #EBE8E1; }
+  .tg-map::after { content: ""; position: absolute; left: 58%; top: 44%; width: 11px; height: 14px; transform: translate(-50%,-100%); background: var(--status-flagged); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; clip-path: polygon(50% 100%, 0 38%, 100% 38%); }
+  .tg-map.sheet::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44%; background: #fff; border-radius: 8px 8px 0 0; box-shadow: 0 -3px 8px rgba(0,0,0,0.12); }
+  .tg-cam { background: radial-gradient(120% 120% at 50% 60%, #2a2724, #0a0908); }
+  .tg-cam::after { content: ""; position: absolute; left: 50%; top: 56%; width: 36px; height: 24px; transform: translate(-50%,-50%); border-radius: 52% 48%; background: #000; box-shadow: inset 0 3px 8px rgba(0,0,0,0.9); }
+  .tg-cam::before { content: ""; position: absolute; left: 50%; bottom: 7px; width: 20px; height: 20px; transform: translateX(-50%); border-radius: 999px; background: var(--accent); }
+  .tg-ok { background: var(--surface-page); display: grid; place-items: center; }
+  .tg-ok::after { content: ""; width: 30px; height: 30px; border-radius: 999px; background: var(--status-verified-bg); border: 3px solid var(--status-verified); }
+  .tg-case { background: var(--surface-page); padding: 7px; }
+  .tg-case::before { content: ""; position: absolute; left: 7px; right: 7px; top: 7px; height: 26px; border-radius: 5px; background: linear-gradient(90deg,#2a2724 60%,#EBE8E1 60%); }
+  .tg-case::after { content: ""; position: absolute; left: 7px; right: 7px; bottom: 8px; height: 22px; border-radius: 5px; background: var(--status-flagged-bg); border: 1px solid var(--status-flagged); }
+  .tg-cand { background: var(--surface-page); display: flex; flex-direction: column; gap: 5px; padding: 8px; justify-content: center; }
+  .tg-cand i { display: block; height: 8px; border-radius: 3px; }
+  .tg-cand i:nth-child(1) { background: var(--status-verified); width: 92%; }
+  .tg-cand i:nth-child(2) { background: var(--accent); width: 66%; }
+  .tg-cand i:nth-child(3) { background: var(--status-flagged); width: 40%; }
+  .tg-vote { background: var(--charcoal-900); display: grid; place-items: center; }
+  .tg-vote::after { content: "04"; font-family: var(--font-display); font-weight: 900; font-size: 22px; color: var(--accent); letter-spacing: -0.03em; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scr, .map__pan, .sheet, .map__scrim, .map-pin, .map-pin__cal, .sb-prog__fill { transition: none !important; }
+    .map.is-pin .map-pin__pulse, .scr.is-active .cam__flash.fire { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <!-- ============ HEADER ============ -->
+  <header class="sb-top">
+    <div class="sb-brand">
+      <div class="sb-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="var(--accent)" stroke-width="1.7"/><circle cx="12" cy="12" r="2.6" fill="var(--accent)"/></svg>
+      </div>
+      <div class="sb-word">STOP<span>HOLE</span></div>
+    </div>
+    <div class="sb-top__meta">
+      <div class="k"><em>Project</em><b>Product walkthrough</b></div>
+      <div class="k"><em>Format</em><b>Vertical · 9:19</b></div>
+      <div class="k"><em>Frames</em><b id="m-frames">8</b></div>
+      <div class="k"><em>Runtime</em><b id="m-runtime">0:26</b></div>
+    </div>
+  </header>
+
+  <!-- ============ INTRO ============ -->
+  <section class="sb-intro">
+    <div>
+      <span class="sb-eyebrow">Storyboard · Animatic</span>
+      <h1>Enter the address. <span class="muted">Watch the whole app</span> <span class="mark">open</span>.</h1>
+    </div>
+    <div class="sb-legend">
+      <span class="sw"><span class="dot" style="background:var(--status-verified)"></span> Green · proven</span>
+      <span class="sw"><span class="dot" style="background:var(--accent)"></span> Amber · partial</span>
+      <span class="sw"><span class="dot" style="background:var(--status-flagged)"></span> Red · replace</span>
+      <span class="sw"><span class="dot" style="background:var(--charcoal-900)"></span> Verdict-led</span>
+    </div>
+  </section>
+
+  <!-- ============ STAGE ============ -->
+  <div class="sb-stage">
+    <!-- LEFT ASIDE -->
+    <aside class="sb-aside sb-aside--l">
+      <div class="sb-card">
+        <div class="sb-card__label">Scene <span class="pin" id="a-scenepin">01 / 08</span></div>
+        <div class="sb-vo" id="a-scene">The road you hate</div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-card__label">Shot · Direction</div>
+        <div class="sb-card__body" id="a-shot">Open on a live map of the user's street. Calm, recognisable, theirs.</div>
+      </div>
+      <div class="sb-card sb-card--dark">
+        <div class="sb-card__label">Beat</div>
+        <div class="sb-kv"><span>Screen</span><b id="a-screen">Map landing</b></div>
+        <div class="sb-kv"><span>Action</span><b id="a-action">Locate</b></div>
+        <div class="sb-kv"><span>Dwell</span><b id="a-dwell">4.0s</b></div>
+      </div>
+    </aside>
+
+    <!-- CENTER PLATE -->
+    <section class="sb-plate">
+      <span class="sb-crop tl"></span><span class="sb-crop tr"></span><span class="sb-crop bl"></span><span class="sb-crop br"></span>
+      <div class="sb-plate__head">
+        <div class="sb-frameno"><sup>Frame</sup><span id="p-no">01</span></div>
+        <div class="sb-scene">
+          <div class="sb-scene__t" id="p-title">Landing</div>
+          <div class="sb-scene__s"><span class="sb-tc" id="p-tc">00:00</span> · <span id="p-of">8 frames</span></div>
+        </div>
+      </div>
+
+      <div class="sb-plate__stage">
+        <div class="sb-phone">
+          <div class="sb-phone__notch"></div>
+          <div class="sb-screen-wrap" id="screenwrap">
+
+            <!-- ============ MAP LANDING (frames 1–3) ============ -->
+            <div class="scr is-active" data-screen="map">
+              <div class="map" id="map">
+                <div class="map__pan">
+                  <div class="map__land"></div>
+                  <div class="map__water" style="left:-12%;top:64%;width:60%;height:46%;transform:rotate(-10deg);border-radius:40px;"></div>
+                  <div class="map__park" style="right:-6%;top:-6%;width:46%;height:38%;"></div>
+                  <div class="map__park" style="left:6%;bottom:4%;width:30%;height:24%;"></div>
+                  <!-- roads -->
+                  <div class="road hwy" style="top:0;bottom:0;left:50%;width:11px;"></div>
+                  <div class="road major" style="top:43%;left:0;right:0;height:9px;"></div>
+                  <div class="road" style="top:18%;left:0;right:0;height:5px;"></div>
+                  <div class="road" style="top:70%;left:0;right:0;height:5px;"></div>
+                  <div class="road" style="top:0;bottom:0;left:24%;width:5px;"></div>
+                  <div class="road" style="top:0;bottom:0;left:78%;width:5px;"></div>
+                  <div class="road major" style="top:43%;left:50%;width:120px;height:6px;transform:rotate(32deg);transform-origin:left center;"></div>
+                  <!-- labels -->
+                  <div class="road__lbl" style="top:39%;left:9%;">Rivonia Rd</div>
+                  <div class="road__lbl" style="top:30%;left:52%;transform:rotate(90deg);transform-origin:left;">M1 Hwy</div>
+                  <div class="road__lbl" style="top:15%;left:26%;">Katherine St</div>
+                  <div class="road__lbl" style="top:72%;left:30%;">Grayston Dr</div>
+                  <!-- POIs -->
+                  <div class="poi park" style="right:8%;top:8%;"><i></i><b>Park</b></div>
+                  <div class="poi" style="left:9%;top:54%;"><i></i><b>Mall</b></div>
+                  <div class="poi" style="left:66%;top:62%;"><i></i><b>School</b></div>
+                  <!-- dropped pin -->
+                  <div class="map-pin">
+                    <div class="map-pin__cal">102 days open · Ward 102</div>
+                    <svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0a15 15 0 0 0-15 15c0 10.6 15 25 15 25s15-14.4 15-25A15 15 0 0 0 15 0Z" fill="var(--status-flagged)"/><circle cx="15" cy="15" r="5.4" fill="#fff"/></svg>
+                    <div class="map-pin__shadow"></div>
+                    <div class="map-pin__pulse"></div>
+                  </div>
+                </div>
+
+                <div class="map__scrim"></div>
+                <div class="map__attr">Stophole Maps · data ©</div>
+                <div class="map__scale"><b>500 m</b><i></i></div>
+
+                <!-- status bar over map -->
+                <div class="stat" style="position:absolute;top:0;left:0;right:0;">
+                  <span>9:41</span>
+                  <div class="stat__ic">
+                    <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4"/><rect x="4" y="4" width="3" height="6"/><rect x="8" y="2" width="3" height="8"/><rect x="12" y="0" width="3" height="10"/></svg>
+                    <span style="font-size:10px;font-weight:700;margin-left:3px;">LTE</span>
+                    <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor" stroke="none"/></svg>
+                  </div>
+                </div>
+
+                <!-- search box (the input) -->
+                <div class="msearch" id="msearch">
+                  <div class="msearch__bar">
+                    <div class="msearch__rt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="var(--accent)" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="var(--accent)"/></svg></div>
+                    <div class="msearch__txt"><span id="search-text"></span><span class="ph" id="search-ph">Find the pothole — type an address</span><span class="cur" id="search-cur" style="display:none;"></span></div>
+                    <div class="msearch__x"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div>
+                  </div>
+                  <div class="msearch__drop">
+                    <div class="ac is-sel">
+                      <div class="ac__pin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
+                      <div><div class="ac__t">Rivonia Rd &amp; Katherine St</div><div class="ac__s">Sandton · Ward 102</div></div>
+                    </div>
+                    <div class="ac">
+                      <div class="ac__pin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
+                      <div><div class="ac__t">Rivonia Village Centre</div><div class="ac__s">Mutual Rd · Ward 102</div></div>
+                    </div>
+                    <div class="ac">
+                      <div class="ac__pin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
+                      <div><div class="ac__t">Rivonia Primary School</div><div class="ac__s">9 Mutual Rd · Ward 102</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- rising sheet = HOME -->
+                <div class="sheet">
+                  <div class="sheet__grab"></div>
+                  <div class="sheet__body">
+                    <div class="topbar" style="padding-left:0;padding-right:0;">
+                      <span class="tag">Sandton · Ward 102</span>
+                      <button class="iconbtn" aria-label="alerts"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="nd"></span></button>
+                    </div>
+                    <h1 class="home-h">Snap the <span class="mark">pothole</span>.<br><span class="muted">Find the asshole.</span></h1>
+                    <div class="pothole-input">
+                      <div class="pothole-input__c">
+                        <div class="pothole-input__cam"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+                        <div class="pothole-input__t">Tap to snap the hole</div>
+                      </div>
+                    </div>
+                    <div class="pill-input"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg><span>or paste an address…</span></div>
+                    <div class="topbar" style="padding:14px 0 8px;"><span class="eyebrow">Near you</span><span class="eyebrow" style="color:var(--text-subtle);">See all ›</span></div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                      <div class="recent"><div class="recent__thumb"><i style="background:var(--status-flagged);"></i></div><div style="flex:1;min-width:0;"><div class="recent__t">Rivonia Rd &amp; Katherine</div><div class="recent__m">WARD 102<span class="sep"></span>102 DAYS OPEN</div><div style="margin-top:6px;"><span class="verdict red"><span class="vd"></span>Repeat failure</span></div></div></div>
+                      <div class="recent"><div class="recent__thumb"><i style="background:var(--accent);"></i></div><div style="flex:1;min-width:0;"><div class="recent__t">William Nicol on-ramp</div><div class="recent__m">WARD 103<span class="sep"></span>41 DAYS OPEN</div><div style="margin-top:6px;"><span class="verdict amber"><span class="vd"></span>Logged, no team</span></div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ CAMERA (frame 4) ============ -->
+            <div class="scr" data-screen="camera">
+              <div class="cam">
+                <div class="cam__view">
+                  <div class="cam__asphalt"></div>
+                  <div class="cam__hole"></div>
+                  <div class="cam__hint">Frame the pothole · tap to capture</div>
+                  <button class="cam__close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+                  <div class="cam__ret">
+                    <span style="top:0;left:0;border-top:4px solid var(--accent);border-left:4px solid var(--accent);border-radius:12px 0 0 0;"></span>
+                    <span style="top:0;right:0;border-top:4px solid var(--accent);border-right:4px solid var(--accent);border-radius:0 12px 0 0;"></span>
+                    <span style="bottom:0;left:0;border-bottom:4px solid var(--accent);border-left:4px solid var(--accent);border-radius:0 0 0 12px;"></span>
+                    <span style="bottom:0;right:0;border-bottom:4px solid var(--accent);border-right:4px solid var(--accent);border-radius:0 0 12px 0;"></span>
+                  </div>
+                </div>
+                <div class="cam__bar">
+                  <div class="cam__shutter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+                </div>
+                <div class="cam__flash"></div>
+              </div>
+            </div>
+
+            <!-- ============ SUCCESS (frame 5) ============ -->
+            <div class="scr" data-screen="success">
+              <div class="stat"><span>9:41</span><div class="stat__ic"><span style="font-size:10px;font-weight:700;">LTE</span></div></div>
+              <div class="success">
+                <div class="success__check"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <span class="tag">Case #SH-1042 opened</span>
+                <h1>Logged. Mapped.<br>Owner named.</h1>
+                <p>We pinned it to <strong style="color:var(--text-strong);">Ward 102</strong> and matched the councillor accountable right now.</p>
+                <div style="width:100%;max-width:260px;margin-top:6px;"><button class="btn btn--primary">See who owns this →</button></div>
+              </div>
+            </div>
+
+            <!-- ============ CASE (frame 6) ============ -->
+            <div class="scr" data-screen="case">
+              <div class="stat"><span>9:41</span><div class="stat__ic"><span style="font-size:10px;font-weight:700;">LTE</span></div></div>
+              <div class="topbar">
+                <button class="iconbtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+                <span class="topbar__t">Case · #SH-1042</span>
+                <button class="iconbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+              </div>
+              <div class="scroll"><div class="scroll__inner" data-scroll="case">
+                <div class="case-hero">
+                  <div class="case-photo"><span class="tag">102 days</span></div>
+                  <div class="case-map">
+                    <div class="mini-grid"></div>
+                    <div class="mini-road major" style="top:42%;left:0;right:0;height:7px;"></div>
+                    <div class="mini-road" style="top:0;bottom:0;left:58%;width:7px;background:#fff;"></div>
+                    <svg class="mini-pin" style="top:44%;left:58%;" viewBox="0 0 24 24" fill="var(--status-flagged)"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg>
+                  </div>
+                </div>
+                <div class="block" style="margin-top:13px;">
+                  <span class="tag">Ward 102 · Sandton</span>
+                  <h1 class="h1" style="margin-top:8px;">Rivonia Rd <span class="muted">@ Katherine St.</span></h1>
+                  <span class="data" style="font-size:11px;color:var(--text-muted);">JOHANNESBURG ROADS AGENCY (JRA)</span>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-tile"><div class="stat-tile__v">102<sub>d</sub></div><div class="stat-tile__l">Open</div></div>
+                  <div class="stat-tile"><div class="stat-tile__v">38</div><div class="stat-tile__l">Reports</div></div>
+                  <div class="stat-tile soft"><div class="stat-tile__v">2</div><div class="stat-tile__l">Refills</div></div>
+                </div>
+                <div class="block">
+                  <span class="eyebrow">Who owns this failure now</span>
+                  <div class="appcard">
+                    <div class="person">
+                      <div class="avatar">JM</div>
+                      <div style="flex:1;min-width:0;"><div class="person__n">Cllr. John Mokoena</div><div class="person__r">Ward Councillor · 102</div></div>
+                      <span class="verdict red"><span class="vd"></span>Replace</span>
+                    </div>
+                    <div class="signal red"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg><span>Unreachable on 3 of 5 numbers</span></div>
+                    <div class="signal red"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Same pothole — 4 election cycles</span></div>
+                    <div class="signal red"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg><span>R1.2m allocated · R0 visible</span></div>
+                  </div>
+                </div>
+                <div class="block">
+                  <span class="eyebrow">Community intel · 38 voices</span>
+                  <div class="appcard appcard--sunken">
+                    <div class="note"><div class="note__h">Thandi M.<span class="sep"></span>4d</div><div class="note__t">Nobody owns it when you phone. The JRA bounces you to the ward office. The office bounces you back.</div></div>
+                    <div class="note"><div class="note__h">Resident · 102<span class="sep"></span>2w<span class="raw">raw · unedited</span></div><div class="note__t">He only shows up two months before elections. The rest of the time? Ghost.</div></div>
+                  </div>
+                </div>
+                <div class="appcard appcard--yellow" style="margin-top:16px;">
+                  <span class="tag" style="background:var(--charcoal-900);color:var(--accent);border-color:var(--charcoal-900);">The job</span>
+                  <h3 class="cta-h">Represent ward 102. <span style="color:var(--yellow-700);">Escalate failures. Report back.</span></h3>
+                  <div style="display:flex;align-items:center;gap:9px;margin-top:11px;color:var(--yellow-700);"><span class="data" style="font-size:11px;">SALARY R270k–R650k/yr</span><span class="sep" style="background:var(--yellow-700);"></span><span class="data" style="font-size:11px;">TAXPAYER FUNDED</span></div>
+                  <div style="margin-top:14px;"><button class="btn btn--dark">Compare who wants the job →</button></div>
+                </div>
+              </div></div>
+            </div>
+
+            <!-- ============ CANDIDATES (frame 7) ============ -->
+            <div class="scr" data-screen="candidates">
+              <div class="stat"><span>9:41</span><div class="stat__ic"><span style="font-size:10px;font-weight:700;">LTE</span></div></div>
+              <div class="topbar">
+                <button class="iconbtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+                <span class="topbar__t">Ward 102 · 2026</span>
+                <button class="iconbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button>
+              </div>
+              <div class="scroll"><div class="scroll__inner" data-scroll="cand">
+                <div style="padding:4px 0;">
+                  <span class="tag">The Pothole Test</span>
+                  <h1 class="h1" style="margin-top:9px;">Who actually <span class="muted">fixes things?</span></h1>
+                  <p class="lead">Scored on delivery, not promises. Sorted best-first.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:13px;">
+                  <div class="cand">
+                    <div class="cand__top"><span class="cand__rank">1</span><div class="avatar" style="background:var(--status-verified);">NK</div><div style="flex:1;min-width:0;"><div class="cand__n">Naledi Khumalo</div><div class="cand__p">Independent · lifelong 102 resident</div></div><span class="verdict green"><span class="vd"></span>Proven</span></div>
+                    <div class="cand__sigs">
+                      <div class="cand__sig"><span class="cand__sig-l">Proven fix rate</span><div class="dots" data-score="5" data-v="green"></div></div>
+                      <div class="cand__sig"><span class="cand__sig-l">Time-to-action</span><div class="dots" data-score="4" data-v="green"></div></div>
+                      <div class="cand__sig"><span class="cand__sig-l">Local accountability</span><div class="dots" data-score="5" data-v="green"></div></div>
+                    </div>
+                  </div>
+                  <div class="cand">
+                    <div class="cand__top"><span class="cand__rank">2</span><div class="avatar" style="background:var(--accent);color:var(--charcoal-900);">PW</div><div style="flex:1;min-width:0;"><div class="cand__n">Pieter van Wyk</div><div class="cand__p">DA · ward committee 2y</div></div><span class="verdict amber"><span class="vd"></span>Partial</span></div>
+                    <div class="cand__sigs">
+                      <div class="cand__sig"><span class="cand__sig-l">Proven fix rate</span><div class="dots" data-score="3" data-v="amber"></div></div>
+                      <div class="cand__sig"><span class="cand__sig-l">Budget conversion</span><div class="dots" data-score="2" data-v="amber"></div></div>
+                    </div>
+                  </div>
+                  <div class="cand">
+                    <div class="cand__top"><span class="cand__rank">3</span><div class="avatar">JM</div><div style="flex:1;min-width:0;"><div class="cand__n">Cllr. John Mokoena</div><div class="cand__p">ANC · incumbent, 12y</div></div><span class="verdict red"><span class="vd"></span>Replace</span></div>
+                    <div class="cand__sigs">
+                      <div class="cand__sig"><span class="cand__sig-l">Proven fix rate</span><div class="dots" data-score="1" data-v="red"></div></div>
+                      <div class="cand__sig"><span class="cand__sig-l">Budget conversion</span><div class="dots" data-score="0" data-v="red"></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="appcard appcard--dark" style="margin-top:16px;">
+                  <h3 class="cta-h">Know where to vote. <span style="color:var(--grey-400);">One tap.</span></h3>
+                  <div style="margin-top:13px;"><button class="btn btn--primary">Your voting station →</button></div>
+                </div>
+              </div></div>
+            </div>
+
+            <!-- ============ VOTE (frame 8) ============ -->
+            <div class="scr" data-screen="vote">
+              <div class="stat"><span>9:41</span><div class="stat__ic"><span style="font-size:10px;font-weight:700;">LTE</span></div></div>
+              <div class="topbar">
+                <button class="iconbtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+                <span class="topbar__t">Where &amp; When</span>
+                <button class="iconbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+              </div>
+              <div class="scroll"><div class="scroll__inner" data-scroll="vote">
+                <div class="vote-hero">
+                  <span class="tag" style="background:var(--charcoal-700);color:var(--accent);border-color:transparent;">Local Election</span>
+                  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:12px;">
+                    <div><div class="vote-date">04 NOV</div><div class="data" style="color:var(--grey-400);font-size:12px;margin-top:4px;">2026 · WEDNESDAY</div></div>
+                    <div style="text-align:right;"><div class="data" style="color:var(--accent);font-size:28px;">156</div><div class="data" style="color:var(--grey-400);font-size:10px;">DAYS TO GO</div></div>
+                  </div>
+                </div>
+                <div class="block">
+                  <span class="eyebrow">Your voting station</span>
+                  <div class="station">
+                    <div class="station__ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
+                    <div style="flex:1;"><div class="person__n">Rivonia Primary School</div><div class="person__r">9 Mutual Rd, Rivonia · Ward 102</div><div class="data" style="font-size:10px;color:var(--text-muted);margin-top:6px;">OPEN 07:00–21:00 · 1.2KM AWAY</div></div>
+                  </div>
+                  <div class="case-map" style="height:120px;margin-top:10px;border-radius:14px;">
+                    <div class="mini-grid"></div>
+                    <div class="mini-road major" style="top:50%;left:0;right:0;height:7px;"></div>
+                    <div class="mini-road" style="top:0;bottom:0;left:46%;width:7px;background:#fff;"></div>
+                    <svg class="mini-pin" style="top:52%;left:46%;" viewBox="0 0 24 24" fill="var(--status-verified)"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row" style="grid-template-columns:1fr 1fr;">
+                  <div class="stat-tile soft"><div class="stat-tile__v" style="font-size:17px;">Registered</div><div class="stat-tile__l">You are</div></div>
+                  <div class="stat-tile"><div class="stat-tile__v">102</div><div class="stat-tile__l">Ward</div></div>
+                </div>
+                <div style="margin-top:16px;"><button class="btn btn--primary"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Remind me on the day</button></div>
+              </div></div>
+              <div class="tabbar">
+                <button class="tab"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>Snap</button>
+                <button class="tab"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>Cases</button>
+                <button class="tab is-active"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M5 7l7-4 7 4v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7z"/></svg></span>Vote</button>
+                <button class="tab"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span>You</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT ASIDE -->
+    <aside class="sb-aside sb-aside--r">
+      <div class="sb-card sb-card--accent">
+        <div class="sb-card__label">Voice-over</div>
+        <div class="sb-vo" id="a-vo">"Start with the road you hate."</div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-card__label">On screen</div>
+        <div class="sb-onscreen" id="a-onscreen">A live map of your street. One search box: <span class="q">find the pothole.</span></div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-card__label">Transition out</div>
+        <div class="sb-card__body" id="a-trans">Type the address → autocomplete → pin drops, map zooms in.</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============ FOOT: transport + filmstrip ============ -->
+  <div class="sb-foot">
+    <div class="sb-transport">
+      <button class="sb-play" id="btn-play" aria-label="play/pause"></button>
+      <button class="sb-step" id="btn-prev" aria-label="previous"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="sb-step" id="btn-next" aria-label="next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <div class="sb-prog"><div class="sb-prog__fill" id="prog"></div></div>
+      <div class="sb-count">Frame <b id="c-cur">01</b> / <span id="c-tot">08</span></div>
+    </div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <template id="__bundler_thumbnail" data-bg-color="#161614">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#161614"/>
+      <rect x="470" y="170" width="260" height="500" rx="44" fill="#0E0E0D" stroke="#33322F" stroke-width="3"/>
+      <rect x="492" y="196" width="216" height="448" rx="26" fill="#EBE8E1"/>
+      <rect x="492" y="196" width="216" height="220" fill="#EBE8E1"/>
+      <rect x="492" y="300" width="216" height="12" fill="#FBE08A"/>
+      <rect x="586" y="196" width="12" height="220" fill="#ffffff"/>
+      <path d="M600 360c-26 0-46 20-46 46 0 33 46 70 46 70s46-37 46-70c0-26-20-46-46-46z" fill="#E5343A"/>
+      <circle cx="600" cy="406" r="16" fill="#fff"/>
+      <rect x="492" y="440" width="216" height="204" rx="20" fill="#fff"/>
+      <circle cx="540" cy="498" r="22" fill="#FFC700"/>
+      <rect x="500" y="556" width="200" height="14" rx="7" fill="#161614"/>
+      <rect x="500" y="582" width="150" height="14" rx="7" fill="#B4AFA6"/>
+    </svg>
+  </template>
+
+  <script>
+  (function(){
+    'use strict';
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---- Frame definitions ----
+    var FRAMES = [
+      { no:'01', screen:'map', state:'idle', title:'Landing', scene:'The road you hate',
+        shot:"Open on a live map of the user's street. Calm, recognisable, theirs.",
+        screenLbl:'Map landing', action:'Locate', dwell:4000,
+        vo:'"Start with the road you hate."',
+        onscreen:'A live map of your street. One search box: <span class="q">find the pothole.</span>',
+        trans:'Type the address → autocomplete → pin drops, map zooms in.', tc:'00:00' },
+      { no:'02', screen:'map', state:'search', title:'Address', scene:'Type it in',
+        shot:'The address types itself. Suggestions drop. The map answers with a pin.',
+        screenLbl:'Map · search', action:'Search', dwell:5200,
+        vo:'"Type the address — the one you already complain about."',
+        onscreen:'Autocomplete finds the ward. A red pin drops on <span class="q">Rivonia Rd &amp; Katherine.</span>',
+        trans:'Map zooms to the pin → the app sheet rises over it.', tc:'00:04' },
+      { no:'03', screen:'map', state:'open', title:'The app opens', scene:'Snap the pothole',
+        shot:'The whole product slides up from the map — already on your ward.',
+        screenLbl:'Home', action:'Enter', dwell:4400,
+        vo:'"And the whole app opens — already on your ward."',
+        onscreen:'<span class="q">Snap the pothole. Find the asshole.</span> Recent cases near you, scored.',
+        trans:'Tap the pothole → camera.', tc:'00:09' },
+      { no:'04', screen:'camera', state:'', title:'Snap', scene:'Take the photo',
+        shot:'Full-screen camera. Yellow reticle on the hole. Shutter fires.',
+        screenLbl:'Camera', action:'Capture', dwell:3400,
+        vo:'"Take the photo you were going to WhatsApp anyway."',
+        onscreen:'Frame the pothole, tap the yellow shutter. <span class="q">Snap.</span>',
+        trans:'Flash → case is created.', tc:'00:13' },
+      { no:'05', screen:'success', state:'', title:'Logged', scene:'Logged. Mapped.',
+        shot:'Confirmation beat. Green check. The case now exists.',
+        screenLbl:'Success', action:'Confirm', dwell:3200,
+        vo:'"Logged. Mapped. Owner named."',
+        onscreen:'<span class="q">Case #SH-1042 opened.</span> Pinned to Ward 102, councillor matched.',
+        trans:'Continue → the case file.', tc:'00:16' },
+      { no:'06', screen:'case', state:'', title:'The case', scene:'Who owns it now',
+        shot:'Scroll the case file: ward, the councillor accountable now, raw community intel.',
+        screenLbl:'Case file', action:'Name', dwell:6000,
+        vo:'"Who owns this failure right now?"',
+        onscreen:'The councillor, scored <span class="q">RED — replace.</span> Unreachable. R1.2m allocated, R0 visible.',
+        trans:'“Compare who wants the job” → candidates.', tc:'00:19' },
+      { no:'07', screen:'candidates', state:'', title:'The job', scene:'Compare applicants',
+        shot:'The election reframed as a hiring round. The Pothole Test, sorted best-first.',
+        screenLbl:'Candidates', action:'Compare', dwell:5600,
+        vo:'"Compare the people applying for the job."',
+        onscreen:'Scored on delivery, not promises. <span class="q">Green beats amber beats red.</span>',
+        trans:'“Your voting station” → vote.', tc:'00:25' },
+      { no:'08', screen:'vote', state:'', title:'Vote', scene:'Where & when',
+        shot:'The payoff: date, station, distance. One tap from a pothole to a ballot.',
+        screenLbl:'Vote', action:'Act', dwell:5000,
+        vo:'"One tap from the pothole to the ballot."',
+        onscreen:'<span class="q">04 Nov 2026.</span> Rivonia Primary, 1.2km. Remind me on the day.',
+        trans:'Loop back to the map.', tc:'00:30' }
+    ];
+
+    var THUMBS = ['tg-map','tg-map sheet','tg-map sheet','tg-cam','tg-ok','tg-case','tg-cand','tg-vote'];
+
+    var idx = 0, playing = true;
+    var EASE = 'cubic-bezier(0.22,0.61,0.36,1)';
+    var PLAY_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    var PAUSE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+    function anim(el, kf, dur, opts){
+      if (!el || reduce) return null;
+      try { el.getAnimations().forEach(function(a){ a.cancel(); }); } catch(e){}
+      try { return el.animate(kf, Object.assign({ duration: dur, easing: EASE, fill: 'none' }, opts||{})); } catch(e){ return null; }
+    }
+
+    // restore
+    try {
+      var saved = JSON.parse(localStorage.getItem('stophole_sb') || '{}');
+      if (typeof saved.idx === 'number' && saved.idx >= 0 && saved.idx < FRAMES.length) idx = saved.idx;
+      // playing always starts true so the first view is in motion
+    } catch(e){}
+
+    function save(){ try { localStorage.setItem('stophole_sb', JSON.stringify({ idx: idx, playing: playing })); } catch(e){} }
+
+    var $ = function(s, r){ return (r||document).querySelector(s); };
+    var $$ = function(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+
+    // ---- build dot scores ----
+    $$('.dots').forEach(function(d){
+      var score = +d.getAttribute('data-score'), v = d.getAttribute('data-v');
+      d.innerHTML = '';
+      for (var i=0;i<5;i++){ var n=document.createElement('i'); if(i<score){ n.className='on '+v; } d.appendChild(n); }
+    });
+
+    // ---- build filmstrip ----
+    var strip = $('#strip');
+    FRAMES.forEach(function(f, i){
+      var cell = document.createElement('button');
+      cell.className = 'cell' + (i===idx?' is-active':'');
+      cell.setAttribute('data-i', i);
+      cell.innerHTML =
+        '<div class="cell__thumb"><div class="tg '+THUMBS[i]+'"></div></div>' +
+        '<div class="cell__no"><b>'+f.no+'</b><span class="t">'+f.title+'</span></div>';
+      cell.addEventListener('click', function(){ goTo(i, true); });
+      strip.appendChild(cell);
+    });
+
+    // map screen element
+    var mapEl = $('#map');
+    var searchText = $('#search-text');
+    var searchPh = $('#search-ph');
+    var searchCur = $('#search-cur');
+    var msearch = $('#msearch');
+    var ADDRESS = 'Rivonia Rd & Katherine St';
+    var typeTimers = [];
+    var panEl = mapEl.querySelector('.map__pan');
+    var pinEl = mapEl.querySelector('.map-pin');
+    var calEl = mapEl.querySelector('.map-pin__cal');
+    var sheetEl = mapEl.querySelector('.sheet');
+    var scrimEl = mapEl.querySelector('.map__scrim');
+    var dropEl = mapEl.querySelector('.msearch__drop');
+
+    function clearTypeTimers(){ typeTimers.forEach(clearTimeout); typeTimers = []; }
+
+    function resetMap(){
+      clearTypeTimers();
+      mapEl.classList.remove('is-zoom','is-pin','is-open');
+      msearch.classList.remove('is-open');
+      [panEl, pinEl, calEl, sheetEl, scrimEl, dropEl].forEach(function(el){
+        if (el){ try { el.getAnimations().forEach(function(a){ a.cancel(); }); } catch(e){} }
+      });
+      searchText.textContent = '';
+      searchPh.style.display = '';
+      searchCur.style.display = 'none';
+    }
+
+    function dropPin(){
+      mapEl.classList.add('is-pin');
+      anim(pinEl, [{ transform:'translate(-50%,-100%) scale(0)' }, { transform:'translate(-50%,-100%) scale(1)' }], 460);
+      anim(calEl, [{ opacity:0 }, { opacity:1 }], 280, { delay:140, fill:'backwards' });
+    }
+    function zoomIn(){
+      mapEl.classList.add('is-zoom');
+      anim(panEl, [{ transform:'scale(1)' }, { transform:'scale(1.28) translate(-4%,-6%)' }], 1000);
+    }
+    function openSheet(){
+      mapEl.classList.add('is-open');
+      anim(sheetEl, [{ transform:'translateY(102%)' }, { transform:'translateY(0)' }], 560);
+      anim(scrimEl, [{ opacity:0 }, { opacity:1 }], 460);
+    }
+
+    function runMapState(state){
+      resetMap();
+      if (state === 'idle'){ return; }
+      if (state === 'search'){
+        searchPh.style.display = 'none';
+        if (reduce){
+          searchText.textContent = ADDRESS;
+          msearch.classList.add('is-open');
+          mapEl.classList.add('is-pin','is-zoom');
+          return;
+        }
+        searchCur.style.display = 'inline-block';
+        var i = 0;
+        (function step(){
+          searchText.textContent = ADDRESS.slice(0, i);
+          i++;
+          if (i <= ADDRESS.length){
+            typeTimers.push(setTimeout(step, 66 + (Math.random()*46)));
+          } else {
+            typeTimers.push(setTimeout(function(){
+              msearch.classList.add('is-open');
+              anim(dropEl, [{ opacity:0, transform:'translateY(-6px)' }, { opacity:1, transform:'translateY(0)' }], 240);
+            }, 220));
+            typeTimers.push(setTimeout(dropPin, 820));
+            typeTimers.push(setTimeout(function(){ zoomIn(); searchCur.style.display='none'; }, 1200));
+          }
+        })();
+        return;
+      }
+      if (state === 'open'){
+        searchPh.style.display = 'none';
+        searchText.textContent = ADDRESS;
+        mapEl.classList.add('is-pin','is-zoom');   // carried over from frame 02, shown instantly
+        if (reduce){ mapEl.classList.add('is-open'); return; }
+        typeTimers.push(setTimeout(openSheet, 320));
+        return;
+      }
+    }
+
+    // ---- auto-scroll long screens ----
+    function resetScrolls(){
+      $$('.scroll__inner').forEach(function(el){
+        try { el.getAnimations().forEach(function(a){ a.cancel(); }); } catch(e){}
+        el.style.transform = 'translateY(0)';
+      });
+    }
+    function autoScroll(screen, dwell){
+      var inner = $('.scroll__inner[data-scroll="'+screen+'"]');
+      if (!inner) return;
+      try { inner.getAnimations().forEach(function(a){ a.cancel(); }); } catch(e){}
+      inner.style.transform = 'translateY(0)';
+      if (reduce) return;
+      var over = inner.scrollHeight - inner.parentElement.clientHeight;
+      if (over > 14){
+        inner.animate(
+          [{ transform:'translateY(0)' }, { transform:'translateY(0)', offset:0.16 }, { transform:'translateY(-'+over+'px)', offset:1 }],
+          { duration: dwell, easing:'linear', fill:'forwards' }
+        );
+      }
+    }
+
+    // ---- core navigation ----
+    function applyAside(f){
+      $('#a-scene').textContent = f.scene;
+      $('#a-scenepin').textContent = f.no + ' / 08';
+      $('#a-shot').textContent = f.shot;
+      $('#a-screen').textContent = f.screenLbl;
+      $('#a-action').textContent = f.action;
+      $('#a-dwell').textContent = (f.dwell/1000).toFixed(1) + 's';
+      $('#a-vo').textContent = f.vo;
+      $('#a-onscreen').innerHTML = f.onscreen;
+      $('#a-trans').textContent = f.trans;
+      $('#p-no').textContent = f.no;
+      $('#p-title').textContent = f.title;
+      $('#p-tc').textContent = f.tc;
+      $('#c-cur').textContent = f.no;
+    }
+
+    var prevScreen = null;
+    function showScreen(screen){
+      $$('.scr').forEach(function(s){ s.classList.toggle('is-active', s.getAttribute('data-screen')===screen); });
+      if (screen !== prevScreen){
+        var el = $('.scr[data-screen="'+screen+'"]');
+        if (el && !reduce){ try { el.animate([{ opacity:0 }, { opacity:1 }], { duration:300, easing:EASE }); } catch(e){} }
+        prevScreen = screen;
+      }
+    }
+
+    function fireFlash(dwell){
+      if (reduce) return;
+      var fl = $('.cam__flash'); if (!fl) return;
+      setTimeout(function(){
+        if (FRAMES[idx].screen === 'camera'){
+          try { fl.animate([{ opacity:0 }, { opacity:0.9, offset:0.14 }, { opacity:0 }], { duration:620, easing:EASE }); } catch(e){}
+        }
+      }, Math.max(dwell - 1000, 400));
+    }
+
+    function goTo(i){
+      idx = (i + FRAMES.length) % FRAMES.length;
+      var f = FRAMES[idx];
+      applyAside(f);
+      showScreen(f.screen);
+      $$('.cell').forEach(function(c,ci){ c.classList.toggle('is-active', ci===idx); });
+      resetScrolls();
+      if (f.screen === 'map'){ runMapState(f.state); }
+      else if (f.screen === 'camera'){ fireFlash(f.dwell); }
+      else if (f.screen === 'case'){ autoScroll('case', f.dwell); }
+      else if (f.screen === 'candidates'){ autoScroll('cand', f.dwell); }
+      else if (f.screen === 'vote'){ autoScroll('vote', f.dwell); }
+      save();
+      startProgress(f.dwell);
+    }
+
+    // ---- progress bar doubles as the auto-advance clock ----
+    var progAnim = null;
+    function startProgress(dur){
+      var fill = $('#prog');
+      try { fill.getAnimations().forEach(function(a){ a.cancel(); }); } catch(e){}
+      progAnim = fill.animate([{ transform:'scaleX(0)' }, { transform:'scaleX(1)' }], { duration: dur, easing:'linear', fill:'forwards' });
+      progAnim.onfinish = function(){ if (playing){ goTo(idx + 1); } };
+      if (!playing){ try { progAnim.pause(); } catch(e){} }
+    }
+
+    function setPlaying(p){
+      playing = p;
+      $('#btn-play').innerHTML = p ? PAUSE_ICON : PLAY_ICON;
+      if (progAnim){ try { p ? progAnim.play() : progAnim.pause(); } catch(e){} }
+      save();
+    }
+
+    // controls
+    $('#btn-play').addEventListener('click', function(){ setPlaying(!playing); });
+    $('#btn-prev').addEventListener('click', function(){ goTo(idx-1); });
+    $('#btn-next').addEventListener('click', function(){ goTo(idx+1); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowRight'){ goTo(idx+1); }
+      else if (e.key === 'ArrowLeft'){ goTo(idx-1); }
+      else if (e.key === ' '){ e.preventDefault(); setPlaying(!playing); }
+    });
+
+    // labels
+    $('#m-runtime').textContent = '0:' + String(Math.round(FRAMES.reduce(function(a,f){return a+f.dwell;},0)/1000)).padStart(2,'0');
+    $('#m-frames').textContent = FRAMES.length;
+    $('#c-tot').textContent = String(FRAMES.length).padStart(2,'0');
+
+    // init
+    $('#btn-play').innerHTML = playing ? PAUSE_ICON : PLAY_ICON;
+    goTo(idx);
+  })();
+  </script>
+</body>
+</html>

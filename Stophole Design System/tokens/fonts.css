@@ -1,0 +1,16 @@
+/* ============================================================
+   Stophole — Webfonts
+   ------------------------------------------------------------
+   SUBSTITUTION NOTE: No brand font files were supplied, so the
+   system uses the closest premium Google Fonts matches:
+     - Archivo        → institutional display grotesque (headers)
+     - Hanken Grotesk → humanist body grotesque (everything else,
+                        including data via tabular-nums + tracking)
+   No monospace family is used — "data" and "labels" are the
+   body grotesque with tabular-nums and tracked uppercase. The
+   monospace trope reads "trying too hard" against the brand's
+   premium-minimalist direction.
+   Swap in self-hosted .woff2 when the real brand fonts arrive.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap');

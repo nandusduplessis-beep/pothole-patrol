@@ -1,0 +1,31 @@
+<!-- @dsCard group="Colors" viewport="700x170" name="Surfaces — Light & Dark" subtitle="Same semantic aliases, two themes. Dark = OLED battery saver." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 20px; background: var(--grey-150); display: flex; gap: 14px; }
+  .pane { flex: 1; border-radius: var(--radius-lg); padding: 14px; background: var(--surface-page); border: 1px solid var(--border-subtle); }
+  .lbl { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+  .card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; box-shadow: var(--shadow-sm); }
+  .card h5 { margin: 0 0 4px; font-family: var(--font-display); font-weight: 800; color: var(--text-strong); font-size: 15px; }
+  .card p { margin: 0; font-size: 12px; color: var(--text-muted); }
+  .dot { display: inline-block; width: 28px; height: 18px; border-radius: 5px; vertical-align: middle; margin-right: 4px; border: 1px solid var(--border-subtle); }
+</style>
+</head>
+<body>
+  <div class="pane" data-theme="light">
+    <div class="lbl">Light</div>
+    <div class="card"><h5>Ward 102</h5><p>page · card · sunken</p>
+      <div style="margin-top:8px;"><span class="dot" style="background:var(--surface-page)"></span><span class="dot" style="background:var(--surface-card)"></span><span class="dot" style="background:var(--surface-sunken)"></span></div>
+    </div>
+  </div>
+  <div class="pane" data-theme="dark">
+    <div class="lbl">Dark</div>
+    <div class="card"><h5>Ward 102</h5><p>page · card · sunken</p>
+      <div style="margin-top:8px;"><span class="dot" style="background:var(--surface-page)"></span><span class="dot" style="background:var(--surface-card)"></span><span class="dot" style="background:var(--surface-sunken)"></span></div>
+    </div>
+  </div>
+</body>
+</html>

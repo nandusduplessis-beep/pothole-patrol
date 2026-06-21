@@ -1,0 +1,70 @@
+/* ============================================================
+   Stophole — Typography tokens
+   ------------------------------------------------------------
+   Archivo  = display / headers (institutional, confident)
+   Hanken Grotesk = body (humanist, legible on small screens)
+   Space Mono = data: ward numbers, dates, IDs, vote counts
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --font-body:    'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* `--font-mono` is intentionally aliased to the body family. Data styling is
+     done via tabular-nums + tracking, not a separate monospace family. */
+  --font-mono:    'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ---- Weights ---- */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-extra:    800;
+  --weight-black:    900;
+
+  /* ---- Type scale (mobile-first; bump via container/media queries on wider screens) ----
+     Display sizes are tight and heavy; body stays steady. */
+  --text-display:  3rem;        /* 48px hero headline (mobile) */
+  --text-h1:       2.125rem;    /* 34px */
+  --text-h2:       1.6875rem;   /* 27px */
+  --text-h3:       1.3125rem;   /* 21px */
+  --text-h4:       1.1875rem;   /* 19px */
+  --text-lg:       1.0625rem;   /* 17px */
+  --text-base:     1rem;        /* 16px — body default */
+  --text-sm:       0.875rem;    /* 14px */
+  --text-xs:       0.75rem;     /* 12px — labels, captions */
+  --text-2xs:      0.6875rem;   /* 11px — overline only */
+
+  /* ---- Line heights ---- */
+  --leading-tight:   1.04;   /* display headers */
+  --leading-snug:    1.18;   /* sub-heads */
+  --leading-normal:  1.5;    /* body */
+  --leading-relaxed: 1.65;   /* long-form */
+
+  /* ---- Letter spacing ---- */
+  --tracking-tight:  -0.02em;  /* large display */
+  --tracking-snug:   -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;
+  --tracking-caps:   0.12em;   /* overlines / eyebrows */
+
+  /* Fluid bumps on tablet+ */
+}
+@media (min-width: 720px) {
+  :root {
+    --text-display: 4rem;       /* 64px */
+    --text-h1:      2.5rem;     /* 40px */
+    --text-h2:      2rem;       /* 32px */
+    --text-h3:      1.5rem;     /* 24px */
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --text-display: 4.5rem;     /* 72px */
+    --text-h1:      3rem;       /* 48px */
+    --text-h2:      2.25rem;    /* 36px */
+
+  /* ---- Semantic roles ---- */
+  --eyebrow-size: var(--text-2xs);
+  --eyebrow-tracking: var(--tracking-caps);
+}

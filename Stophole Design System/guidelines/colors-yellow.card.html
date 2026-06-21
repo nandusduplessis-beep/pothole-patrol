@@ -1,0 +1,28 @@
+<!-- @dsCard group="Colors" viewport="700x190" name="Brand — Hazard Yellow" subtitle="One vivid hue. Yellow is a surface — never text on light. Charcoal text always." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 22px; background: var(--surface-page); display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; gap: 10px; }
+  .sw { flex: 1; height: 78px; border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; border: 1px solid rgba(0,0,0,0.08); }
+  .name { font-family: var(--font-body); font-size: 11px; font-weight: 700; color: var(--charcoal-900); }
+  .hex { font-family: var(--font-body); font-size: 10px; font-weight: 500; color: var(--charcoal-700); font-variant-numeric: tabular-nums; }
+  .legend { font-family: var(--font-body); font-size: 11.5px; color: var(--text-muted); }
+  .legend b { color: var(--text-strong); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw" style="background: var(--yellow-200);"><span class="name">200 soft</span><span class="hex">#FFEEA1</span></div>
+    <div class="sw" style="background: var(--yellow-300);"><span class="name">300</span><span class="hex">#FFE066</span></div>
+    <div class="sw" style="background: var(--yellow-400);"><span class="name">400</span><span class="hex">#FFD633</span></div>
+    <div class="sw" style="background: var(--yellow-500); outline: 2px solid var(--charcoal-900); outline-offset: 3px;"><span class="name">500 · primary</span><span class="hex">#FFC700</span></div>
+    <div class="sw" style="background: var(--yellow-600);"><span class="name">600 hover</span><span class="hex">#F2BB00</span></div>
+    <div class="sw" style="background: var(--yellow-700);"><span class="name">700 press</span><span class="hex">#E5AC00</span></div>
+  </div>
+  <div class="legend"><b>One yellow, vivid.</b> Darker yellows go olive — so hover/press are subtle shifts on the same hue. There is no "yellow text on light" — pair yellow surfaces with charcoal text.</div>
+</body>
+</html>

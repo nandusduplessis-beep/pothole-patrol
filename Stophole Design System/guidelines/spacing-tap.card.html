@@ -1,0 +1,20 @@
+<!-- @dsCard group="Spacing" viewport="700x150" name="Tap Targets" subtitle="44px minimum, 52px for primary CTAs. Thumbs on cheap phones." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--surface-page); display: flex; gap: 22px; align-items: center; }
+  .t { display: flex; flex-direction: column; align-items: center; gap: 9px; }
+  .target { background: var(--accent-soft); border: 1.5px dashed var(--yellow-700); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--yellow-800); }
+  .cap { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
+  .cta { height: 52px; padding: 0 24px; background: var(--accent); color: var(--charcoal-900); border-radius: var(--radius-md); display: flex; align-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; }
+</style>
+</head>
+<body>
+  <div class="t"><div class="target" style="width:44px;height:44px;">44</div><div class="cap">--tap-min</div></div>
+  <div class="t"><div class="target" style="width:52px;height:52px;">52</div><div class="cap">--tap-comfy</div></div>
+  <div class="t"><div class="cta">Upload pothole photo</div><div class="cap">primary CTA · 52px tall</div></div>
+</body>
+</html>

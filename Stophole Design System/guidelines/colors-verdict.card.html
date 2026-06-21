@@ -1,0 +1,24 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Verdict & Semantic" subtitle="Traffic-light saturation — punchy enough to live alongside hazard yellow." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 22px; background: var(--surface-page); }
+  .row { display: flex; gap: 12px; }
+  .item { flex: 1; }
+  .sw { height: 70px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-display); font-weight: 900; letter-spacing: 0.06em; color: #fff; font-size: 16px; }
+  .cap { font-family: var(--font-body); font-size: 11px; font-weight: 600; margin-top: 8px; color: var(--text-muted); display: block; text-align: center; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="item"><div class="sw" style="background: var(--green-500);">GREEN</div><span class="cap">verified · #16A34A</span></div>
+    <div class="item"><div class="sw" style="background: var(--accent); color: var(--charcoal-900);">AMBER</div><span class="cap">partial · #FFC700</span></div>
+    <div class="item"><div class="sw" style="background: var(--red-500);">RED</div><span class="cap">flagged · #E5343A</span></div>
+    <div class="item"><div class="sw" style="background: var(--blue-500);">INFO</div><span class="cap">neutral · #2B6FE3</span></div>
+  </div>
+</body>
+</html>

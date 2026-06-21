@@ -1,0 +1,35 @@
+<!-- @dsCard group="Brand" viewport="700x220" name="Logo & Mark" subtitle="Charcoal asphalt tile + yellow reticle = vet + locate." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 0; background: var(--surface-page); display: flex; }
+  .pane { flex: 1; display: flex; flex-direction: column; gap: 18px; align-items: center; justify-content: center; padding: 24px; }
+  .pane.dark { background: var(--charcoal-900); }
+  img { display: block; }
+  .marks { display: flex; gap: 14px; align-items: center; }
+  .cap { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .dark .cap { color: var(--grey-400); }
+</style>
+</head>
+<body>
+  <div class="pane">
+    <img src="../assets/logo-wordmark.svg" alt="Stophole" height="46" />
+    <div class="marks">
+      <img src="../assets/mark.svg" alt="mark" width="48" height="48" />
+      <img src="../assets/mark-yellow.svg" alt="mark yellow" width="48" height="48" />
+    </div>
+    <span class="cap">On light</span>
+  </div>
+  <div class="pane dark">
+    <img src="../assets/logo-wordmark-dark.svg" alt="Stophole" height="46" />
+    <div class="marks">
+      <img src="../assets/mark.svg" alt="mark" width="48" height="48" />
+      <img src="../assets/mark-yellow.svg" alt="mark yellow" width="48" height="48" />
+    </div>
+    <span class="cap">On charcoal</span>
+  </div>
+</body>
+</html>

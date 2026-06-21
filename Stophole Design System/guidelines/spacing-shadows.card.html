@@ -1,0 +1,21 @@
+<!-- @dsCard group="Spacing" viewport="700x160" name="Shadows" subtitle="Soft, neutral, low-spread. Never coloured (bar the yellow press-ledge)." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 26px 24px; background: var(--surface-page); display: flex; gap: 24px; align-items: center; }
+  .box { width: 92px; height: 70px; background: var(--surface-card); border-radius: var(--radius-md); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; border: 1px solid var(--border-subtle); }
+  .tok { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
+  .ledge { box-shadow: var(--shadow-accent); border-color: var(--yellow-700); }
+</style>
+</head>
+<body>
+  <div class="box" style="box-shadow: var(--shadow-xs);"><span class="tok">xs</span></div>
+  <div class="box" style="box-shadow: var(--shadow-sm);"><span class="tok">sm</span></div>
+  <div class="box" style="box-shadow: var(--shadow-md);"><span class="tok">md</span></div>
+  <div class="box" style="box-shadow: var(--shadow-lg);"><span class="tok">lg</span></div>
+  <div class="box ledge"><span class="tok">accent ledge</span></div>
+</body>
+</html>

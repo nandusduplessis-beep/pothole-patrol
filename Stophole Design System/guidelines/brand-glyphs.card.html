@@ -1,0 +1,32 @@
+<!-- @dsCard group="Brand" viewport="700x260" name="Grid Glyphs" subtitle="Generative brand primitive — potholes, marks, dot-scores from one modular grid." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<script src="../grid-glyph.js"></script>
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--surface-page); display: flex; gap: 26px; align-items: center; flex-wrap: wrap; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .cap { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <div class="item">
+    <svg-glyph data-matrix="0,1,2,1,0;1,2,2,2,1;2,2,2,2,2;1,2,2,2,1;0,1,1,1,0" data-cell="14" data-fg="#161614"></svg-glyph>
+    <span class="cap">pothole · 5×5</span>
+  </div>
+  <div class="item">
+    <svg-glyph data-matrix="7,1,8;1,2,1;10,1,9" data-cell="22" data-fg="#FFC700"></svg-glyph>
+    <span class="cap">reticle · 3×3</span>
+  </div>
+  <div class="item">
+    <svg-glyph data-matrix="0,1,2,1,0;1,1,2,1,1;2,2,2,2,2;1,1,1,1,1;1,1,1,1,1" data-cell="14" data-fg="#161614"></svg-glyph>
+    <span class="cap">pin · 5×5</span>
+  </div>
+  <div class="item">
+    <svg-glyph data-matrix="2,2,2,2,2,1,1,1,0,0" data-cell="14" data-fg="#2FA66B"></svg-glyph>
+    <span class="cap">score 6/10</span>
+  </div>
+</body>
+</html>

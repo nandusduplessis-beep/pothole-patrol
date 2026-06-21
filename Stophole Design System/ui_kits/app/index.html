@@ -1,0 +1,132 @@
+<!-- @dsCard group="App" viewport="760x820" name="Stophole App" subtitle="Snap → case → accountability → candidates → vote. Tap to play." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stophole — App</title>
+<link rel="stylesheet" href="../../styles.css" />
+<link rel="stylesheet" href="app.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="Shell.jsx"></script>
+  <script type="text/babel" src="Shared.jsx"></script>
+  <script type="text/babel" src="HomeScreen.jsx"></script>
+  <script type="text/babel" src="CaseScreen.jsx"></script>
+  <script type="text/babel" src="CandidatesScreen.jsx"></script>
+  <script type="text/babel" src="VoteScreen.jsx"></script>
+  <script type="text/babel" src="CasesScreen.jsx"></script>
+
+  <script type="text/babel">
+    const { Button, Icon, Tag } = window.StopholeDesignSystem_1ea2d7;
+
+    function InteractivePhone({ theme }) {
+      const [screen, setScreen] = React.useState('splash');   // splash|home|camera|success|case|candidates|vote|cases
+      const [tab, setTab] = React.useState('home');
+      const [capturing, setCapturing] = React.useState(false);
+
+      const go = (s, t) => { setScreen(s); if (t) setTab(t); };
+
+      const onSnap = () => { setScreen('camera'); };
+      const onCapture = () => {
+        setCapturing(true);
+        setTimeout(() => { setCapturing(false); setScreen('success'); }, 650);
+      };
+
+      let body;
+      if (screen === 'splash') body = <SplashScreen onEnter={() => go('home', 'home')} />;
+      else if (screen === 'success') body = <SuccessScreen onContinue={() => go('case')} />;
+      else if (screen === 'case') body = <CaseScreen onBack={() => go('home', 'home')} onSeeCandidates={() => go('candidates')} />;
+      else if (screen === 'candidates') body = <CandidatesScreen onBack={() => go('case')} onVote={() => go('vote', 'vote')} />;
+      else if (screen === 'vote') body = <VoteScreen onBack={() => go('candidates')} />;
+      else if (screen === 'cases') body = <CasesScreen onOpenCase={() => go('case')} />;
+      else body = <HomeScreen onSnap={onSnap} onPickRecent={() => go('case')} onSeeCandidates={() => go('candidates')} />;
+
+      const showChrome = !['splash', 'camera', 'success'].includes(screen);
+      const showTabs = ['home', 'cases', 'vote'].includes(screen);
+
+      const handleNav = (id) => {
+        setTab(id);
+        if (id === 'home') go('home', 'home');
+        else if (id === 'cases') go('cases', 'cases');
+        else if (id === 'vote') go('vote', 'vote');
+        else go('home', 'home');
+      };
+
+      return (
+        <div className="stophole-frame" data-theme={theme}>
+          <div className="stophole-phone__notch" />
+          <div className="stophole-phone__screen">
+            {showChrome && <StatusBar />}
+            {body}
+            {screen === 'camera' && (
+              <CameraOverlay onCapture={onCapture} onClose={() => go('home', 'home')} />
+            )}
+            {capturing && (
+              <div style={{ position: 'absolute', inset: 0, background: '#fff', zIndex: 50, opacity: 0.9 }} />
+            )}
+            {showTabs && <TabBar active={tab} onNav={handleNav} />}
+          </div>
+          <div className="stophole-frame__caption"><strong>Interactive</strong> tap through it</div>
+        </div>
+      );
+    }
+
+    // Static showcase frame (no chrome state machine — just renders one screen)
+    function StaticPhone({ theme, caption, children, withTabs, activeTab }) {
+      return (
+        <div className="stophole-frame" data-theme={theme}>
+          <div className="stophole-phone__notch" />
+          <div className="stophole-phone__screen">
+            <StatusBar />
+            {children}
+            {withTabs && <TabBar active={activeTab} onNav={() => {}} />}
+          </div>
+          <div className="stophole-frame__caption">{caption}</div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [theme, setTheme] = React.useState('light');
+      const toggle = () => setTheme(t => t === 'light' ? 'dark' : 'light');
+
+      return (
+        <div className="stophole-page">
+          <div className="stophole-page__title">
+            <Tag>Stophole · Civic App</Tag>
+            <h1>Turn a pothole into a <span className="sh-underline">hiring decision.</span></h1>
+            <p>Snap the pothole. See the ward. Name who's accountable now. Compare who wants the job next — scored on delivery, not promises.</p>
+            <div className="stophole-toolbar" style={{ justifyContent: 'center', marginTop: 18 }}>
+              <Button variant="secondary" size="sm" leadingIcon={<Icon name={theme === 'light' ? 'moon' : 'sun'} size={16} />} onClick={toggle}>
+                {theme === 'light' ? 'Dark mode' : 'Light mode'}
+              </Button>
+            </div>
+          </div>
+
+          <div className="stophole-rail">
+            <InteractivePhone theme={theme} />
+            <StaticPhone theme={theme} caption={<><strong>Case</strong> accountability</>}>
+              <CaseScreen onBack={() => {}} onSeeCandidates={() => {}} />
+            </StaticPhone>
+            <StaticPhone theme={theme} caption={<><strong>Compare</strong> the Pothole Test</>}>
+              <CandidatesScreen onBack={() => {}} onVote={() => {}} />
+            </StaticPhone>
+            <StaticPhone theme={theme} caption={<><strong>Vote</strong> where & when</>} withTabs activeTab="vote">
+              <VoteScreen onBack={() => {}} />
+            </StaticPhone>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

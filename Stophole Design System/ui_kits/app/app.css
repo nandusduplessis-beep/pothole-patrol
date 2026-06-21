@@ -1,0 +1,359 @@
+/* ============================================================
+   Stophole app UI kit — phone frame + screens
+   Built on the design-system CSS custom properties.
+   ============================================================ */
+
+body {
+  margin: 0;
+  background: var(--surface-page);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px 80px;
+  font-family: var(--font-body);
+}
+
+.stophole-page {
+  width: 100%;
+  max-width: 1340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+.stophole-page__title { text-align: center; max-width: 720px; padding: 0 16px; }
+.stophole-page__title h1 {
+  font-family: var(--font-display); font-weight: 900;
+  font-size: clamp(2.25rem, 4vw + 1rem, 3.5rem);
+  letter-spacing: -0.025em; line-height: 1.0;
+  color: var(--text-strong); margin: 14px 0 12px;
+}
+.stophole-page__title p {
+  font-size: 17px; color: var(--text-muted); margin: 0 auto; max-width: 54ch; line-height: 1.5;
+}
+
+.stophole-toolbar { display: flex; gap: 8px; align-items: center; }
+
+.stophole-rail {
+  display: flex; gap: 40px; align-items: flex-start;
+  flex-wrap: wrap; justify-content: center;
+}
+
+/* ---------- Phone frame ---------- */
+.stophole-frame {
+  width: 360px; height: 740px;
+  border-radius: 46px;
+  background: var(--charcoal-950);
+  padding: 9px;
+  box-shadow: 0 30px 70px -20px rgba(14,14,13,0.45), 0 6px 16px rgba(14,14,13,0.18);
+  position: relative; flex-shrink: 0;
+}
+.stophole-frame__caption {
+  position: absolute; left: 0; right: 0; top: calc(100% + 16px);
+  text-align: center; font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); font-weight: 700;
+}
+.stophole-frame__caption strong { color: var(--text-strong); margin-right: 6px; }
+.stophole-phone__screen {
+  width: 100%; height: 100%; border-radius: 38px;
+  background: var(--surface-page); overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+}
+.stophole-phone__notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 116px; height: 26px; background: var(--charcoal-950);
+  border-radius: 0 0 18px 18px; z-index: 30;
+}
+
+/* ---------- Status / top bars ---------- */
+.stophole-status {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 26px 4px; font-family: var(--font-mono);
+  font-size: 13px; font-weight: 700; color: var(--text-strong); flex-shrink: 0;
+}
+.stophole-status__icons { display: flex; align-items: center; gap: 4px; }
+
+.stophole-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px 6px; gap: 12px; flex-shrink: 0;
+}
+.stophole-topbar__l, .stophole-topbar__r { display: flex; align-items: center; gap: 6px; min-width: 40px; }
+.stophole-topbar__r { justify-content: flex-end; }
+.stophole-topbar__t {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em; color: var(--text-muted); text-transform: uppercase;
+  flex: 1; text-align: center;
+}
+.stophole-iconbtn {
+  appearance: none; background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  width: 40px; height: 40px; border-radius: 999px;
+  color: var(--text-strong); display: grid; place-items: center; cursor: pointer; position: relative;
+}
+.stophole-iconbtn:hover { background: var(--surface-sunken); }
+.stophole-dot {
+  position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+  border-radius: 999px; background: var(--status-flagged); border: 2px solid var(--surface-card);
+}
+
+.stophole-scroll { flex: 1; overflow-y: auto; padding: 6px 16px 96px; }
+.stophole-scroll::-webkit-scrollbar { width: 0; }
+
+/* ---------- Tab bar ---------- */
+.stophole-tabbar {
+  position: absolute; bottom: 12px; left: 12px; right: 12px;
+  background: var(--charcoal-900); border-radius: 999px; padding: 6px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; z-index: 20;
+  box-shadow: 0 8px 26px rgba(14,14,13,0.3);
+}
+.stophole-tab {
+  appearance: none; background: transparent; border: none; color: var(--grey-400);
+  padding: 9px 4px; border-radius: 999px; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; cursor: pointer; font-family: var(--font-mono);
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.stophole-tab:hover { color: var(--grey-150); }
+.stophole-tab.is-active { background: var(--accent); color: var(--charcoal-900); }
+
+/* ---------- Atoms ---------- */
+.stophole-row { display: flex; align-items: center; }
+.stophole-row--between { justify-content: space-between; }
+.stophole-row--gap { gap: 10px; flex-wrap: wrap; }
+.stophole-stack { display: flex; flex-direction: column; gap: 10px; }
+.stophole-block { margin-top: 22px; }
+.stophole-link {
+  appearance: none; background: none; border: none; cursor: pointer;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-strong);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.stophole-dot-sep { width: 3px; height: 3px; border-radius: 999px; background: var(--text-subtle); display: inline-block; }
+
+.stophole-display {
+  font-family: var(--font-display); font-weight: 900; font-size: 36px;
+  line-height: 1.0; letter-spacing: -0.025em; color: var(--text-strong); margin: 14px 0 0;
+}
+.stophole-h1 {
+  font-family: var(--font-display); font-weight: 900; font-size: 27px;
+  line-height: 1.05; letter-spacing: -0.02em; color: var(--text-strong); margin: 8px 0;
+}
+.stophole-cta-h {
+  font-family: var(--font-display); font-weight: 800; font-size: 21px;
+  line-height: 1.12; letter-spacing: -0.01em; color: var(--grey-50); margin: 12px 0 0;
+}
+
+/* ---------- Home ---------- */
+.stophole-home__intro { padding: 8px 4px 8px; }
+.stophole-home__hole { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 14px; }
+.stophole-pill-input {
+  appearance: none; background: var(--surface-sunken); border: 1px dashed var(--border-default);
+  height: 40px; padding: 0 18px; border-radius: 999px; font-family: var(--font-body);
+  font-size: 13px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.stophole-pill-input:hover { border-color: var(--text-subtle); }
+.stophole-home__recent { margin-top: 26px; }
+.stophole-recent {
+  appearance: none; background: var(--surface-card); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg); padding: 12px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; text-align: left; width: 100%;
+  transition: transform var(--dur-fast), border-color var(--dur-fast);
+}
+.stophole-recent:hover { border-color: var(--border-default); }
+.stophole-recent:active { transform: scale(0.99); }
+.stophole-recent__body { flex: 1; min-width: 0; }
+.stophole-recent__title {
+  font-family: var(--font-display); font-weight: 800; font-size: 15px; color: var(--text-strong);
+  letter-spacing: -0.01em; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.stophole-recent__meta { display: flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+
+/* ---------- Case file ---------- */
+.stophole-case__hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 8px; margin-top: 6px; }
+.stophole-case__photo {
+  height: 176px; border-radius: var(--radius-lg); position: relative; overflow: hidden;
+  background: radial-gradient(140% 110% at 30% 25%, #2a2826 0%, #161412 60%, #0c0b0a 100%);
+}
+.stophole-case__photo::before {
+  content: ""; position: absolute; top: 50%; left: 45%;
+  width: 74%; height: 64%; transform: translate(-35%, -38%);
+  border-radius: 51% 49% 56% 44% / 48% 56% 44% 52%;
+  background: radial-gradient(120% 120% at 50% 30%, #0c0b0a 0%, #000 80%);
+  box-shadow: inset 0 10px 28px rgba(0,0,0,0.9), inset 0 -6px 16px rgba(0,0,0,0.6);
+}
+.stophole-case__photo::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 20px;
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 15px, var(--charcoal-900) 15px 27px);
+  opacity: 0.92;
+}
+.stophole-case__photo-inner { position: absolute; top: 10px; left: 10px; z-index: 2; }
+.stophole-case__map {
+  height: 176px; border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--surface-sunken); border: 1px solid var(--border-subtle); position: relative;
+}
+.stophole-case__head { margin-top: 16px; }
+.stophole-case__stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; }
+
+/* ---------- Person / signals ---------- */
+.stophole-person { display: flex; align-items: center; gap: 12px; }
+.stophole-avatar {
+  width: 44px; height: 44px; border-radius: 999px; background: var(--charcoal-800);
+  color: var(--grey-50); display: grid; place-items: center; font-family: var(--font-display);
+  font-weight: 800; font-size: 14px; letter-spacing: 0.04em; flex-shrink: 0;
+}
+.stophole-person__name { font-family: var(--font-display); font-weight: 800; font-size: 15px; color: var(--text-strong); }
+.stophole-person__role { font-size: 12px; color: var(--text-muted); }
+.stophole-signals { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.stophole-signal {
+  display: flex; align-items: center; gap: 10px; padding: 9px 11px;
+  border-radius: var(--radius-md); font-size: 13px; font-weight: 500;
+}
+.stophole-signal--red   { background: var(--status-flagged-bg); color: var(--status-flagged); }
+.stophole-signal--amber { background: var(--accent-soft); color: var(--yellow-800); }
+.stophole-signal--green { background: var(--status-verified-bg); color: var(--status-verified); }
+.stophole-signal__txt { flex: 1; }
+
+/* ---------- Community note ---------- */
+.stophole-note { display: flex; flex-direction: column; gap: 4px; padding: 11px 0; border-bottom: 1px solid var(--border-subtle); }
+.stophole-note:last-child { border-bottom: none; padding-bottom: 0; }
+.stophole-note__head { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700; }
+.stophole-note__head .raw { background: var(--status-flagged-bg); color: var(--status-flagged); padding: 2px 6px; border-radius: 4px; font-size: 9px; }
+.stophole-note__txt { font-size: 13.5px; color: var(--text-body); line-height: 1.45; }
+
+/* ---------- Candidates ---------- */
+.stophole-cand {
+  display: flex; flex-direction: column; gap: 12px; padding: 15px;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+  background: var(--surface-card); cursor: pointer; transition: border-color var(--dur-fast), transform var(--dur-fast);
+  width: 100%; text-align: left; appearance: none;
+}
+.stophole-cand:hover { border-color: var(--border-default); }
+.stophole-cand:active { transform: scale(0.995); }
+.stophole-cand__top { display: flex; align-items: center; gap: 12px; }
+.stophole-cand__rank {
+  font-family: var(--font-display); font-weight: 900; font-size: 20px;
+  color: var(--text-subtle); width: 24px; flex-shrink: 0; letter-spacing: -0.02em;
+}
+.stophole-cand__name { font-family: var(--font-display); font-weight: 800; font-size: 16px; color: var(--text-strong); }
+.stophole-cand__party { font-size: 12px; color: var(--text-muted); }
+.stophole-cand__signals { display: flex; flex-direction: column; gap: 7px; }
+.stophole-cand__sig { display: flex; align-items: center; gap: 10px; }
+.stophole-cand__sig-label { font-size: 12px; color: var(--text-muted); flex: 1; }
+
+/* ---------- Success screen ---------- */
+.stophole-success {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 30px; gap: 18px;
+}
+.stophole-success__check {
+  width: 96px; height: 96px; border-radius: 999px; background: var(--accent);
+  display: grid; place-items: center; color: var(--charcoal-900);
+  box-shadow: 0 10px 30px rgba(255,199,0,0.4), inset 0 -3px 0 var(--yellow-700);
+}
+.stophole-success h1 {
+  font-family: var(--font-display); font-weight: 900; font-size: 30px;
+  letter-spacing: -0.02em; line-height: 1.05; color: var(--text-strong); margin: 0;
+}
+.stophole-success p { color: var(--text-muted); font-size: 15px; margin: 0; max-width: 30ch; }
+
+/* ---------- Splash ---------- */
+.stophole-splash {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px; background: var(--charcoal-950); position: relative; overflow: hidden;
+}
+.stophole-splash__grid {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,199,0,0.10) 1.4px, transparent 1.4px);
+  background-size: 26px 26px;
+  mask: radial-gradient(circle at 50% 42%, #000 0%, transparent 68%);
+  -webkit-mask: radial-gradient(circle at 50% 42%, #000 0%, transparent 68%);
+}
+.stophole-splash__mark {
+  width: 96px; height: 96px; border-radius: 24px; background: var(--charcoal-900);
+  border: 1px solid var(--charcoal-700); display: grid; place-items: center; z-index: 2;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.stophole-splash__word {
+  font-family: var(--font-display); font-weight: 900; font-size: 34px; letter-spacing: -0.02em; z-index: 2;
+}
+.stophole-splash__tag {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--grey-400); z-index: 2; text-align: center; max-width: 26ch; line-height: 1.6;
+}
+.stophole-splash__loader {
+  position: absolute; bottom: 60px; width: 120px; height: 4px; border-radius: 999px;
+  background: var(--charcoal-800); overflow: hidden; z-index: 2;
+}
+.stophole-splash__loader::after {
+  content: ""; position: absolute; inset: 0; width: 40%; background: var(--accent);
+  border-radius: 999px; animation: stophole-load 1.3s var(--ease-in-out) infinite;
+}
+@keyframes stophole-load { 0% { left: -40%; } 100% { left: 100%; } }
+
+/* ---------- Snap / camera overlay ---------- */
+.stophole-camera {
+  position: absolute; inset: 0; background: var(--charcoal-950); z-index: 40;
+  display: flex; flex-direction: column; border-radius: 38px; overflow: hidden;
+}
+.stophole-camera__view {
+  flex: 1; position: relative;
+  background: radial-gradient(130% 100% at 40% 35%, #34322f 0%, #1a1816 55%, #0c0b0a 100%);
+  display: grid; place-items: center;
+}
+.stophole-camera__reticle {
+  width: 180px; height: 180px; border: 2px solid rgba(255,199,0,0.7); border-radius: 24px; position: relative;
+}
+.stophole-camera__reticle::before, .stophole-camera__reticle::after {
+  content: ""; position: absolute; background: var(--accent);
+}
+.stophole-camera__hint {
+  position: absolute; top: 24px; left: 0; right: 0; text-align: center;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey-300);
+}
+.stophole-camera__bar { padding: 24px; display: flex; justify-content: center; align-items: center; }
+.stophole-camera__shutter {
+  width: 72px; height: 72px; border-radius: 999px; background: var(--accent); border: 4px solid var(--charcoal-800);
+  cursor: pointer; box-shadow: 0 0 0 4px rgba(255,199,0,0.25); display: grid; place-items: center; color: var(--charcoal-900);
+}
+.stophole-camera__close {
+  position: absolute; top: 18px; right: 18px; z-index: 2;
+  width: 40px; height: 40px; border-radius: 999px; background: rgba(0,0,0,0.5);
+  border: none; color: var(--grey-50); display: grid; place-items: center; cursor: pointer;
+}
+
+/* ---------- Vote screen ---------- */
+.stophole-vote__hero {
+  background: var(--charcoal-900); border-radius: var(--radius-xl); padding: 22px; color: var(--grey-50); margin-top: 8px;
+}
+.stophole-vote__date { font-family: var(--font-display); font-weight: 900; font-size: 44px; letter-spacing: -0.02em; line-height: 1; }
+.stophole-station {
+  display: flex; align-items: flex-start; gap: 12px; padding: 14px;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: var(--surface-card); margin-top: 12px;
+}
+.stophole-station__icon {
+  width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--accent-soft);
+  color: var(--yellow-800); display: grid; place-items: center; flex-shrink: 0;
+}
+
+/* ---------- Cases list ---------- */
+.stophole-greet { padding: 10px 4px 4px; }
+.stophole-greet h1 { font-family: var(--font-display); font-weight: 900; font-size: 26px; letter-spacing: -0.02em; color: var(--text-strong); margin: 6px 0 2px; }
+.stophole-greet p { color: var(--text-muted); font-size: 14px; margin: 0; }
+.stophole-daterow { margin-top: 18px; }
+.stophole-daterow__label { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-subtle); margin-bottom: 8px; }
+
+/* ---------- Map dots ---------- */
+.stophole-map-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 28px 28px; opacity: 0.6;
+}
+.stophole-map-road {
+  position: absolute; background: var(--grey-250);
+}
+.stophole-map-pin {
+  position: absolute; width: 26px; height: 26px; transform: translate(-50%, -100%);
+  color: var(--status-flagged);
+}

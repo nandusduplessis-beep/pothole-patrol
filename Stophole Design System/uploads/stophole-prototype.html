@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StopHole Prototype</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.35rem);
+      --text-xl: clamp(1.4rem, 1.15rem + 1vw, 1.9rem);
+      --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem;
+      --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem;
+      --color-bg: #f7f6f2; --color-surface: #fbfaf7; --color-surface-2: #f1eee8; --color-surface-3:#e8e2d8;
+      --color-text: #1f1c17; --color-text-muted: #6d6a64; --color-text-faint: #96928a; --color-border:#d7d1c6;
+      --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-primary-soft:#dcebea;
+      --color-success:#437a22; --color-warning:#c87813; --color-error:#9b2242; --color-danger:#7a1010;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.06); --shadow-md:0 10px 24px rgba(20,18,13,.08); --shadow-lg:0 24px 50px rgba(20,18,13,.14);
+      --radius-sm:.5rem; --radius-md:.9rem; --radius-lg:1.25rem; --radius-xl:1.5rem; --radius-full:999px;
+      --font-body:'Satoshi', system-ui, sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2:#23211f; --color-surface-3:#2e2b28;
+      --color-text:#ece7df; --color-text-muted:#b1aba1; --color-text-faint:#8b8478; --color-border:#38342e;
+      --color-primary:#61a7ae; --color-primary-hover:#8bc1c7; --color-primary-soft:#223538;
+      --color-success:#82b962; --color-warning:#f0ab4a; --color-error:#d96b88; --color-danger:#f07c7c;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow-md:0 10px 24px rgba(0,0,0,.34); --shadow-lg:0 24px 50px rgba(0,0,0,.45);
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%;margin:0;overflow:hidden}
+    body{font-family:var(--font-body);font-size:var(--text-base);background:var(--color-bg);color:var(--color-text);line-height:1.5}
+    button,input,textarea,select{font:inherit;color:inherit}
+    img{display:block;max-width:100%}
+    .dashboard{display:grid;grid-template-columns:320px 1fr;grid-template-rows:auto 1fr;height:100dvh}
+    .sidebar{grid-row:1 / -1;overflow-y:auto;overscroll-behavior:contain;background:var(--color-surface);border-right:1px solid var(--color-border);padding:var(--space-5)}
+    .header{grid-column:2;display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-border);background:color-mix(in srgb, var(--color-surface) 92%, transparent);backdrop-filter:blur(10px)}
+    .main{grid-column:2;overflow-y:auto;overscroll-behavior:contain;padding:var(--space-5)}
+    .logo{display:flex;align-items:center;gap:.85rem;margin-bottom:var(--space-6)}
+    .logo svg{width:42px;height:42px;color:var(--color-danger)}
+    .eyebrow{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.12em;color:var(--color-text-muted);font-weight:700}
+    .title{font-size:var(--text-xl);font-weight:900;letter-spacing:-.03em;margin:.15rem 0 .2rem}
+    .muted{color:var(--color-text-muted)}
+    .tiny{font-size:var(--text-xs);color:var(--color-text-muted)}
+    .nav-group{margin-bottom:var(--space-6)}
+    .nav-item{display:flex;justify-content:space-between;align-items:center;padding:.8rem .95rem;border-radius:var(--radius-md);margin-bottom:.45rem;background:transparent;border:1px solid transparent;cursor:pointer}
+    .nav-item.active{background:var(--color-primary-soft);border-color:color-mix(in srgb, var(--color-primary) 20%, var(--color-border));color:var(--color-text)}
+    .nav-item:hover{background:var(--color-surface-2)}
+    .pill{display:inline-flex;align-items:center;gap:.4rem;padding:.32rem .7rem;border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:700;border:1px solid var(--color-border);background:var(--color-surface-2)}
+    .pill.green{color:var(--color-success);border-color:color-mix(in srgb,var(--color-success) 25%, var(--color-border));background:color-mix(in srgb,var(--color-success) 10%, var(--color-surface))}
+    .pill.amber{color:var(--color-warning);border-color:color-mix(in srgb,var(--color-warning) 25%, var(--color-border));background:color-mix(in srgb,var(--color-warning) 10%, var(--color-surface))}
+    .pill.red{color:var(--color-error);border-color:color-mix(in srgb,var(--color-error) 25%, var(--color-border));background:color-mix(in srgb,var(--color-error) 10%, var(--color-surface))}
+    .button{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;border:none;border-radius:var(--radius-md);padding:.9rem 1rem;font-size:var(--text-sm);font-weight:700;cursor:pointer}
+    .button.primary{background:var(--color-danger);color:#fff}
+    .button.primary:hover{filter:brightness(.95)}
+    .button.secondary{background:var(--color-surface-2);border:1px solid var(--color-border)}
+    .button.ghost{background:transparent;border:1px solid var(--color-border)}
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--space-5);margin-bottom:var(--space-5)}
+    .card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+    .card-pad{padding:var(--space-5)}
+    .hero-copy{display:flex;flex-direction:column;gap:var(--space-4)}
+    .hero-copy h1{font-size:var(--text-xl);line-height:1.02;margin:0;max-width:14ch}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:.75rem}
+    .dropzone{border:1.5px dashed color-mix(in srgb,var(--color-danger) 35%, var(--color-border));background:linear-gradient(180deg, color-mix(in srgb,var(--color-danger) 8%, var(--color-surface)) 0%, var(--color-surface) 100%);border-radius:var(--radius-lg);padding:var(--space-5);display:flex;flex-direction:column;justify-content:space-between;min-height:290px}
+    .drop-art{position:relative;height:160px;border-radius:var(--radius-lg);overflow:hidden;background:linear-gradient(180deg,#979188 0%,#b8afa4 35%,#4f4943 36%,#2c2825 100%)}
+    .drop-art::before{content:"";position:absolute;inset:auto 12% 10% 12%;height:42px;border-radius:50%;background:radial-gradient(circle at 50% 30%, #5d5a57 0, #1f1d1b 55%, #0f0e0d 100%);box-shadow:0 -12px 40px rgba(0,0,0,.25)}
+    .drop-art::after{content:"Ward 102 · Douglasdale";position:absolute;left:14px;bottom:12px;background:rgba(255,255,255,.9);color:#111;padding:.35rem .6rem;border-radius:999px;font-size:12px;font-weight:700}
+    .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-5)}
+    .field{display:flex;flex-direction:column;gap:.45rem}
+    .field label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-muted)}
+    .field input,.field textarea{border:1px solid var(--color-border);background:var(--color-surface);padding:.9rem 1rem;border-radius:var(--radius-md);outline:none}
+    .field textarea{min-height:92px;resize:vertical}
+    .field input:focus,.field textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 14%, transparent)}
+    .map-and-case{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--space-5);margin-bottom:var(--space-5)}
+    .map-card .map{aspect-ratio:16/10;border-radius:var(--radius-lg);background:
+      linear-gradient(90deg, rgba(255,255,255,.65) 0 2px, transparent 2px 100%),
+      linear-gradient(rgba(255,255,255,.55) 0 2px, transparent 2px 100%),
+      linear-gradient(135deg,#ddd7cd 0%,#efeae1 65%,#d8d1c6 100%);
+      background-size:90px 90px,90px 90px,100% 100%;position:relative;overflow:hidden;border:1px solid var(--color-border)}
+    .road{position:absolute;background:#b8b0a5;border-radius:999px}
+    .road.one{width:130%;height:18px;left:-10%;top:42%;transform:rotate(-10deg)}
+    .road.two{width:18px;height:120%;left:58%;top:-12%}
+    .road.three{width:70%;height:14px;left:20%;top:68%;transform:rotate(14deg)}
+    .pin{position:absolute;width:18px;height:18px;border-radius:50%;background:var(--color-danger);border:3px solid #fff;box-shadow:0 8px 15px rgba(122,16,16,.25)}
+    .pin::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:16px;background:var(--color-danger);transform:translateX(-50%)}
+    .pin.a{left:40%;top:44%}.pin.b{left:64%;top:29%}.pin.c{left:28%;top:63%}
+    .map-legend{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:var(--space-4)}
+    .info-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3);margin-top:var(--space-4)}
+    .info-tile{padding:var(--space-4);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md)}
+    .stack{display:flex;flex-direction:column;gap:var(--space-4)}
+    .person-card{display:grid;grid-template-columns:auto 1fr auto;gap:var(--space-4);align-items:start;padding:var(--space-4);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md)}
+    .avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--color-danger),#c96464);color:white;font-weight:900}
+    .detail-list{display:grid;gap:.55rem}
+    .detail-row{display:flex;justify-content:space-between;gap:var(--space-3);font-size:var(--text-sm)}
+    .note-box{padding:var(--space-4);border-radius:var(--radius-md);background:color-mix(in srgb,var(--color-primary) 6%, var(--color-surface));border:1px solid var(--color-border)}
+    .job-candidates{display:grid;grid-template-columns:.88fr 1.12fr;gap:var(--space-5)}
+    .job-spec{position:sticky;top:var(--space-4);align-self:start}
+    .salary{display:flex;justify-content:space-between;align-items:end;padding:var(--space-4);background:linear-gradient(135deg,color-mix(in srgb,var(--color-warning) 14%, var(--color-surface)) 0%, var(--color-surface) 100%);border-radius:var(--radius-md);border:1px solid color-mix(in srgb,var(--color-warning) 22%, var(--color-border));margin:var(--space-4) 0}
+    .candidate-list{display:grid;gap:var(--space-4)}
+    .candidate{padding:var(--space-5);border-radius:var(--radius-lg);border:1px solid var(--color-border);background:var(--color-surface);box-shadow:var(--shadow-sm)}
+    .candidate-top{display:flex;align-items:start;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-4)}
+    .candidate h3{margin:0;font-size:var(--text-lg)}
+    .score{display:grid;gap:.4rem;min-width:130px}
+    .bar{height:8px;border-radius:999px;background:var(--color-surface-3);overflow:hidden}
+    .bar > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--color-success),#9dc961)}
+    .signal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;margin:var(--space-4) 0}
+    .signal{font-size:var(--text-sm);padding:.8rem .9rem;border-radius:var(--radius-md);background:var(--color-surface-2);border:1px solid var(--color-border)}
+    .candidate-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:var(--space-4)}
+    .footer-note{margin-top:var(--space-5);padding:var(--space-4);font-size:var(--text-sm);color:var(--color-text-muted);background:var(--color-surface-2);border-radius:var(--radius-md);border:1px solid var(--color-border)}
+    .mobile-only{display:none}
+    @media (max-width: 1180px){
+      .dashboard{grid-template-columns:86px 1fr}
+      .sidebar .logo-copy,.sidebar .nav-copy,.sidebar .hide-compact{display:none}
+      .sidebar{padding:var(--space-4)}
+      .nav-item{justify-content:center}
+    }
+    @media (max-width: 900px){
+      html,body{overflow:auto}
+      .dashboard{display:block;height:auto}
+      .sidebar{display:none}
+      .header,.main{padding-inline:var(--space-4)}
+      .hero,.map-and-case,.job-candidates,.input-grid{grid-template-columns:1fr}
+      .job-spec{position:static}
+      .mobile-only{display:inline-flex}
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo">
+        <svg viewBox="0 0 64 64" fill="none" aria-label="StopHole logo">
+          <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6"></circle>
+          <path d="M19 32h26" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+          <circle cx="32" cy="32" r="9" fill="currentColor"></circle>
+        </svg>
+        <div class="logo-copy">
+          <div class="eyebrow">Stop the asshole</div>
+          <div style="font-size:1.2rem;font-weight:900;letter-spacing:-.03em">StopHole</div>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="eyebrow hide-compact" style="margin-bottom:.7rem">Known holes</div>
+        <button class="nav-item active"><span class="nav-copy">Douglasdale trench pool</span><span class="pill red">102 days</span></button>
+        <button class="nav-item"><span class="nav-copy">Witkoppen axle killer</span><span class="pill amber">48 days</span></button>
+        <button class="nav-item"><span class="nav-copy">Fourways sink strip</span><span class="pill green">Fixed</span></button>
+      </div>
+
+      <div class="nav-group">
+        <div class="eyebrow hide-compact" style="margin-bottom:.7rem">Why this exists</div>
+        <p class="tiny hide-compact">Stunts shame one hole. Local elections replace the person paid to stop thousands.[file:3][file:6]</p>
+      </div>
+
+      <div class="nav-group">
+        <div class="eyebrow hide-compact" style="margin-bottom:.7rem">Case status</div>
+        <div class="stack hide-compact">
+          <div class="pill red">Current owner named</div>
+          <div class="pill amber">Applicants loaded</div>
+          <div class="pill green">Community notes open</div>
+        </div>
+      </div>
+    </aside>
+
+    <header class="header">
+      <div>
+        <div class="eyebrow">Prototype</div>
+        <div style="font-size:var(--text-lg);font-weight:800;letter-spacing:-.02em">Turn a pothole into a hiring decision</div>
+      </div>
+      <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
+        <button class="button secondary mobile-only">Menu</button>
+        <button class="button ghost" id="themeToggle">Dark mode</button>
+        <button class="button primary">Open case file</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="hero">
+        <div class="card card-pad hero-copy">
+          <div>
+            <div class="pill red">Local elections fix streets</div>
+            <h1>Snap the pothole. Name who failed. Compare who wants the job next.</h1>
+          </div>
+          <p class="muted">StopHole starts with the road you hate, then shows the ward, the current accountable person, the public job spec, what taxpayers pay for it, and the 2026 applicants.[file:3][file:6]</p>
+          <div class="hero-actions">
+            <button class="button primary">Upload pothole photo</button>
+            <button class="button secondary">Use address instead</button>
+          </div>
+          <div class="footer-note">Internal shorthand: “EskomSePush for potholes.” Product reality: it helps you fix the problem, not just know about it.[web:52][file:3][file:6]</div>
+        </div>
+        <div class="dropzone">
+          <div>
+            <div class="eyebrow">Entry point</div>
+            <div style="font-size:var(--text-lg);font-weight:800;margin:.25rem 0 .4rem">Take the picture you’re already sending to WhatsApp</div>
+            <p class="muted" style="margin:0">Or skip the pic and enter the address. Public potholes are preloaded, missing ones become new case files.[web:40][web:46]</p>
+          </div>
+          <div class="drop-art" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="card card-pad" style="margin-bottom:var(--space-5)">
+        <div style="display:flex;justify-content:space-between;align-items:end;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-4)">
+          <div>
+            <div class="eyebrow">Create or confirm a case</div>
+            <div class="title" style="font-size:var(--text-lg)">Pothole input</div>
+          </div>
+          <div class="pill amber">Truecaller-style public notes enabled</div>
+        </div>
+        <div class="input-grid">
+          <div class="field">
+            <label>Pothole address</label>
+            <input value="42 Leslie Avenue, Douglasdale, Johannesburg" />
+          </div>
+          <div class="field">
+            <label>Nearest landmark</label>
+            <input value="Opposite Douglasdale Shopping Centre" />
+          </div>
+          <div class="field">
+            <label>First reported</label>
+            <input value="2010 (community claimed)" />
+          </div>
+          <div class="field">
+            <label>Road authority</label>
+            <input value="City of Johannesburg" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Add what locals know</label>
+          <textarea>Reported this in 2010. Refilled twice. Opens again after every heavy rain. Councillor’s office says it’s with roads. Nobody owns it when you phone. John is a poes.</textarea>
+        </div>
+      </section>
+
+      <section class="map-and-case">
+        <div class="card card-pad map-card">
+          <div style="display:flex;justify-content:space-between;align-items:end;gap:var(--space-4);flex-wrap:wrap">
+            <div>
+              <div class="eyebrow">Case file</div>
+              <div class="title" style="font-size:var(--text-lg)">Mapped pothole evidence</div>
+            </div>
+            <div class="pill red">Ward 102 · unresolved</div>
+          </div>
+          <div class="map" style="margin-top:var(--space-4)">
+            <div class="road one"></div>
+            <div class="road two"></div>
+            <div class="road three"></div>
+            <div class="pin a"></div>
+            <div class="pin b"></div>
+            <div class="pin c"></div>
+          </div>
+          <div class="map-legend">
+            <div class="pill red">Selected pothole</div>
+            <div class="pill amber">Other known holes nearby</div>
+            <div class="pill">Google Maps-style location view</div>
+          </div>
+          <div class="info-list">
+            <div class="info-tile"><div class="eyebrow">Address</div><div style="font-weight:700;margin-top:.35rem">42 Leslie Ave, Douglasdale</div></div>
+            <div class="info-tile"><div class="eyebrow">Ward</div><div style="font-weight:700;margin-top:.35rem">Ward 102 · Johannesburg</div></div>
+            <div class="info-tile"><div class="eyebrow">Known since</div><div style="font-weight:700;margin-top:.35rem">102 days on public systems</div></div>
+            <div class="info-tile"><div class="eyebrow">Community claim</div><div style="font-weight:700;margin-top:.35rem">“Been here since 2010”</div></div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card card-pad">
+            <div class="eyebrow">Current accountability</div>
+            <div class="title" style="font-size:var(--text-lg)">Who owns this failure now?</div>
+            <div class="person-card" style="margin-top:var(--space-4)">
+              <div class="avatar">JM</div>
+              <div>
+                <div style="font-weight:800">John Mokoena</div>
+                <div class="muted" style="font-size:var(--text-sm)">Current ward councillor · Ward 102</div>
+                <p class="tiny" style="margin-top:.5rem">Publicly accountable for representing the ward, escalating local service failures, and following up inside the municipality.[web:31][web:34][web:37]</p>
+              </div>
+              <div class="pill red">Needs replacing</div>
+            </div>
+            <div class="detail-list" style="margin-top:var(--space-4)">
+              <div class="detail-row"><span class="muted">Contactability</span><strong>Office listed, no response logged</strong></div>
+              <div class="detail-row"><span class="muted">Public note summary</span><strong>Unresponsive · repeat failure</strong></div>
+              <div class="detail-row"><span class="muted">Road status</span><strong>Burst-pipe damage reopened</strong></div>
+            </div>
+          </div>
+
+          <div class="card card-pad">
+            <div class="eyebrow">Community intelligence</div>
+            <div class="title" style="font-size:var(--text-lg)">Truecaller-style notes</div>
+            <div class="stack" style="margin-top:var(--space-4)">
+              <div class="note-box"><strong>2010 claim:</strong> “Been reported for years. Temporary patch, then same story.”</div>
+              <div class="note-box"><strong>April note:</strong> “Water leak fixed, road wasn’t.”</div>
+              <div class="note-box"><strong>Public tone:</strong> raw user text stored, public labels shown as structured signals like unresponsive, repeat failure, and not fixed.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="job-candidates">
+        <div class="card card-pad job-spec">
+          <div class="eyebrow">The job</div>
+          <div class="title">Who is applying to run this ward?</div>
+          <p class="muted">StopHole reframes the local election as a hiring round. Before you see candidates, you see the job they want, what it is supposed to do, and what taxpayers are paying for it.[file:3][file:6]</p>
+          <div class="salary">
+            <div>
+              <div class="eyebrow">Salary band</div>
+              <div style="font-size:1.6rem;font-weight:900;letter-spacing:-.03em">R270k–R650k</div>
+            </div>
+            <div class="tiny" style="max-width:18ch;text-align:right">Illustrative councillor pay framing from public remuneration references.[web:30][web:33][web:36][web:39]</div>
+          </div>
+          <div class="stack">
+            <div class="info-tile">
+              <div class="eyebrow">Role brief</div>
+              <div style="font-weight:700;margin-top:.35rem">Represent the ward, escalate service failures, monitor municipal delivery, report back publicly.[web:31][web:34][web:37]</div>
+            </div>
+            <div class="info-tile">
+              <div class="eyebrow">Why local elections matter</div>
+              <div style="font-weight:700;margin-top:.35rem">They are the only ballot where you hire the people closest to roads, water, refuse, and daily service delivery.[file:3][file:6]</div>
+            </div>
+            <div class="info-tile">
+              <div class="eyebrow">Sorting logic</div>
+              <div style="font-weight:700;margin-top:.35rem">Green = visible, local, delivery-adjacent. Amber = partial. Red = ghost, recycled, or pure party boilerplate.[file:3][file:6]</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="candidate-list">
+          <article class="candidate">
+            <div class="candidate-top">
+              <div>
+                <div class="eyebrow">Applicant 01</div>
+                <h3>Helen Zille</h3>
+                <div class="muted">DA · highly visible, but still judged as an applicant, not a stunt.[web:10][web:11][web:19]</div>
+              </div>
+              <div class="score">
+                <div class="pill amber">Amber vote</div>
+                <div class="bar"><span style="width:68%;background:linear-gradient(90deg,var(--color-warning),#f2b95b)"></span></div>
+                <div class="tiny">Visible, but not automatic</div>
+              </div>
+            </div>
+            <div class="signal-grid">
+              <div class="signal"><strong>Local specificity:</strong> Named the hole, but stunt alone doesn’t replace a system.[web:11][web:18]</div>
+              <div class="signal"><strong>Reachability:</strong> Very high public visibility.[web:10][web:19]</div>
+              <div class="signal"><strong>Delivery fit:</strong> Governance experience, still needs ward/city proof.[file:3][file:6]</div>
+              <div class="signal"><strong>StopHole read:</strong> Not the asshole here, not automatic green either.[file:3][file:6]</div>
+            </div>
+            <div class="candidate-actions">
+              <button class="button primary">Vote shortlist</button>
+              <button class="button secondary">Why this score</button>
+              <button class="button ghost">See official listing</button>
+            </div>
+          </article>
+
+          <article class="candidate">
+            <div class="candidate-top">
+              <div>
+                <div class="eyebrow">Applicant 02</div>
+                <h3>Lerato Dlamini</h3>
+                <div class="muted">Independent · civil engineer · Douglasdale resident</div>
+              </div>
+              <div class="score">
+                <div class="pill green">Green vote</div>
+                <div class="bar"><span style="width:89%"></span></div>
+                <div class="tiny">Most likely to execute</div>
+              </div>
+            </div>
+            <div class="signal-grid">
+              <div class="signal"><strong>Local:</strong> Names streets, wards, and known repair backlog.</div>
+              <div class="signal"><strong>Visible:</strong> Public WhatsApp channel, TikTok explainers, email listed.</div>
+              <div class="signal"><strong>Role fit:</strong> Civil engineering and contractor oversight background.</div>
+              <div class="signal"><strong>Accountability:</strong> Contactable, non-incumbent, specific on pothole timelines.</div>
+            </div>
+            <div class="candidate-actions">
+              <button class="button primary">Vote shortlist</button>
+              <button class="button secondary">Why this score</button>
+              <button class="button ghost">See profile links</button>
+            </div>
+          </article>
+
+          <article class="candidate">
+            <div class="candidate-top">
+              <div>
+                <div class="eyebrow">Applicant 03</div>
+                <h3>Party Poster Candidate</h3>
+                <div class="muted">Unknown local footprint · generic party messaging</div>
+              </div>
+              <div class="score">
+                <div class="pill red">Red vote</div>
+                <div class="bar"><span style="width:24%;background:linear-gradient(90deg,var(--color-error),#e98ea2)"></span></div>
+                <div class="tiny">Ghost candidate risk</div>
+              </div>
+            </div>
+            <div class="signal-grid">
+              <div class="signal"><strong>Local:</strong> No ward-specific posts found.</div>
+              <div class="signal"><strong>Visible:</strong> Poster face, minimal public footprint.</div>
+              <div class="signal"><strong>Role fit:</strong> No delivery-adjacent evidence surfaced.</div>
+              <div class="signal"><strong>Continuity:</strong> Reads like recycled party boilerplate.[file:3][file:6]</div>
+            </div>
+            <div class="candidate-actions">
+              <button class="button primary">Vote shortlist</button>
+              <button class="button secondary">Why this score</button>
+              <button class="button ghost">Search web footprint</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer-note">Prototype summary: preloaded public potholes, photo/address input, ward mapping, accountable person, moderated community notes, local-election job framing, salary context, and applicant-style candidate comparison.[web:35][web:40][web:46][file:3][file:6]</div>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const root = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      let dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      toggle.textContent = dark ? 'Light mode' : 'Dark mode';
+      toggle.addEventListener('click', function(){
+        dark = !dark;
+        root.setAttribute('data-theme', dark ? 'dark' : 'light');
+        toggle.textContent = dark ? 'Light mode' : 'Dark mode';
+      });
+    })();
+  </script>
+</body>
+</html>
