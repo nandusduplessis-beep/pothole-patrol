@@ -33,7 +33,7 @@ export const Route = createFileRoute("/vote/$wardId")({
 });
 
 function VoteRoute() {
-  const { ward, daysLeft } = Route.useLoaderData();
+  const { ward, daysLeft } = Route.useLoaderData() as { ward: Ward; daysLeft: number };
 
   return (
     <PhoneShell>

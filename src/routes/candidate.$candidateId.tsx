@@ -45,7 +45,7 @@ export const Route = createFileRoute("/candidate/$candidateId")({
 });
 
 function CandidateRoute() {
-  const { ward, candidate } = Route.useLoaderData();
+  const { ward, candidate } = Route.useLoaderData() as { ward: Ward; candidate: Candidate };
   const v = verdictFor(candidate);
   const avg = avgSignalScore(candidate);
 

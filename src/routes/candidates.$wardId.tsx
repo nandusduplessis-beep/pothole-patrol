@@ -43,7 +43,7 @@ export const Route = createFileRoute("/candidates/$wardId")({
 });
 
 function CandidatesRoute() {
-  const { ward, ranked } = Route.useLoaderData();
+  const { ward, ranked } = Route.useLoaderData() as { ward: Ward; ranked: Candidate[] };
   const navigate = useNavigate();
 
   return (

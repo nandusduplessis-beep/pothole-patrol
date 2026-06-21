@@ -47,7 +47,7 @@ export const Route = createFileRoute("/case/$caseId")({
 });
 
 function CaseRoute() {
-  const { ward, case: caseFile } = Route.useLoaderData();
+  const { ward, case: caseFile } = Route.useLoaderData() as { ward: Ward; case: CaseFile };
   const navigate = useNavigate();
   const trackCase = useStopholeStore((s) => s.trackCase);
   const incumbent = ward.candidates.find((c) => c.isIncumbent);
@@ -122,7 +122,7 @@ function CaseRoute() {
                 {incumbent
                   ? incumbent.name
                       .split(" ")
-                      .map((w) => w[0])
+                      .map((w: string) => w[0])
                       .slice(0, 2)
                       .join("")
                   : "?"}
