@@ -43,33 +43,43 @@ function StatusBar() {
   );
 }
 
-const TABS = [
-  { to: "/", label: "Snap", Icon: Camera, match: (p: string) => p === "/" },
-  { to: "/cases", label: "Cases", Icon: List, match: (p: string) => p.startsWith("/cases") || p.startsWith("/case/") },
-  { to: "/vote/$wardId", params: { wardId: "JHB_WARD102" }, label: "Vote", Icon: Vote, match: (p: string) => p.startsWith("/vote") },
-  { to: "/you", label: "You", Icon: User, match: (p: string) => p.startsWith("/you") },
-] as const;
-
 function TabBar() {
   const { pathname } = useLocation();
+  const tabs = [
+    {
+      key: "home",
+      label: "Snap",
+      Icon: Camera,
+      active: pathname === "/",
+      link: <Link to="/" className={`sh-tab${pathname === "/" ? " is-active" : ""}`}><Camera size={20} /><span>Snap</span></Link>,
+    },
+    {
+      key: "cases",
+      label: "Cases",
+      Icon: List,
+      active: pathname.startsWith("/cases") || pathname.startsWith("/case/"),
+      link: <Link to="/cases" className={`sh-tab${pathname.startsWith("/cases") || pathname.startsWith("/case/") ? " is-active" : ""}`}><List size={20} /><span>Cases</span></Link>,
+    },
+    {
+      key: "vote",
+      label: "Vote",
+      Icon: Vote,
+      active: pathname.startsWith("/vote"),
+      link: <Link to="/vote/$wardId" params={{ wardId: "JHB_WARD102" }} className={`sh-tab${pathname.startsWith("/vote") ? " is-active" : ""}`}><Vote size={20} /><span>Vote</span></Link>,
+    },
+    {
+      key: "you",
+      label: "You",
+      Icon: User,
+      active: pathname.startsWith("/you"),
+      link: <Link to="/you" className={`sh-tab${pathname.startsWith("/you") ? " is-active" : ""}`}><User size={20} /><span>You</span></Link>,
+    },
+  ];
   return (
     <nav className="sh-tabbar" aria-label="Primary">
-      {TABS.map(({ to, label, Icon, match }) => {
-        const active = match(pathname);
-        const params = (TABS.find((t) => t.to === to) as { params?: Record<string, string> })?.params;
-        return (
-          <Link
-            key={to}
-            to={to}
-            params={params as never}
-            className={`sh-tab${active ? " is-active" : ""}`}
-            aria-current={active ? "page" : undefined}
-          >
-            <Icon size={20} />
-            <span>{label}</span>
-          </Link>
-        );
-      })}
+      {tabs.map((t) => (
+        <span key={t.key}>{t.link}</span>
+      ))}
     </nav>
   );
 }
