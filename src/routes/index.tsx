@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, ArrowRight, Sun, Moon } from "lucide-react";
+import { MapPin, ArrowRight, Sun, Moon, Camera } from "lucide-react";
 import {
   Button,
   Card,
   LogoMark,
   PhoneShell,
-  PotholeInput,
   Tag,
   TopBar,
   VerdictBadge,
@@ -180,9 +179,16 @@ function DefaultSheet({ onSnap }: { onSnap: () => void }) {
         Tap any pin to see who is paid to fix it — and who's standing to replace
         them in 2026.
       </p>
-      <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
-        <PotholeInput width={300} height={150} onSnap={onSnap} />
-      </div>
+      <Button
+        variant="primary"
+        size="lg"
+        fullWidth
+        leadingIcon={<Camera size={18} />}
+        trailingIcon={<ArrowRight size={16} />}
+        onClick={onSnap}
+      >
+        Snap the pothole
+      </Button>
     </div>
   );
 }
