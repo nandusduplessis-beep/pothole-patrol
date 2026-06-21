@@ -689,7 +689,7 @@ html, body {
   border-radius: 38px;
   overflow: hidden;
 }
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .sh-camera { border-radius: 0; }
 }
 .sh-camera__view {
