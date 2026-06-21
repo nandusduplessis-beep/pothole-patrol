@@ -12,32 +12,8 @@ export function PhoneShell({
   return (
     <div className="sh-frame">
       <div className="sh-phone__screen">
-        <div className="sh-phone__notch" />
-        <StatusBar />
-        {children}
         {!hideTabBar && <TabBar />}
-      </div>
-    </div>
-  );
-}
-
-function StatusBar() {
-  return (
-    <div className="sh-status">
-      <span>9:41</span>
-      <div className="sh-status__icons">
-        <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor">
-          <rect x="0" y="6" width="3" height="4" />
-          <rect x="4" y="4" width="3" height="6" />
-          <rect x="8" y="2" width="3" height="8" />
-          <rect x="12" y="0" width="3" height="10" />
-        </svg>
-        <span style={{ fontSize: 10, fontWeight: 700, marginLeft: 4 }}>LTE</span>
-        <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" strokeWidth={1}>
-          <rect x="0.5" y="0.5" width="18" height="10" rx="2" />
-          <rect x="20" y="3" width="1.5" height="5" rx="0.5" fill="currentColor" stroke="none" />
-          <rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor" stroke="none" />
-        </svg>
+        {children}
       </div>
     </div>
   );
