@@ -45,41 +45,32 @@ function StatusBar() {
 
 function TabBar() {
   const { pathname } = useLocation();
-  const tabs = [
-    {
-      key: "home",
-      label: "Snap",
-      Icon: Camera,
-      active: pathname === "/",
-      link: <Link to="/" className={`sh-tab${pathname === "/" ? " is-active" : ""}`}><Camera size={20} /><span>Snap</span></Link>,
-    },
-    {
-      key: "cases",
-      label: "Cases",
-      Icon: List,
-      active: pathname.startsWith("/cases") || pathname.startsWith("/case/"),
-      link: <Link to="/cases" className={`sh-tab${pathname.startsWith("/cases") || pathname.startsWith("/case/") ? " is-active" : ""}`}><List size={20} /><span>Cases</span></Link>,
-    },
-    {
-      key: "vote",
-      label: "Vote",
-      Icon: Vote,
-      active: pathname.startsWith("/vote"),
-      link: <Link to="/vote/$wardId" params={{ wardId: "JHB_WARD102" }} className={`sh-tab${pathname.startsWith("/vote") ? " is-active" : ""}`}><Vote size={20} /><span>Vote</span></Link>,
-    },
-    {
-      key: "you",
-      label: "You",
-      Icon: User,
-      active: pathname.startsWith("/you"),
-      link: <Link to="/you" className={`sh-tab${pathname.startsWith("/you") ? " is-active" : ""}`}><User size={20} /><span>You</span></Link>,
-    },
-  ];
+  const isHome = pathname === "/";
+  const isCases = pathname.startsWith("/cases") || pathname.startsWith("/case/");
+  const isVote = pathname.startsWith("/vote");
+  const isYou = pathname.startsWith("/you");
   return (
     <nav className="sh-tabbar" aria-label="Primary">
-      {tabs.map((t) => (
-        <span key={t.key}>{t.link}</span>
-      ))}
+      <Link to="/" className={`sh-tab${isHome ? " is-active" : ""}`}>
+        <Camera size={20} />
+        <span>Snap</span>
+      </Link>
+      <Link to="/cases" className={`sh-tab${isCases ? " is-active" : ""}`}>
+        <List size={20} />
+        <span>Cases</span>
+      </Link>
+      <Link
+        to="/vote/$wardId"
+        params={{ wardId: "JHB_WARD102" }}
+        className={`sh-tab${isVote ? " is-active" : ""}`}
+      >
+        <Vote size={20} />
+        <span>Vote</span>
+      </Link>
+      <Link to="/you" className={`sh-tab${isYou ? " is-active" : ""}`}>
+        <User size={20} />
+        <span>You</span>
+      </Link>
     </nav>
   );
 }
