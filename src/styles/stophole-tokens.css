@@ -1,0 +1,148 @@
+/* ============================================================
+   Stophole — design tokens (colors, type, spacing, effects)
+   Ported from the Stophole Design System repo.
+   ============================================================ */
+
+:root {
+  /* Charcoal / neutral */
+  --charcoal-950: #0E0E0D;
+  --charcoal-900: #161614;
+  --charcoal-850: #1D1D1B;
+  --charcoal-800: #242422;
+  --charcoal-700: #33322F;
+  --charcoal-600: #46443F;
+
+  --grey-500: #6E6B64;
+  --grey-400: #8E8A82;
+  --grey-300: #B4AFA6;
+  --grey-250: #C9C4BB;
+  --grey-200: #DCD8D0;
+  --grey-150: #E7E3DC;
+  --grey-100: #F1EEE8;
+  --grey-50:  #F8F6F2;
+  --white:    #FFFFFF;
+
+  /* Hazard yellow */
+  --yellow-200: #FFEEA1;
+  --yellow-300: #FFE066;
+  --yellow-400: #FFD633;
+  --yellow-500: #FFC700;
+  --yellow-600: #F2BB00;
+  --yellow-700: #E5AC00;
+  --yellow-800: #9A7A00;
+
+  /* Semantic raw */
+  --green-500:  #16A34A;
+  --green-600:  #128A3F;
+  --green-50:   #E3F4E8;
+  --red-500:    #E5343A;
+  --red-600:    #C72830;
+  --red-50:     #FBE5E6;
+  --blue-500:   #2B6FE3;
+  --blue-50:    #E5EEFB;
+
+  /* Semantic aliases — light */
+  --surface-page:    var(--grey-50);
+  --surface-card:    var(--white);
+  --surface-sunken:  var(--grey-100);
+  --surface-raised:  var(--white);
+  --surface-inverse: var(--charcoal-900);
+  --surface-overlay: rgba(14, 14, 13, 0.55);
+
+  --text-strong:    var(--charcoal-900);
+  --text-body:      var(--charcoal-800);
+  --text-muted:     var(--grey-500);
+  --text-subtle:    var(--grey-400);
+  --text-inverse:   var(--grey-50);
+  --text-on-accent: var(--charcoal-900);
+
+  --accent:         var(--yellow-500);
+  --accent-hover:   var(--yellow-600);
+  --accent-pressed: var(--yellow-700);
+  --accent-soft:    var(--yellow-200);
+
+  --border-subtle:  var(--grey-200);
+  --border-default: var(--grey-250);
+  --border-strong:  var(--charcoal-900);
+  --divider:        var(--grey-150);
+
+  --status-verified:    var(--green-500);
+  --status-verified-bg: var(--green-50);
+  --status-flagged:     var(--red-500);
+  --status-flagged-bg:  var(--red-50);
+  --status-info:        var(--blue-500);
+  --status-info-bg:     var(--blue-50);
+  --status-pending:     var(--grey-400);
+
+  --focus-ring: var(--charcoal-900);
+
+  /* Type */
+  --font-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --font-body:    'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radii */
+  --sh-radius-xs:   4px;
+  --sh-radius-sm:   6px;
+  --sh-radius-md:   10px;
+  --sh-radius-lg:   14px;
+  --sh-radius-xl:   20px;
+  --sh-radius-pill: 999px;
+
+  /* Shadows */
+  --sh-shadow-xs:  0 1px 2px rgba(14, 14, 13, 0.06);
+  --sh-shadow-sm:  0 1px 2px rgba(14, 14, 13, 0.05), 0 2px 6px rgba(14, 14, 13, 0.06);
+  --sh-shadow-md:  0 2px 4px rgba(14, 14, 13, 0.05), 0 6px 16px rgba(14, 14, 13, 0.08);
+  --sh-shadow-lg:  0 8px 28px rgba(14, 14, 13, 0.12), 0 2px 6px rgba(14, 14, 13, 0.06);
+  --sh-shadow-accent: 0 2px 0 var(--yellow-700);
+
+  /* Motion */
+  --ease-out:    cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.2, 1);
+  --dur-fast:    120ms;
+  --dur-base:    180ms;
+  --dur-slow:    260ms;
+}
+
+[data-theme="dark"] {
+  --surface-page:    var(--charcoal-950);
+  --surface-card:    var(--charcoal-900);
+  --surface-sunken:  var(--charcoal-850);
+  --surface-raised:  var(--charcoal-850);
+  --surface-inverse: var(--grey-50);
+  --surface-overlay: rgba(0, 0, 0, 0.66);
+
+  --text-strong:    var(--grey-50);
+  --text-body:      var(--grey-150);
+  --text-muted:     var(--grey-400);
+  --text-subtle:    var(--grey-500);
+  --text-inverse:   var(--charcoal-900);
+  --text-on-accent: var(--charcoal-900);
+
+  --accent-hover:   var(--yellow-400);
+  --accent-pressed: var(--yellow-600);
+  --accent-soft:    rgba(255, 199, 0, 0.14);
+
+  --border-subtle:  var(--charcoal-700);
+  --border-default: var(--charcoal-600);
+  --border-strong:  var(--grey-300);
+  --divider:        var(--charcoal-800);
+
+  --status-verified:    #1FB85A;
+  --status-verified-bg: rgba(22, 163, 74, 0.16);
+  --status-flagged:     #F25055;
+  --status-flagged-bg:  rgba(229, 52, 58, 0.16);
+  --status-info:        #5990EA;
+  --status-info-bg:     rgba(43, 111, 227, 0.16);
+
+  --focus-ring: var(--yellow-500);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
