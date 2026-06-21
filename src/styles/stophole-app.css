@@ -110,6 +110,15 @@ html, body {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Desktop: leave room for fixed top nav */
+  padding-top: 64px;
+}
+@media (max-width: 767px) {
+  .sh-phone__screen {
+    padding-top: 0;
+    /* Mobile: leave room for fixed bottom nav */
+    padding-bottom: 68px;
+  }
 }
 .sh-phone__notch { display: none; }
 
