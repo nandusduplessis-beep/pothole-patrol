@@ -8,14 +8,12 @@ import { useEffect, useState } from "react";
 export function SplashIntro() {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    let alreadyShown = false;
-    try {
-      alreadyShown = sessionStorage.getItem("sh_splash_done") === "1";
-    } catch {}
-    if (alreadyShown) return;
+    if (typeof window === "undefined") return;
+    // Gated: only play when explicitly requested via ?intro=1
+    const wantIntro = new URLSearchParams(window.location.search).get("intro") === "1";
+    if (!wantIntro) return;
     setShow(true);
     const t = setTimeout(() => {
-      try { sessionStorage.setItem("sh_splash_done", "1"); } catch {}
       setShow(false);
     }, 1700);
     return () => clearTimeout(t);
