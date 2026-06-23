@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, ArrowRight, Sun, Moon, Camera, Info } from "lucide-react";
+import { MapPin, ArrowRight, Sun, Moon, Camera, Info, Navigation } from "lucide-react";
 import {
   Button,
   Card,
@@ -46,6 +46,7 @@ function HomeRoute() {
   const localCases = useStopholeStore((s) => s.localCases);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [snapBusy, setSnapBusy] = useState(false);
+  const [locBusy, setLocBusy] = useState(false);
 
   const allCases = useMemo<CaseFile[]>(
     () => [...localCases, ...WARDS.flatMap((w) => w.cases)],
@@ -65,6 +66,18 @@ function HomeRoute() {
 
   function triggerSnap() {
     fileRef.current?.click();
+  }
+
+  async function findMyCouncillor() {
+    setLocBusy(true);
+    try {
+      const where = await getPositionOrCenter();
+      const ward = resolveAccountability(where.lat, where.lng);
+      setActiveWard(ward.id);
+      navigate({ to: "/candidates/$wardId", params: { wardId: ward.id } });
+    } finally {
+      setLocBusy(false);
+    }
   }
 
   async function getPositionOrCenter(): Promise<{ lat: number; lng: number }> {
@@ -227,7 +240,12 @@ function HomeRoute() {
               </div>
             </>
           ) : (
-            <DefaultSheet onSnap={triggerSnap} busy={snapBusy} />
+            <DefaultSheet
+              onFindCouncillor={findMyCouncillor}
+              locBusy={locBusy}
+              onSnap={triggerSnap}
+              snapBusy={snapBusy}
+            />
           )}
         </div>
       </PhoneShell>
@@ -238,14 +256,24 @@ function selectedVerdict(c: CaseFile): Verdict {
   return c.daysOpen > 60 ? "red" : c.daysOpen > 14 ? "amber" : "green";
 }
 
-function DefaultSheet({ onSnap, busy }: { onSnap: () => void; busy?: boolean }) {
+function DefaultSheet({
+  onFindCouncillor,
+  locBusy,
+  onSnap,
+  snapBusy,
+}: {
+  onFindCouncillor: () => void;
+  locBusy?: boolean;
+  onSnap: () => void;
+  snapBusy?: boolean;
+}) {
   return (
     <div className="sh-sheet" role="region" aria-label="Snap a pothole">
       <span className="sh-sheet__grab" aria-hidden />
-      <Tag>Pothole-to-accountability</Tag>
+      <Tag>One tap to accountability</Tag>
       <h2 className="sh-h1" style={{ margin: 0 }}>
-        Snap the <span className="sh-mark">pothole</span>.{" "}
-        <span className="sh-muted">Find the asshole.</span>
+        Find <span className="sh-mark">your</span> councillor.{" "}
+        <span className="sh-muted">One tap.</span>
       </h2>
       <p
         style={{
@@ -254,20 +282,42 @@ function DefaultSheet({ onSnap, busy }: { onSnap: () => void; busy?: boolean }) 
           margin: 0,
         }}
       >
-        Tap any pin to see who is paid to fix it — and who's standing to replace
-        them in 2026.
+        Use your current location and we'll open the card for the councillor
+        who is paid to fix your street.
       </p>
       <Button
         variant="primary"
         size="lg"
         fullWidth
-        leadingIcon={<Camera size={18} />}
+        leadingIcon={<Navigation size={18} />}
         trailingIcon={<ArrowRight size={16} />}
-        onClick={onSnap}
-        disabled={busy}
+        onClick={onFindCouncillor}
+        disabled={locBusy}
       >
-        {busy ? "Reading location…" : "Snap the pothole"}
+        {locBusy ? "Finding your ward…" : "Use my current location"}
       </Button>
+      <button
+        type="button"
+        onClick={onSnap}
+        disabled={snapBusy}
+        className="sh-muted"
+        style={{
+          appearance: "none",
+          background: "transparent",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+          fontSize: 13,
+          textDecoration: "underline",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          alignSelf: "flex-start",
+        }}
+      >
+        <Camera size={14} />
+        {snapBusy ? "Reading location…" : "Or snap a pothole instead"}
+      </button>
       <div
         style={{
           display: "flex",
