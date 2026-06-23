@@ -15,6 +15,7 @@ import { Route as UssdRouteImport } from './routes/ussd'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WardWardIdRouteImport } from './routes/ward.$wardId'
 import { Route as VoteWardIdRouteImport } from './routes/vote.$wardId'
 import { Route as CaseCaseIdRouteImport } from './routes/case.$caseId'
 import { Route as CandidatesWardIdRouteImport } from './routes/candidates.$wardId'
@@ -50,6 +51,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WardWardIdRoute = WardWardIdRouteImport.update({
+  id: '/ward/$wardId',
+  path: '/ward/$wardId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VoteWardIdRoute = VoteWardIdRouteImport.update({
   id: '/vote/$wardId',
   path: '/vote/$wardId',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/candidates/$wardId': typeof CandidatesWardIdRoute
   '/case/$caseId': typeof CaseCaseIdRoute
   '/vote/$wardId': typeof VoteWardIdRoute
+  '/ward/$wardId': typeof WardWardIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/candidates/$wardId': typeof CandidatesWardIdRoute
   '/case/$caseId': typeof CaseCaseIdRoute
   '/vote/$wardId': typeof VoteWardIdRoute
+  '/ward/$wardId': typeof WardWardIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/candidates/$wardId': typeof CandidatesWardIdRoute
   '/case/$caseId': typeof CaseCaseIdRoute
   '/vote/$wardId': typeof VoteWardIdRoute
+  '/ward/$wardId': typeof WardWardIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/candidates/$wardId'
     | '/case/$caseId'
     | '/vote/$wardId'
+    | '/ward/$wardId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/candidates/$wardId'
     | '/case/$caseId'
     | '/vote/$wardId'
+    | '/ward/$wardId'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/candidates/$wardId'
     | '/case/$caseId'
     | '/vote/$wardId'
+    | '/ward/$wardId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   CandidatesWardIdRoute: typeof CandidatesWardIdRoute
   CaseCaseIdRoute: typeof CaseCaseIdRoute
   VoteWardIdRoute: typeof VoteWardIdRoute
+  WardWardIdRoute: typeof WardWardIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ward/$wardId': {
+      id: '/ward/$wardId'
+      path: '/ward/$wardId'
+      fullPath: '/ward/$wardId'
+      preLoaderRoute: typeof WardWardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vote/$wardId': {
       id: '/vote/$wardId'
       path: '/vote/$wardId'
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   CandidatesWardIdRoute: CandidatesWardIdRoute,
   CaseCaseIdRoute: CaseCaseIdRoute,
   VoteWardIdRoute: VoteWardIdRoute,
+  WardWardIdRoute: WardWardIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
