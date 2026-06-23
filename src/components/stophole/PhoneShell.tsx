@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Camera, List, Vote, User, MoreHorizontal } from "lucide-react";
 import { useStopholeStore } from "@/lib/stophole-store";
+import logoUrl from "@/assets/stophole/logo.svg?url";
 
 export function PhoneShell({
   children,
@@ -65,25 +66,14 @@ function TabBar() {
   );
 }
 
-export function LogoMark({ size = 32 }: { size?: number }) {
+export function LogoMark({ size = 28 }: { size?: number }) {
   return (
-    <div
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 7,
-        background: "var(--charcoal-900)",
-        display: "grid",
-        placeItems: "center",
-        flexShrink: 0,
-      }}
-      aria-label="Stophole"
-    >
-      <svg width={size * 0.62} height={size * 0.62} viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="7" stroke="var(--accent)" strokeWidth="1.7" />
-        <circle cx="12" cy="12" r="2.6" fill="var(--accent)" />
-      </svg>
-    </div>
+    <img
+      src={logoUrl}
+      alt="Stophole"
+      style={{ height: size, width: "auto", display: "block", flexShrink: 0 }}
+      draggable={false}
+    />
   );
 }
 
