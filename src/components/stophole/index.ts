@@ -13,3 +13,5 @@ export type { CardProps, CardVariant, CardPadding } from "./Card";
 export { PotholeInput } from "./PotholeInput";
 export type { PotholeInputProps } from "./PotholeInput";
 export { PhoneShell, LogoMark, TopBar } from "./PhoneShell";
+export { SplashIntro } from "./SplashIntro";
+export { AsshLoader } from "./AsshLoader";

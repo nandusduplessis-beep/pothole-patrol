@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, ArrowRight, Sun, Moon, Camera, Info, Navigation } from "lucide-react";
+import { MapPin, ArrowRight, Sun, Moon, Camera, Info, Navigation, X } from "lucide-react";
 import {
   Button,
   Card,
@@ -9,6 +9,8 @@ import {
   Tag,
   TopBar,
   VerdictBadge,
+  SplashIntro,
+  AsshLoader,
   type Verdict,
 } from "@/components/stophole";
 import { MapEmbed } from "@/components/stophole/MapEmbed";
@@ -47,6 +49,9 @@ function HomeRoute() {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [snapBusy, setSnapBusy] = useState(false);
   const [locBusy, setLocBusy] = useState(false);
+  const [pickOpen, setPickOpen] = useState(false);
+  const [addr, setAddr] = useState("");
+  const [flipping, setFlipping] = useState<null | { wardId: string; label: string }>(null);
 
   const allCases = useMemo<CaseFile[]>(
     () => [...localCases, ...WARDS.flatMap((w) => w.cases)],
@@ -74,10 +79,30 @@ function HomeRoute() {
       const where = await getPositionOrCenter();
       const ward = resolveAccountability(where.lat, where.lng);
       setActiveWard(ward.id);
-      navigate({ to: "/candidates/$wardId", params: { wardId: ward.id } });
+      flipTo(ward.id, `Ward ${ward.number} · ${ward.area}`);
     } finally {
       setLocBusy(false);
+      setPickOpen(false);
     }
+  }
+
+  function flipTo(wardId: string, label: string) {
+    setFlipping({ wardId, label });
+    setTimeout(() => {
+      navigate({ to: "/ward/$wardId", params: { wardId } });
+    }, 820);
+  }
+
+  function lookupAddress() {
+    const q = addr.trim().toLowerCase();
+    if (!q) return;
+    const fromSeed = WARDS.find((w) =>
+      [w.area, w.municipalityName, ...(w.suburbs ?? [])]
+        .some((s) => s?.toLowerCase().includes(q)),
+    );
+    const ward = fromSeed ?? resolveAccountability(center.lat, center.lng);
+    setActiveWard(ward.id);
+    flipTo(ward.id, `Ward ${ward.number} · ${ward.area}`);
   }
 
   async function getPositionOrCenter(): Promise<{ lat: number; lng: number }> {
@@ -138,10 +163,12 @@ function HomeRoute() {
   }
 
   return (
+    <>
+      <SplashIntro />
       <PhoneShell>
         <div style={{ position: "relative", flex: 1, overflow: "hidden" }}>
           {/* Live OSM map */}
-          <div className="sh-map-wrap">
+          <div className={`sh-map-wrap${selected || pickOpen ? "" : " is-greyscale"}`}>
             <MapEmbed
               cases={allCases}
               center={selected ? { lat: selected.lat, lng: selected.lng } : center}
@@ -149,6 +176,11 @@ function HomeRoute() {
               onSelect={setSelected}
               selectedId={selected?.id ?? null}
             />
+            {!selected && !pickOpen && (
+              <div className="sh-map-logo">
+                <div className="sh-map-logo__inner">STOPHOLE</div>
+              </div>
+            )}
           </div>
 
           {/* Floating top bar */}
@@ -196,7 +228,16 @@ function HomeRoute() {
           />
 
           {/* Bottom sheet — selected case OR default pothole-input prompt */}
-          {selected ? (
+          {pickOpen ? (
+            <PickSheet
+              addr={addr}
+              setAddr={setAddr}
+              onLocate={findMyCouncillor}
+              onLookup={lookupAddress}
+              locBusy={locBusy}
+              onClose={() => setPickOpen(false)}
+            />
+          ) : selected ? (
             <>
               <button
                 className="sh-sheet-scrim"
@@ -241,7 +282,7 @@ function HomeRoute() {
             </>
           ) : (
             <DefaultSheet
-              onFindCouncillor={findMyCouncillor}
+              onFindCouncillor={() => setPickOpen(true)}
               locBusy={locBusy}
               onSnap={triggerSnap}
               snapBusy={snapBusy}
@@ -249,6 +290,76 @@ function HomeRoute() {
           )}
         </div>
       </PhoneShell>
+      {flipping && (
+        <div className="sh-flip" aria-hidden>
+          <div className="sh-flip__card">
+            <div className="sh-flip__face sh-flip__face--front">
+              <AsshLoader size={72} />
+            </div>
+            <div className="sh-flip__face sh-flip__face--back">
+              <div className="sh-ward__sign" style={{ width: "min(560px, 92vw)" }}>
+                <p className="sh-ward__sign-eyebrow">Ward Councillor Card</p>
+                <h1 className="sh-ward__sign-title">{flipping.label}</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function PickSheet({
+  addr, setAddr, onLocate, onLookup, locBusy, onClose,
+}: {
+  addr: string;
+  setAddr: (s: string) => void;
+  onLocate: () => void;
+  onLookup: () => void;
+  locBusy: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div className="sh-pick" role="dialog" aria-label="Find your ward">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <Tag>One tap to your ward card</Tag>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="sh-iconbtn"
+          style={{ width: 32, height: 32 }}
+        >
+          <X size={16} />
+        </button>
+      </div>
+      <Button
+        variant="primary"
+        size="lg"
+        fullWidth
+        leadingIcon={locBusy ? <AsshLoader size={20} /> : <Navigation size={18} />}
+        trailingIcon={<ArrowRight size={16} />}
+        onClick={onLocate}
+        disabled={locBusy}
+      >
+        {locBusy ? "Finding your ward…" : "Use my current location"}
+      </Button>
+      <div className="sh-pick__or">OR</div>
+      <form
+        className="sh-pick__row"
+        onSubmit={(e) => { e.preventDefault(); onLookup(); }}
+      >
+        <input
+          placeholder="Enter your address, suburb or town"
+          value={addr}
+          onChange={(e) => setAddr(e.target.value)}
+          aria-label="Address"
+        />
+        <Button type="submit" variant="secondary" size="lg" fullWidth disabled={!addr.trim()}>
+          Open this ward card
+        </Button>
+      </form>
+    </div>
   );
 }
 
