@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MapPin, ArrowRight, Sun, Moon, Navigation } from "lucide-react";
 import {
