@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, ArrowRight, Sun, Moon, Navigation } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Camera, User } from "lucide-react";
 import {
-  LogoMark,
   PhoneShell,
-  TopBar,
   SplashIntro,
   AsshLoader,
 } from "@/components/stophole";
+import logoUrl from "@/assets/stophole/logo.svg?url";
 import { MapEmbed } from "@/components/stophole/MapEmbed";
 import { WARDS, resolveAccountability, type CaseFile } from "@/data/seed";
 import { useStopholeStore } from "@/lib/stophole-store";
@@ -34,12 +33,9 @@ export const Route = createFileRoute("/")({
 
 function HomeRoute() {
   const navigate = useNavigate();
-  const theme = useStopholeStore((s) => s.theme);
-  const toggleTheme = useStopholeStore((s) => s.toggleTheme);
   const setActiveWard = useStopholeStore((s) => s.setActiveWard);
   const localCases = useStopholeStore((s) => s.localCases);
   const [locBusy, setLocBusy] = useState(false);
-  const [addr, setAddr] = useState("");
   const [flipping, setFlipping] = useState<null | { wardId: string; label: string }>(null);
 
   const allCases = useMemo<CaseFile[]>(
@@ -69,18 +65,6 @@ function HomeRoute() {
     }, 600);
   }
 
-  function lookupAddress() {
-    const q = addr.trim().toLowerCase();
-    if (!q) return;
-    const fromSeed = WARDS.find((w) =>
-      [w.area, w.municipalityName, ...(w.suburbs ?? [])]
-        .some((s) => s?.toLowerCase().includes(q)),
-    );
-    const ward = fromSeed ?? resolveAccountability(center.lat, center.lng);
-    setActiveWard(ward.id);
-    flipTo(ward.id, `Ward ${ward.number} · ${ward.area}`);
-  }
-
   async function getPositionOrCenter(): Promise<{ lat: number; lng: number }> {
     if (typeof navigator === "undefined" || !navigator.geolocation) return center;
     return new Promise((resolve) => {
@@ -102,10 +86,10 @@ function HomeRoute() {
   return (
     <>
       <SplashIntro />
-      <PhoneShell>
-        <div style={{ position: "relative", flex: 1, overflow: "hidden" }}>
-          {/* Live OSM map */}
-          <div className="sh-map-wrap is-greyscale">
+      <PhoneShell hideTabBar>
+        <div className="sh-splash" style={{ position: "relative", flex: 1, overflow: "hidden" }}>
+          {/* Greyscale + blurred map background */}
+          <div className="sh-map-wrap is-greyscale sh-splash__map">
             <MapEmbed
               cases={allCases}
               center={center}
@@ -115,50 +99,35 @@ function HomeRoute() {
             />
           </div>
 
-          {/* Floating top bar */}
-          <div style={{ position: "relative", zIndex: 400 }}>
-            <TopBar
-              left={<LogoMark size={36} />}
-              title=""
-              right={
-                <button
-                    className="sh-iconbtn"
-                    onClick={toggleTheme}
-                    aria-label="Toggle theme"
-                    type="button"
-                  >
-                    {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-                  </button>
-              }
-            />
-          </div>
-
-          {/* Single search pill — top of map */}
-          <form
-            className="sh-airbar"
-            onSubmit={(e) => { e.preventDefault(); lookupAddress(); }}
-            role="search"
-          >
-            <MapPin size={16} aria-hidden />
-            <input
-              value={addr}
-              onChange={(e) => setAddr(e.target.value)}
-              placeholder="Search an address or suburb"
-              aria-label="Search an address or suburb"
-            />
-          </form>
-
-          {/* Single floating yellow CTA above tab bar */}
+          {/* Centered hero */}
           <button
             type="button"
-            className="sh-airfab"
+            className="sh-splash__hero"
             onClick={findMyCouncillor}
             disabled={locBusy}
+            aria-label="Find your councillor"
           >
-            {locBusy ? <AsshLoader size={18} /> : <Navigation size={18} />}
-            <span>{locBusy ? "Finding your ward…" : "Use my current location"}</span>
-            <ArrowRight size={16} />
+            <span className="sh-splash__tag sh-splash__tag--top">every pothole</span>
+            <span className="sh-splash__mark">
+              <img src={logoUrl} alt="Stophole" draggable={false} />
+              <span className="sh-splash__asterisk" aria-hidden>*</span>
+            </span>
+            <span className="sh-splash__tag sh-splash__tag--bot">
+              {locBusy ? "finding your ward…" : "has an asshole"}
+            </span>
           </button>
+
+          {/* Minimal 2-item tab bar */}
+          <nav className="sh-splash__tabs" aria-label="Primary">
+            <Link to="/" className="sh-splash__tab is-active">
+              <Camera size={18} />
+              <span>Snap</span>
+            </Link>
+            <Link to="/you" className="sh-splash__tab">
+              <User size={18} />
+              <span>You</span>
+            </Link>
+          </nav>
         </div>
       </PhoneShell>
       {flipping && (
