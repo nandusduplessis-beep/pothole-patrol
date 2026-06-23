@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Snap a pothole. Find the ward, the councillor accountable now, and the candidates standing to take the job in 2026.",
       },
       { name: "author", content: "Stophole" },
-      { property: "og:title", content: "Stophole — South African civic accountability" },
+      { property: "og:title", content: "Stophole — Stop the assholes responsible for the potholes" },
       {
         property: "og:description",
         content:
@@ -94,6 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "theme-color", content: "#161614" },
+      { name: "twitter:title", content: "Stophole — Stop the assholes responsible for the potholes" },
+      { name: "description", content: "Pothole Patrol maps potholes to local government accountability and candidate information." },
+      { property: "og:description", content: "Pothole Patrol maps potholes to local government accountability and candidate information." },
+      { name: "twitter:description", content: "Pothole Patrol maps potholes to local government accountability and candidate information." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ff8f79a2-c75a-4172-b895-30714bd0a198/id-preview-ef92946d--59ae399d-d3a4-49c0-bb95-78bc2a2d1574.lovable.app-1782247932751.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ff8f79a2-c75a-4172-b895-30714bd0a198/id-preview-ef92946d--59ae399d-d3a4-49c0-bb95-78bc2a2d1574.lovable.app-1782247932751.png" },
     ],
     links: [
       {
