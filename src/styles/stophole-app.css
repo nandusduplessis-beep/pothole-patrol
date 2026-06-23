@@ -1280,3 +1280,131 @@ html, body {
   font-weight: 700;
   cursor: pointer;
 }
+
+/* ============================================================
+   Airbnb-style cleanup (black + yellow). Overrides earlier rules.
+   ============================================================ */
+
+/* Top search pill */
+.sh-airbar {
+  position: absolute;
+  top: 60px;
+  left: 14px;
+  right: 14px;
+  z-index: 410;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 999px;
+  padding: 12px 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  color: #111;
+}
+.sh-airbar input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: 500 14px/1.2 var(--font-body);
+  color: #111;
+  min-width: 0;
+}
+.sh-airbar input::placeholder { color: #717171; font-weight: 500; }
+@media (min-width: 768px) {
+  .sh-airbar { left: 18px; right: auto; width: 420px; top: 76px; }
+}
+
+/* Floating yellow CTA above tab bar */
+.sh-airfab {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 470;
+  appearance: none;
+  border: 0;
+  background: #fecd00;
+  color: #111;
+  font: 700 15px/1 var(--font-body);
+  padding: 14px 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0,0,0,.22), 0 0 0 1px rgba(0,0,0,.04);
+  white-space: nowrap;
+}
+.sh-airfab:hover { background: #ffd633; }
+.sh-airfab:disabled { opacity: .8; cursor: progress; }
+@media (min-width: 768px) {
+  .sh-airfab { left: 18px; transform: none; bottom: 28px; }
+}
+
+/* Hide the older bottom-sheet pick UI if it ever renders */
+.sh-pick, .sh-map-search, .sh-map-logo { display: none !important; }
+
+/* Loader overlay (no flip) */
+.sh-flip { background: rgba(255,255,255,.92); pointer-events: auto; }
+.sh-flip__card, .sh-flip__face { display: none; }
+.sh-airloader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 14px;
+  align-content: center;
+  font: 600 14px/1.3 var(--font-body);
+  color: #111;
+}
+.sh-airloader p { margin: 0; color: #717171; }
+
+/* Tab bar — flatter Airbnb look */
+.sh-tabbar {
+  background: #fff;
+  border-top: 1px solid #ebebeb;
+  box-shadow: none;
+}
+@media (min-width: 768px) {
+  .sh-tabbar {
+    background: #fff;
+    border-bottom: 1px solid #ebebeb;
+    border-top: 0;
+  }
+}
+.sh-tab { color: #717171; text-transform: none; letter-spacing: 0; font-weight: 600; }
+.sh-tab:hover { color: #111; }
+.sh-tab.is-active {
+  background: transparent;
+  color: #111;
+}
+.sh-tab.is-active span { border-bottom: 2px solid #fecd00; padding-bottom: 2px; }
+
+/* Slim down top-bar icon button */
+.sh-topbar { padding: 10px 14px 6px; }
+.sh-iconbtn { width: 40px; height: 40px; border-radius: 999px; background: #fff; border: 1px solid #ebebeb; }
+
+/* Ward card — Airbnb-style white surfaces with hairlines */
+.sh-ward { background: #fff; color: #111; }
+@media (min-width: 768px) {
+  .sh-ward { border-left: 1px solid #ebebeb; border-right: 1px solid #ebebeb; }
+}
+.sh-ward__topbar { background: #fff; color: #111; border-bottom: 1px solid #ebebeb; }
+.sh-ward__sign {
+  background: #fecd00;
+  color: #111;
+  padding: 18px 18px 16px;
+  border-bottom: 1px solid #111;
+}
+.sh-ward__sign::before, .sh-ward__sign::after { display: none; }
+.sh-ward__sign-title { font-size: clamp(22px, 5vw, 30px); }
+.sh-ward__cat { border-bottom: 1px solid #ebebeb; }
+.sh-ward__cat-h { color: #111; opacity: .6; letter-spacing: .16em; }
+.sh-ward__cat-h::after { background: linear-gradient(to right, #ebebeb, transparent); }
+.sh-ward__stat { background: #fff; border: 1px solid #ebebeb; border-radius: 12px; }
+.sh-ward__stat-k { color: #717171; }
+.sh-ward__stat-v { color: #111; }
+.sh-ward__stat-v--accent { color: #111; }
+.sh-ward__stat-v--bad { color: #c91f1f; }
