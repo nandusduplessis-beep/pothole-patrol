@@ -59,6 +59,27 @@ export interface Ward {
   candidates: Candidate[];
   cases: CaseFile[];
   centroid: { lat: number; lng: number };
+  // Extended ward profile (optional — Ward 32 demo is fully populated)
+  suburbs?: string[];
+  households?: number;
+  avgHouseholdDensity?: number;
+  repairCostPerM2?: { min: number; max: number };
+  neglectMultiplier?: number;
+  infra?: {
+    capitalGrantsZar: number;
+    maintenanceSpendZar: number;
+    returnedToTreasuryZar: number;
+  };
+  auditNote?: string;
+  payroll?: {
+    totalPerYearZar: number;
+    avgAnnualZar: number;
+    headcount: number;
+    note?: string;
+  };
+  electionDate?: string;
+  potholesPreloaded?: number;
+  incumbentElectedCycle?: string;
 }
 
 export const ELECTION_DATE_ISO = "2026-11-04";
@@ -339,7 +360,203 @@ export const WARDS: Ward[] = [
       },
     ],
   },
+  // ============================================================
+  // WARD 32 — Matjhabeng (Welkom CBD) — fully populated demo ward
+  // ============================================================
+  {
+    id: "WD_MATJ_32",
+    number: 32,
+    area: "Welkom CBD",
+    municipalityCode: "MATJ",
+    municipalityName: "Matjhabeng Local Municipality",
+    auditorGeneralStatus: "Qualified Opinion",
+    governanceNotes:
+      "Flagged as technically insolvent; under provincial administration due to severe debt.",
+    totalSalaryBudgetZar: 1_120_000_000,
+    totalStaffCount: 3_512,
+    actualMaintenanceSpendZar: 13_700_000,
+    avgHouseholdIncomeMonthlyZar: 4_120,
+    votingStation: {
+      name: "Welkom Civic Hall",
+      address: "Stateway, Welkom Central",
+      hours: "07:00–21:00",
+      distanceKm: 0.9,
+    },
+    centroid: { lat: -27.9784, lng: 26.7359 },
+    suburbs: [
+      "Welkom CBD",
+      "Jan Cilliers Park",
+      "Sandania",
+      "Reitz Park",
+      "Voorspoed",
+    ],
+    households: 3_738,
+    avgHouseholdDensity: 2.7,
+    repairCostPerM2: { min: 700, max: 1_500 },
+    neglectMultiplier: 18,
+    infra: {
+      capitalGrantsZar: 202_900_000,
+      maintenanceSpendZar: 13_700_000,
+      returnedToTreasuryZar: 209_000_000,
+    },
+    auditNote:
+      "Critical infrastructure neglect — ~R209M grant money returned to National Treasury, unspent.",
+    payroll: {
+      totalPerYearZar: 1_120_000_000,
+      avgAnnualZar: 319_611,
+      headcount: 3_512,
+      note: "National government recently suspended parts of this payroll after a R150M ghost-employee and overpayment scandal.",
+    },
+    electionDate: ELECTION_DATE_ISO,
+    potholesPreloaded: 12,
+    incumbentElectedCycle: "November 2021",
+    candidates: [
+      {
+        id: "matj32_rene",
+        name: "René Steyn",
+        party: "DA",
+        isIncumbent: true,
+        tenureYears: 5,
+        contactability: "partial",
+        signals: [
+          { label: "Proven fix rate", score: 2, evidence: "Few visible repairs in CBD this cycle." },
+          { label: "Time-to-action", score: 2, evidence: "Median response ~30 days on logged complaints." },
+          { label: "Budget conversion", score: 1, evidence: "R209M in capital grants returned to Treasury unspent." },
+          { label: "System presence", score: 3, evidence: "Active in council, public Facebook page." },
+          { label: "Local accountability", score: 3, evidence: "Resident of Ward 32." },
+        ],
+      },
+      {
+        id: "matj32_thabo",
+        name: "Thabo Molefe",
+        party: "ANC",
+        isIncumbent: false,
+        contactability: "partial",
+        signals: [
+          { label: "Proven fix rate", score: 2, evidence: "Co-organised street-light drive in Reitz Park 2024." },
+          { label: "Time-to-action", score: 2, evidence: "Replies on WhatsApp within ~10 days." },
+          { label: "Budget conversion", score: 1, evidence: "No prior office; party-aligned with current administration." },
+          { label: "System presence", score: 3, evidence: "Monthly community meeting at Welkom Civic Hall." },
+          { label: "Local accountability", score: 3, evidence: "Born in Welkom, lives in Sandania." },
+        ],
+      },
+      {
+        id: "matj32_lerato",
+        name: "Lerato Mokoena",
+        party: "EFF",
+        isIncumbent: false,
+        contactability: "reachable",
+        signals: [
+          { label: "Proven fix rate", score: 3, evidence: "Led community fill on Stateway in 2025." },
+          { label: "Time-to-action", score: 4, evidence: "Replies same week on listed mobile." },
+          { label: "Budget conversion", score: 2, evidence: "First time standing — no spend record." },
+          { label: "System presence", score: 3, evidence: "WhatsApp broadcast list, weekly walkabout." },
+          { label: "Local accountability", score: 4, evidence: "Resident, raised in Voorspoed." },
+        ],
+      },
+      {
+        id: "matj32_johan",
+        name: "Johan Pretorius",
+        party: "FF+",
+        isIncumbent: false,
+        contactability: "reachable",
+        signals: [
+          { label: "Proven fix rate", score: 3, evidence: "Three verified patches with Jan Cilliers ratepayers." },
+          { label: "Time-to-action", score: 4, evidence: "Median response 5 days." },
+          { label: "Budget conversion", score: 3, evidence: "Publishes monthly ratepayer report." },
+          { label: "System presence", score: 3, evidence: "Listed mobile, attends ward committee." },
+          { label: "Local accountability", score: 4, evidence: "Lifelong Welkom resident." },
+        ],
+      },
+      {
+        id: "matj32_nomsa",
+        name: "Nomsa Khoza",
+        party: "Independent",
+        isIncumbent: false,
+        contactability: "reachable",
+        signals: [
+          { label: "Proven fix rate", score: 4, evidence: "Documented 9 verified pothole fills via residents' WhatsApp group." },
+          { label: "Time-to-action", score: 4, evidence: "Median response 3 days." },
+          { label: "Budget conversion", score: 3, evidence: "No prior office; pledges itemised ward fund spend." },
+          { label: "System presence", score: 4, evidence: "Public WhatsApp line, monthly written report." },
+          { label: "Local accountability", score: 5, evidence: "Lives in Welkom CBD, listed home address." },
+        ],
+      },
+    ],
+    cases: matjhabeng32Cases(),
+  },
 ];
+
+function matjhabeng32Cases(): CaseFile[] {
+  const wardId = "WD_MATJ_32";
+  const authority = "Matjhabeng Roads & Stormwater";
+  // 12 preloaded potholes scattered around the Welkom CBD centroid.
+  const seeds: Array<{
+    id: string;
+    title: string;
+    cross: string;
+    daysOpen: number;
+    reports: number;
+    refills: number;
+    lat: number;
+    lng: number;
+    suburb: string;
+  }> = [
+    { id: "matj32-stateway-tempest",   title: "Stateway",          cross: "@ Tempest Rd",       daysOpen: 412, reports: 64, refills: 3, lat: -27.9772, lng: 26.7338, suburb: "Welkom CBD" },
+    { id: "matj32-buiten-arrarat",     title: "Buiten St",         cross: "@ Arrarat Ave",      daysOpen: 287, reports: 41, refills: 2, lat: -27.9795, lng: 26.7401, suburb: "Welkom CBD" },
+    { id: "matj32-jan-cilliers-1",     title: "Long Rd",           cross: "@ Jan Cilliers Park", daysOpen: 198, reports: 23, refills: 1, lat: -27.9712, lng: 26.7268, suburb: "Jan Cilliers Park" },
+    { id: "matj32-sandania-school",    title: "Sandania Cres",     cross: "@ Primary School",   daysOpen: 144, reports: 17, refills: 0, lat: -27.9851, lng: 26.7295, suburb: "Sandania" },
+    { id: "matj32-reitz-koppie",       title: "Reitz Ave",         cross: "@ Koppie St",        daysOpen: 96,  reports: 12, refills: 0, lat: -27.9826, lng: 26.7458, suburb: "Reitz Park" },
+    { id: "matj32-voorspoed-mine",     title: "Voorspoed Rd",      cross: "@ Mine Gate 4",      daysOpen: 73,  reports: 9,  refills: 0, lat: -27.9697, lng: 26.7501, suburb: "Voorspoed" },
+    { id: "matj32-stateway-mall",      title: "Stateway",          cross: "@ Goldfields Mall",  daysOpen: 52,  reports: 14, refills: 1, lat: -27.9758, lng: 26.7372, suburb: "Welkom CBD" },
+    { id: "matj32-pres-brand",         title: "President Brand St", cross: "@ OK Bazaars",       daysOpen: 41,  reports: 8,  refills: 0, lat: -27.9778, lng: 26.7384, suburb: "Welkom CBD" },
+    { id: "matj32-koppie-alley",       title: "Koppie Alley",       cross: "@ Reitz Park gate",  daysOpen: 33,  reports: 6,  refills: 0, lat: -27.9809, lng: 26.7470, suburb: "Reitz Park" },
+    { id: "matj32-jc-rugby",           title: "Rugby Rd",           cross: "@ JC Sportsground",  daysOpen: 21,  reports: 5,  refills: 0, lat: -27.9722, lng: 26.7244, suburb: "Jan Cilliers Park" },
+    { id: "matj32-sandania-clinic",    title: "Sandania Ave",       cross: "@ Day Clinic",       daysOpen: 12,  reports: 3,  refills: 0, lat: -27.9874, lng: 26.7312, suburb: "Sandania" },
+    { id: "matj32-cbd-taxi-rank",      title: "Bok St",             cross: "@ Taxi Rank",        daysOpen: 4,   reports: 2,  refills: 0, lat: -27.9764, lng: 26.7355, suburb: "Welkom CBD" },
+  ];
+  return seeds.map((s) => {
+    const tone: "red" | "amber" | "green" =
+      s.daysOpen > 60 ? "red" : s.daysOpen > 14 ? "amber" : "green";
+    return {
+      id: s.id,
+      title: s.title,
+      cross: s.cross,
+      wardId,
+      authority,
+      daysOpen: s.daysOpen,
+      reports: s.reports,
+      refills: s.refills,
+      lat: s.lat,
+      lng: s.lng,
+      ownerSignals: [
+        {
+          icon: "money",
+          text: "R209M in grants returned to Treasury unspent",
+          tone: "red",
+        },
+        {
+          icon: "alert",
+          text: `${s.suburb} · ${s.daysOpen} days open`,
+          tone,
+        },
+        {
+          icon: "phone",
+          text: "Municipality under provincial administration",
+          tone: "amber",
+        },
+      ],
+      notes: [
+        {
+          author: `${s.suburb} resident`,
+          ago: `${Math.max(1, Math.round(s.daysOpen / 14))}w`,
+          text: `Reported ${s.title} ${s.cross} months ago. Nothing. We dodge it every morning.`,
+          raw: true,
+        },
+      ],
+    };
+  });
+}
 
 // ============================================================
 // Helpers

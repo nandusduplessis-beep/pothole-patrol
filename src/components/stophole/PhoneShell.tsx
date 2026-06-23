@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Camera, List, Vote, User } from "lucide-react";
+import { Camera, List, Vote, User, MoreHorizontal } from "lucide-react";
+import { useStopholeStore } from "@/lib/stophole-store";
 
 export function PhoneShell({
   children,
@@ -21,10 +22,16 @@ export function PhoneShell({
 
 function TabBar() {
   const { pathname } = useLocation();
+  const activeWardId = useStopholeStore((s) => s.activeWardId);
   const isHome = pathname === "/";
   const isCases = pathname.startsWith("/cases") || pathname.startsWith("/case/");
   const isVote = pathname.startsWith("/vote");
   const isYou = pathname.startsWith("/you");
+  const isMore =
+    pathname.startsWith("/how-it-works") ||
+    pathname.startsWith("/whatsapp") ||
+    pathname.startsWith("/ussd");
+  const wardId = activeWardId ?? "WD_MATJ_32";
   return (
     <nav className="sh-tabbar" aria-label="Primary">
       <Link to="/" className={`sh-tab${isHome ? " is-active" : ""}`}>
@@ -37,7 +44,7 @@ function TabBar() {
       </Link>
       <Link
         to="/vote/$wardId"
-        params={{ wardId: "JHB_WARD102" }}
+        params={{ wardId }}
         className={`sh-tab${isVote ? " is-active" : ""}`}
       >
         <Vote size={20} />
@@ -46,6 +53,13 @@ function TabBar() {
       <Link to="/you" className={`sh-tab${isYou ? " is-active" : ""}`}>
         <User size={20} />
         <span>You</span>
+      </Link>
+      <Link
+        to="/how-it-works"
+        className={`sh-tab${isMore ? " is-active" : ""}`}
+      >
+        <MoreHorizontal size={20} />
+        <span>More</span>
       </Link>
     </nav>
   );

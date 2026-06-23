@@ -7,6 +7,7 @@ import {
   TriangleAlert,
   Banknote,
   ArrowRight,
+  MessageCircle,
 } from "lucide-react";
 import {
   Button,
@@ -17,25 +18,30 @@ import {
   TopBar,
   VerdictBadge,
 } from "@/components/stophole";
-import { getCase, type CaseFile, type Ward, type CommunityNote } from "@/data/seed";
+import { getCase, resolveAccountability, type CaseFile, type Ward, type CommunityNote } from "@/data/seed";
 import { useStopholeStore } from "@/lib/stophole-store";
+import { formatZAR, formatNumber } from "@/lib/format";
 
 export const Route = createFileRoute("/case/$caseId")({
-  loader: ({ params }): { ward: Ward; case: CaseFile } => {
+  loader: ({ params }): { ward: Ward; case: CaseFile } | { localId: string } => {
+    if (params.caseId.startsWith("local-")) {
+      return { localId: params.caseId };
+    }
     const result = getCase(params.caseId);
     if (!result) throw notFound();
     return result;
   },
   head: ({ loaderData }) => {
-    const title = loaderData
-      ? `${loaderData.case.title} ${loaderData.case.cross} — Ward ${loaderData.ward.number}`
-      : "Case file";
+    const title =
+      loaderData && "case" in loaderData
+        ? `${loaderData.case.title} ${loaderData.case.cross} — Ward ${loaderData.ward.number}`
+        : "Your pothole snap";
     return {
       meta: [
         { title: `${title} | Stophole` },
         {
           name: "description",
-          content: loaderData
+          content: loaderData && "case" in loaderData
             ? `Open since ${loaderData.case.daysOpen} days. ${loaderData.ward.municipalityName}.`
             : "Pothole case file.",
         },
@@ -47,14 +53,49 @@ export const Route = createFileRoute("/case/$caseId")({
 });
 
 function CaseRoute() {
-  const { ward, case: caseFile } = Route.useLoaderData() as { ward: Ward; case: CaseFile };
+  const loaderData = Route.useLoaderData() as
+    | { ward: Ward; case: CaseFile }
+    | { localId: string };
+  const localCases = useStopholeStore((s) => s.localCases);
+  let ward: Ward;
+  let caseFile: CaseFile;
+  if ("case" in loaderData) {
+    ward = loaderData.ward;
+    caseFile = loaderData.case;
+  } else {
+    const local = localCases.find((c) => c.id === loaderData.localId);
+    if (!local) {
+      return (
+        <PhoneShell>
+          <TopBar
+            left={
+              <Link to="/" className="sh-iconbtn" aria-label="Back">
+                <ChevronLeft size={22} />
+              </Link>
+            }
+            title="CASE NOT FOUND"
+          />
+          <div className="sh-scroll" style={{ padding: 24 }}>
+            <p style={{ color: "var(--text-muted)" }}>
+              This snap was logged on another device. Open Stophole on the
+              device you snapped from, or log a new pothole.
+            </p>
+          </div>
+        </PhoneShell>
+      );
+    }
+    caseFile = local;
+    ward = resolveAccountability(local.lat, local.lng);
+  }
   const navigate = useNavigate();
   const trackCase = useStopholeStore((s) => s.trackCase);
+  const setActiveWard = useStopholeStore((s) => s.setActiveWard);
   const incumbent = ward.candidates.find((c) => c.isIncumbent);
 
   useEffect(() => {
     trackCase(caseFile.id);
-  }, [caseFile.id, trackCase]);
+    setActiveWard(ward.id);
+  }, [caseFile.id, ward.id, trackCase, setActiveWard]);
 
   return (
     <PhoneShell>
@@ -175,6 +216,145 @@ function CaseRoute() {
           </Card>
         </div>
 
+        {ward.suburbs && ward.suburbs.length > 0 && (
+          <div className="sh-block">
+            <span className="sh-eyebrow">Local economic &amp; community context</span>
+            <Card style={{ marginTop: 10 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {ward.suburbs.map((s) => (
+                  <Tag key={s}>{s}</Tag>
+                ))}
+              </div>
+              <div className="sh-case__stats" style={{ marginTop: 14 }}>
+                {ward.households != null && (
+                  <StatTile
+                    label="Households"
+                    value={formatNumber(ward.households)}
+                    unit={ward.avgHouseholdDensity ? `· ${ward.avgHouseholdDensity}/home` : undefined}
+                  />
+                )}
+                <StatTile
+                  label="Avg income / month"
+                  value={formatZAR(ward.avgHouseholdIncomeMonthlyZar)}
+                  tone="soft"
+                />
+                {ward.repairCostPerM2 && (
+                  <StatTile
+                    label="Repair cost / m²"
+                    value={`R${ward.repairCostPerM2.min}–${ward.repairCostPerM2.max}`}
+                  />
+                )}
+              </div>
+              {ward.neglectMultiplier && (
+                <p
+                  style={{
+                    marginTop: 12,
+                    fontSize: 13,
+                    color: "var(--text-muted)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Left unmaintained, structural degradation costs up to{" "}
+                  <strong>{ward.neglectMultiplier}×</strong> more in future
+                  reconstruction.
+                </p>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {ward.infra && (
+          <div className="sh-block">
+            <span className="sh-eyebrow">Municipal money monitor</span>
+            <Card style={{ marginTop: 10 }}>
+              {incumbent && (
+                <div
+                  className="sh-row sh-row--gap"
+                  style={{ color: "var(--text-muted)", fontSize: 12, flexWrap: "wrap" }}
+                >
+                  <span className="sh-data">CURRENT · {incumbent.name.toUpperCase()}</span>
+                  <span className="sh-dot-sep" />
+                  <span className="sh-data">{incumbent.party}</span>
+                  {incumbent.tenureYears != null && (
+                    <>
+                      <span className="sh-dot-sep" />
+                      <span className="sh-data">{incumbent.tenureYears} YRS</span>
+                    </>
+                  )}
+                  {ward.incumbentElectedCycle && (
+                    <>
+                      <span className="sh-dot-sep" />
+                      <span className="sh-data">
+                        ELECTED {ward.incumbentElectedCycle.toUpperCase()}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+              <div className="sh-case__stats" style={{ marginTop: 14 }}>
+                <StatTile
+                  label="Capital grants"
+                  value={formatZAR(ward.infra.capitalGrantsZar)}
+                />
+                <StatTile
+                  label="Maintenance spend"
+                  value={formatZAR(ward.infra.maintenanceSpendZar)}
+                  tone="soft"
+                />
+                <StatTile
+                  label="Returned to Treasury"
+                  value={formatZAR(ward.infra.returnedToTreasuryZar)}
+                />
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <div className="sh-row sh-row--gap">
+                  <VerdictBadge
+                    verdict={ward.auditorGeneralStatus.toLowerCase().includes("clean") ? "green" : "red"}
+                    size="sm"
+                    label={ward.auditorGeneralStatus}
+                  />
+                </div>
+                {ward.auditNote && (
+                  <p style={{ marginTop: 8, fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>
+                    {ward.auditNote}
+                  </p>
+                )}
+              </div>
+              {ward.payroll && (
+                <div
+                  style={{
+                    marginTop: 14,
+                    padding: 12,
+                    borderRadius: 12,
+                    background: "var(--surface-sunken)",
+                  }}
+                >
+                  <div className="sh-eyebrow" style={{ marginBottom: 6 }}>
+                    Salaries
+                  </div>
+                  <div style={{ fontSize: 13, color: "var(--text-body)", lineHeight: 1.55 }}>
+                    <strong>{formatZAR(ward.payroll.totalPerYearZar)}</strong> / year
+                    on payroll · avg <strong>{formatZAR(ward.payroll.avgAnnualZar)}</strong>
+                    /yr across {formatNumber(ward.payroll.headcount)} workers.
+                  </div>
+                  {ward.payroll.note && (
+                    <div
+                      style={{
+                        marginTop: 8,
+                        fontSize: 12,
+                        color: "var(--status-flagged)",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {ward.payroll.note}
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
         <Card variant="yellow" padding="lg" style={{ marginTop: 18 }}>
           <Tag
             tone="dark"
@@ -209,8 +389,18 @@ function CaseRoute() {
             <span className="sh-data" style={{ fontSize: 12 }}>
               TAXPAYER FUNDED
             </span>
+            {ward.electionDate && (
+              <>
+                <span className="sh-dot-sep" style={{ background: "var(--yellow-800)" }} />
+                <span className="sh-data" style={{ fontSize: 12 }}>
+                  DECISION {new Date(ward.electionDate)
+                    .toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })
+                    .toUpperCase()}
+                </span>
+              </>
+            )}
           </div>
-          <div style={{ marginTop: 16 }}>
+          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
             <Button
               variant="dark"
               size="lg"
@@ -225,8 +415,45 @@ function CaseRoute() {
             >
               Compare who wants the job
             </Button>
+            <Link
+              to="/whatsapp"
+              className="sh-row sh-row--gap"
+              style={{
+                justifyContent: "center",
+                gap: 8,
+                color: "var(--charcoal-900)",
+                fontWeight: 700,
+                fontSize: 13,
+                textDecoration: "underline",
+              }}
+            >
+              <MessageCircle size={16} /> Get WhatsApp voter reminders
+            </Link>
           </div>
         </Card>
+
+        {ward.potholesPreloaded != null && (
+          <div className="sh-block">
+            <span className="sh-eyebrow">Pothole reporting engine</span>
+            <Card variant="sunken" style={{ marginTop: 10 }}>
+              <div style={{ fontSize: 14, color: "var(--text-body)", lineHeight: 1.5 }}>
+                <strong>{ward.potholesPreloaded}</strong> potholes preloaded nearby in
+                Ward {ward.number}.
+              </div>
+              <div style={{ marginTop: 12 }}>
+                <Button
+                  variant="primary"
+                  size="md"
+                  fullWidth
+                  trailingIcon={<ArrowRight size={16} />}
+                  onClick={() => navigate({ to: "/" })}
+                >
+                  Log a new pothole at your location
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
 
         <p
           style={{

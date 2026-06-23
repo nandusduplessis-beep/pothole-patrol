@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, ArrowRight, Sun, Moon, Camera } from "lucide-react";
+import { MapPin, ArrowRight, Sun, Moon, Camera, Info } from "lucide-react";
 import {
   Button,
   Card,
@@ -12,8 +12,9 @@ import {
   type Verdict,
 } from "@/components/stophole";
 import { MapEmbed } from "@/components/stophole/MapEmbed";
-import { WARDS, type CaseFile } from "@/data/seed";
+import { WARDS, resolveAccountability, type CaseFile } from "@/data/seed";
 import { useStopholeStore } from "@/lib/stophole-store";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,19 +41,87 @@ function HomeRoute() {
   const theme = useStopholeStore((s) => s.theme);
   const toggleTheme = useStopholeStore((s) => s.toggleTheme);
   const trackCase = useStopholeStore((s) => s.trackCase);
+  const setActiveWard = useStopholeStore((s) => s.setActiveWard);
+  const addLocalCase = useStopholeStore((s) => s.addLocalCase);
+  const localCases = useStopholeStore((s) => s.localCases);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [snapBusy, setSnapBusy] = useState(false);
 
   const allCases = useMemo<CaseFile[]>(
-    () => WARDS.flatMap((w) => w.cases),
-    [],
+    () => [...localCases, ...WARDS.flatMap((w) => w.cases)],
+    [localCases],
   );
   const [selected, setSelected] = useState<CaseFile | null>(null);
   const [showSearch, setShowSearch] = useState(false);
 
-  const center = { lat: -28.4793, lng: 24.6727 }; // SA-centered
+  // Default to Welkom Ward 32 (our fully populated demo ward).
+  const center = { lat: -27.9784, lng: 26.7359 };
 
   function openCase(c: CaseFile) {
     trackCase(c.id);
+    setActiveWard(c.wardId);
     navigate({ to: "/case/$caseId", params: { caseId: c.id } });
+  }
+
+  function triggerSnap() {
+    fileRef.current?.click();
+  }
+
+  async function getPositionOrCenter(): Promise<{ lat: number; lng: number }> {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return center;
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => resolve(center), 4000);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          clearTimeout(timer);
+          resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        () => {
+          clearTimeout(timer);
+          resolve(center);
+        },
+        { enableHighAccuracy: true, timeout: 3500 },
+      );
+    });
+  }
+
+  async function handlePhotoPicked(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setSnapBusy(true);
+    try {
+      const where = await getPositionOrCenter();
+      const ward = resolveAccountability(where.lat, where.lng);
+      const id = `local-${Date.now().toString(36)}`;
+      const newCase: CaseFile = {
+        id,
+        title: "Your snap",
+        cross: `Logged ${new Date().toLocaleDateString("en-ZA")}`,
+        wardId: ward.id,
+        authority: ward.municipalityName,
+        daysOpen: 0,
+        reports: 1,
+        refills: 0,
+        lat: where.lat,
+        lng: where.lng,
+        ownerSignals: [
+          { icon: "alert", text: "Reported by you · just now", tone: "amber" },
+          { icon: "phone", text: `Routed to ${ward.municipalityName}`, tone: "amber" },
+        ],
+        notes: [
+          {
+            author: "You",
+            ago: "just now",
+            text: "Snapped from the Stophole app. Photo attached locally for this demo.",
+          },
+        ],
+      };
+      addLocalCase(newCase);
+      openCase(newCase);
+    } finally {
+      setSnapBusy(false);
+    }
   }
 
   return (
@@ -63,7 +132,7 @@ function HomeRoute() {
             <MapEmbed
               cases={allCases}
               center={selected ? { lat: selected.lat, lng: selected.lng } : center}
-              zoom={selected ? 14 : 5}
+              zoom={selected ? 15 : 13}
               onSelect={setSelected}
               selectedId={selected?.id ?? null}
             />
@@ -75,14 +144,19 @@ function HomeRoute() {
               left={<LogoMark />}
               title="STOPHOLE"
               right={
-                <button
-                  className="sh-iconbtn"
-                  onClick={toggleTheme}
-                  aria-label="Toggle theme"
-                  type="button"
-                >
-                  {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-                </button>
+                <div style={{ display: "inline-flex", gap: 8 }}>
+                  <Link to="/how-it-works" className="sh-iconbtn" aria-label="How it works">
+                    <Info size={18} />
+                  </Link>
+                  <button
+                    className="sh-iconbtn"
+                    onClick={toggleTheme}
+                    aria-label="Toggle theme"
+                    type="button"
+                  >
+                    {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+                  </button>
+                </div>
               }
             />
           </div>
@@ -97,6 +171,15 @@ function HomeRoute() {
               setShowSearch(false);
             }}
             cases={allCases}
+          />
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            style={{ display: "none" }}
+            onChange={handlePhotoPicked}
           />
 
           {/* Bottom sheet — selected case OR default pothole-input prompt */}
@@ -144,12 +227,7 @@ function HomeRoute() {
               </div>
             </>
           ) : (
-            <DefaultSheet
-              onSnap={() => {
-                // pothole input as snap → open the first case
-                openCase(allCases[0]);
-              }}
-            />
+            <DefaultSheet onSnap={triggerSnap} busy={snapBusy} />
           )}
         </div>
       </PhoneShell>
@@ -160,7 +238,7 @@ function selectedVerdict(c: CaseFile): Verdict {
   return c.daysOpen > 60 ? "red" : c.daysOpen > 14 ? "amber" : "green";
 }
 
-function DefaultSheet({ onSnap }: { onSnap: () => void }) {
+function DefaultSheet({ onSnap, busy }: { onSnap: () => void; busy?: boolean }) {
   return (
     <div className="sh-sheet" role="region" aria-label="Snap a pothole">
       <span className="sh-sheet__grab" aria-hidden />
@@ -186,9 +264,29 @@ function DefaultSheet({ onSnap }: { onSnap: () => void }) {
         leadingIcon={<Camera size={18} />}
         trailingIcon={<ArrowRight size={16} />}
         onClick={onSnap}
+        disabled={busy}
       >
-        Snap the pothole
+        {busy ? "Reading location…" : "Snap the pothole"}
       </Button>
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          fontSize: 12,
+          color: "var(--text-muted)",
+          flexWrap: "wrap",
+        }}
+      >
+        <Link to="/how-it-works" className="sh-muted" style={{ textDecoration: "underline" }}>
+          How it works
+        </Link>
+        <Link to="/whatsapp" className="sh-muted" style={{ textDecoration: "underline" }}>
+          WhatsApp version
+        </Link>
+        <Link to="/ussd" className="sh-muted" style={{ textDecoration: "underline" }}>
+          USSD version
+        </Link>
+      </div>
     </div>
   );
 }
