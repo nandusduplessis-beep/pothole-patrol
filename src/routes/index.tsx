@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, ArrowRight, Sun, Moon, Camera, Info } from "lucide-react";
+import { MapPin, ArrowRight, Sun, Moon, Camera, Info, Navigation } from "lucide-react";
 import {
   Button,
   Card,
@@ -46,6 +46,7 @@ function HomeRoute() {
   const localCases = useStopholeStore((s) => s.localCases);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [snapBusy, setSnapBusy] = useState(false);
+  const [locBusy, setLocBusy] = useState(false);
 
   const allCases = useMemo<CaseFile[]>(
     () => [...localCases, ...WARDS.flatMap((w) => w.cases)],
@@ -65,6 +66,18 @@ function HomeRoute() {
 
   function triggerSnap() {
     fileRef.current?.click();
+  }
+
+  async function findMyCouncillor() {
+    setLocBusy(true);
+    try {
+      const where = await getPositionOrCenter();
+      const ward = resolveAccountability(where.lat, where.lng);
+      setActiveWard(ward.id);
+      navigate({ to: "/candidates/$wardId", params: { wardId: ward.id } });
+    } finally {
+      setLocBusy(false);
+    }
   }
 
   async function getPositionOrCenter(): Promise<{ lat: number; lng: number }> {
@@ -227,7 +240,12 @@ function HomeRoute() {
               </div>
             </>
           ) : (
-            <DefaultSheet onSnap={triggerSnap} busy={snapBusy} />
+            <DefaultSheet
+              onFindCouncillor={findMyCouncillor}
+              locBusy={locBusy}
+              onSnap={triggerSnap}
+              snapBusy={snapBusy}
+            />
           )}
         </div>
       </PhoneShell>
