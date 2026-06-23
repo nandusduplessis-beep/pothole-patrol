@@ -2,25 +2,24 @@ import { useEffect, useState } from "react";
 
 /**
  * Black pothole splash — pulls the viewer out of the hole into the map.
- * Auto-hides after ~1.6s; honors session flag so it only plays once per visit.
+ * SSR-safe: renders nothing on the server and the first client render,
+ * then mounts after hydration. Only plays once per session.
  */
 export function SplashIntro() {
-  const [show, setShow] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return sessionStorage.getItem("sh_splash_done") !== "1";
-    } catch {
-      return true;
-    }
-  });
+  const [show, setShow] = useState(false);
   useEffect(() => {
-    if (!show) return;
+    let alreadyShown = false;
+    try {
+      alreadyShown = sessionStorage.getItem("sh_splash_done") === "1";
+    } catch {}
+    if (alreadyShown) return;
+    setShow(true);
     const t = setTimeout(() => {
       try { sessionStorage.setItem("sh_splash_done", "1"); } catch {}
       setShow(false);
     }, 1700);
     return () => clearTimeout(t);
-  }, [show]);
+  }, []);
   if (!show) return null;
   return (
     <div className="sh-splash" aria-hidden>
