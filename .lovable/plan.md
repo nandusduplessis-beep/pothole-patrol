@@ -1,86 +1,92 @@
 
-# Stophole MVP — Port design system + build clickable flow
+## What I actually saw (audited mobile 393px + desktop 1280px)
 
-The `pothole-patrol` repo already contains a complete **Stophole Design System** (tokens, 8 core components, 5 screen layouts, brand assets). The plan is to **port it wholesale** into this TanStack Start project rather than rebuild — then wire the screens into real routes with seeded demo data and a Leaflet map.
+- **Home / "front card" is broken as a tool.** "Snap the pothole" doesn't snap anything — it just navigates to a hard-coded first case. There's no camera/upload, no geolocation, no "create new pothole". The big pin near Soweto is fictional and doesn't represent the user.
+- **Desktop layout is a stretched phone.** The bottom "sheet" spans the full 1200px column, the search bar is the same — neither reads as a card. The TopBar is overlaid centered on the map, separated from the sheet.
+- **Vote tab is hard-coded to `JHB_WARD102`.** Any other ward (e.g. the Ward 32 Welkom example you sent) 404s. The TabBar destination must be derived from the active/last-viewed ward, with a fallback.
+- **Ward councillor card is missing ~80% of the content** you pasted (suburbs, households, density, income, repair cost band, budget vs spend, returned-to-Treasury, audit outcome, payroll, action steps, pothole engine count).
+- **No `/how-it-works`, `/whatsapp`, `/ussd` routes exist.**
+- **Ward 32 / Matjhabeng is not in seed data** — your example can't be loaded at all.
 
-## What's in the repo to reuse
+## Plan
 
+### A. Fix the front (home) card — functionality, not redesign
+
+`src/routes/index.tsx` + `src/lib/stophole-store.ts`
+
+1. Replace the "Snap the pothole" button's `onClick` with a real flow:
+   - Trigger a hidden `<input type="file" accept="image/*" capture="environment">`.
+   - On file pick, call `navigator.geolocation.getCurrentPosition` (with a graceful fallback to the search bar / map-tap location if denied).
+   - Create a new `CaseFile` in the store (`addLocalCase`) tagged `source: "user"`, attach the photo as an object URL, snap to the nearest ward in seed (or `unassigned` if outside).
+   - Navigate to `/case/$caseId` for the new record.
+2. Add a secondary "Tap the map to drop a pin" affordance when geolocation is denied — `MapEmbed` already supports `onSelect`; extend it with an `onMapTap(lat,lng)` callback for empty space.
+3. Desktop: constrain the bottom sheet + search bar to `max-width: 520px` and pin to the bottom-right of the map rather than stretching across 1200px. Mobile unchanged.
+
+### B. Make `/vote` and the Vote tab work for any ward
+
+`src/components/stophole/PhoneShell.tsx` + store
+
+- Add `activeWardId` to the store (set whenever the user opens a case or selects on the map; persisted to localStorage).
+- TabBar's Vote link uses `activeWardId ?? DEFAULT_WARD_ID`. If still missing, the link routes to `/vote` (new index) that prompts the user to pick or detect their ward.
+- Add `src/routes/vote.index.tsx` for that fallback.
+
+### C. Enrich the ward councillor data + add Ward 32 (Welkom)
+
+`src/data/seed.ts`
+
+- Extend `Ward` with: `municipalityName`, `suburbs[]`, `households`, `avgHouseholdDensity`, `avgMonthlyIncomeZAR`, `repairCostPerM2: {min,max}`, `neglectMultiplier`, `infra: {capitalGrantsZAR, maintenanceSpendZAR, returnedToTreasuryZAR}`, `auditOutcome`, `auditNote`, `payroll: {totalPerYearZAR, avgAnnualZAR, headcount, note}`, `electionDate`, `potholesPreloaded`.
+- Extend incumbent `Candidate` with `tenureYears`, `electedCycle`.
+- Add `WD_MATJ_32` with the exact figures from your brief (René Steyn / DA, R202.9M grants vs R13.7M spend, R209M returned, Qualified Opinion, R1.12B payroll, R319,611 avg across 3,512 staff, election 2026-11-04, 12 preloaded potholes, suburbs: Welkom CBD, Jan Cilliers Park, Sandania, Reitz Park, Voorspoed).
+- Generate 12 plausible preloaded pothole `CaseFile`s scattered around the Ward 32 centroid.
+
+`src/routes/case.$caseId.tsx` — append new content blocks under the existing "Who owns this failure now":
+
+```text
+[ Tag: Local economic & community context ]
+- Suburbs chips
+- Households · Density · Avg income (StatTiles)
+- Pothole repair cost band + 18× neglect callout
+
+[ Tag: Municipal money monitor ]
+- Tenure line (incumbent · party · years · cycle)
+- StatTiles: Capital grants / Maintenance spend / Returned to Treasury
+- Audit outcome badge (red for Qualified Opinion) + one-line auditNote
+- Payroll block: total/yr, avg/yr, headcount, ghost-employee note
+
+[ Action steps card (already yellow) ]
+- Existing "Compare who wants the job" CTA → /candidates/$wardId
+- New secondary CTA → /whatsapp (Get WhatsApp reminders)
+- New line: "Final decision: 04 Nov 2026" with electionDate
+
+[ Tag: Pothole reporting engine ]
+- "{N} potholes preloaded nearby in Ward {n}"
+- "Log a new pothole at your current location" → triggers the same snap flow as the home button
 ```
-Stophole Design System/
-├── tokens/         6 CSS files (fonts, colors, typography, spacing, effects, base)
-├── components/core/  8 components: Button, Tag, VerdictBadge, StatTile,
-│                     DotScore, Card, Icon, PotholeInput
-├── ui_kits/app/    HomeScreen, CaseScreen, CandidatesScreen, VoteScreen,
-│                   CasesScreen, Shell, Shared, app.css
-├── assets/         mark.svg, mark-yellow.svg, logo-wordmark(-dark).svg
-└── readme.md       Brand voice, scoring model, tone rules
-```
 
-The components are written as standalone JSX with CSS variables — they assume a `window.StopholeDesignSystem_*` global. I'll convert them to plain ES module imports.
+Add `src/lib/format.ts` with `formatZAR(n)` → "R 202.9M / R 1.12B / R 4,120" used across the card.
 
-## Build steps
+### D. New routes
 
-### 1. Port the design tokens
-- Copy `tokens/*.css` → `src/styles/tokens/`.
-- In `src/styles.css`, `@import` the 6 token files and bridge them to Tailwind v4 `@theme` variables so utilities work alongside the raw CSS vars.
-- Install `@fontsource/archivo`, `@fontsource/hanken-grotesk`, `@fontsource/space-mono`; import in `src/router.tsx` or `__root.tsx`.
-- Copy `assets/*.svg` → `src/assets/stophole/`. Set `mark-yellow.svg` as favicon.
+1. `src/routes/how-it-works.tsx` — 4 numbered steps (Snap → Ward → Incumbent → 2026 candidates), data sources block (AGSA, National Treasury, IEC), disclaimer, CTA back to `/`.
+2. `src/routes/whatsapp.tsx` — explainer + mock WhatsApp transcript (location pin → ward card reply → `CANDIDATES` / `REMIND ME` / `REPORT`), command list, `wa.me/<placeholder>?text=Start` CTA, POPIA opt-out note.
+3. `src/routes/ussd.tsx` — explainer + interactive USSD simulator (pure React state) for `*120*7867#`: Welcome → 1) Report 2) Find ward 3) Voter reminder → end screen, with carrier list + cost note.
 
-### 2. Port the 8 core components
-For each in `Stophole Design System/components/core/`:
-- Convert `.jsx` from global-object pattern → `export function Component(...)`.
-- Land at `src/components/stophole/{Button,Tag,VerdictBadge,StatTile,DotScore,Card,Icon,PotholeInput}.tsx`.
-- Keep prop shapes from the `.d.ts` files. `Icon` becomes a thin wrapper around `lucide-react`.
+Each route: own `head()` with unique title/description/og:title/og:description.
 
-### 3. Port the 5 screens as route components
-Convert each ui_kit screen into a TanStack route:
+### E. Navigation wiring
 
-| Repo screen | New route | Purpose |
-|---|---|---|
-| `HomeScreen.jsx` | `src/routes/index.tsx` | Map landing + pothole-input + recent cases |
-| `CaseScreen.jsx` | `src/routes/case.$caseId.tsx` | Address, ward, councillor, community signals |
-| `CandidatesScreen.jsx` | `src/routes/candidates.$wardId.tsx` | 2026 applicants ranked by Pothole Test |
-| `VoteScreen.jsx` | `src/routes/vote.$wardId.tsx` | Voting station + 4 Nov 2026 date |
-| `CasesScreen.jsx` | `src/routes/cases.tsx` | User's tracked cases list |
+- Add a "More" overflow on `PhoneShell` TabBar linking to How it works · WhatsApp · USSD. On desktop, surface them inline in the TopBar.
+- Add a small footer link cluster on `/` for the same three pages.
 
-`Shell.jsx` (phone frame + status bar + tab bar) becomes a `<PhoneShell>` wrapper used by `__root.tsx`. Each route gets unique `head()` metadata (title, description, og).
+## Technical notes
 
-### 4. Map landing (the one big addition)
-The repo's HomeScreen uses a stylized static map. Replace it with **Leaflet + OpenStreetMap** (`react-leaflet`, no API key) inside the phone frame:
-- Centered on Johannesburg by default.
-- Two seeded pothole markers (Ward 102 JHB, Ward 55 CPT) using red drop-pin SVG matching the storyboard.
-- Tap pin → rises the existing pothole-input sheet → CTA goes to `/case/{id}`.
-- Search input with 3 hardcoded autocomplete demo addresses.
-- Camera CTA opens a mocked overlay (`Shared.jsx` already has the camera UI).
+- All new pages are static (no loaders, no server functions, no Cloud).
+- Pothole creation stays client-side (Zustand + localStorage). Image lives as a blob URL — fine for demo, real upload can come later with Cloud.
+- Geolocation + camera APIs need HTTPS, which the preview already provides.
+- No design-token changes; reuse existing `Button`, `Card`, `Tag`, `StatTile`, `VerdictBadge`, `PhoneShell`, `TopBar`.
 
-### 5. Seed data (`src/data/seed.ts`)
-Plain TypeScript. Two fully populated wards:
+## Out of scope (flag for later)
 
-- **Ward 102, City of Johannesburg** — incumbent + 4 challengers, 1 open case ("Corlett Drive @ Athol").
-- **Ward 55, City of Cape Town** — incumbent + 3 challengers, 1 open case.
-
-Each candidate carries the 5 Pothole Test signals (proven fix rate, time-to-action, budget conversion, system presence, local accountability) scored 0–5 with one-line evidence, plus tenure and contactability.
-
-Each ward carries: `municipality_name`, `auditor_general_status`, `total_salary_budget_zar`, `actual_maintenance_spend_zar`, `avg_household_income_monthly_zar`, derived per-worker salary — rendered exactly as the PRD copy block, with the aggregate-vs-localized disclaimer.
-
-A `resolveAccountability(lat,lng)` helper picks the nearest demo ward by haversine distance — same signature the real PostGIS lookup will use later.
-
-### 6. Pothole Test verdict
-Helper computes verdict from the 5 signals: avg ≥ 4 → 🟢 GREEN, 2–4 → 🟡 AMBER, < 2 → 🔴 RED. Candidates list sorts green → amber → red; incumbent pinned at top with "OWNS THIS FAILURE NOW" tag.
-
-### 7. Theme, persistence, polish
-- Light/dark toggle in top bar (writes `data-theme` on `<html>`, persisted to localStorage).
-- Zustand store for "recent cases" persisted to localStorage so the Home screen feels lived-in.
-- Respect `prefers-reduced-motion` (the pin pulse, sheet rise).
-- 44px tap targets verified throughout.
-
-## What I will not do in this build
-
-- No Lovable Cloud / database (deferred — `resolveAccountability` is the swap point).
-- No real ward polygons / IEC ingest / PostGIS.
-- No real photo upload (camera is mocked).
-- No auth, no user accounts, no push.
-
-## Deliverable
-
-Open preview → phone-frame map of Joburg → tap pothole pin → bottom sheet rises → "See who's accountable" → case file with councillor, ward stats, community signals → "Compare the applicants" → ranked candidate list with DotScore signals → tap candidate → scorecard → "Where & when to vote" → voting station + 4 Nov 2026. Full Stophole brand fidelity, full flow, mock data, ready for real data to slot in.
+- Real WhatsApp Business / USSD aggregator integration.
+- Real backend persistence of user-snapped potholes (would need Lovable Cloud).
+- Full national ward dataset — we keep three seeded wards (JHB 102, CPT 55, Matjhabeng 32).

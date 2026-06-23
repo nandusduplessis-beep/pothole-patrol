@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as YouRouteImport } from './routes/you'
+import { Route as WhatsappRouteImport } from './routes/whatsapp'
+import { Route as UssdRouteImport } from './routes/ussd'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VoteWardIdRouteImport } from './routes/vote.$wardId'
@@ -20,6 +23,21 @@ import { Route as CandidateCandidateIdRouteImport } from './routes/candidate.$ca
 const YouRoute = YouRouteImport.update({
   id: '/you',
   path: '/you',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WhatsappRoute = WhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UssdRoute = UssdRouteImport.update({
+  id: '/ussd',
+  path: '/ussd',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CasesRoute = CasesRouteImport.update({
@@ -56,6 +74,9 @@ const CandidateCandidateIdRoute = CandidateCandidateIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cases': typeof CasesRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/ussd': typeof UssdRoute
+  '/whatsapp': typeof WhatsappRoute
   '/you': typeof YouRoute
   '/candidate/$candidateId': typeof CandidateCandidateIdRoute
   '/candidates/$wardId': typeof CandidatesWardIdRoute
@@ -65,6 +86,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cases': typeof CasesRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/ussd': typeof UssdRoute
+  '/whatsapp': typeof WhatsappRoute
   '/you': typeof YouRoute
   '/candidate/$candidateId': typeof CandidateCandidateIdRoute
   '/candidates/$wardId': typeof CandidatesWardIdRoute
@@ -75,6 +99,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cases': typeof CasesRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/ussd': typeof UssdRoute
+  '/whatsapp': typeof WhatsappRoute
   '/you': typeof YouRoute
   '/candidate/$candidateId': typeof CandidateCandidateIdRoute
   '/candidates/$wardId': typeof CandidatesWardIdRoute
@@ -86,6 +113,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cases'
+    | '/how-it-works'
+    | '/ussd'
+    | '/whatsapp'
     | '/you'
     | '/candidate/$candidateId'
     | '/candidates/$wardId'
@@ -95,6 +125,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cases'
+    | '/how-it-works'
+    | '/ussd'
+    | '/whatsapp'
     | '/you'
     | '/candidate/$candidateId'
     | '/candidates/$wardId'
@@ -104,6 +137,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/cases'
+    | '/how-it-works'
+    | '/ussd'
+    | '/whatsapp'
     | '/you'
     | '/candidate/$candidateId'
     | '/candidates/$wardId'
@@ -114,6 +150,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CasesRoute: typeof CasesRoute
+  HowItWorksRoute: typeof HowItWorksRoute
+  UssdRoute: typeof UssdRoute
+  WhatsappRoute: typeof WhatsappRoute
   YouRoute: typeof YouRoute
   CandidateCandidateIdRoute: typeof CandidateCandidateIdRoute
   CandidatesWardIdRoute: typeof CandidatesWardIdRoute
@@ -128,6 +167,27 @@ declare module '@tanstack/react-router' {
       path: '/you'
       fullPath: '/you'
       preLoaderRoute: typeof YouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/whatsapp': {
+      id: '/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof WhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ussd': {
+      id: '/ussd'
+      path: '/ussd'
+      fullPath: '/ussd'
+      preLoaderRoute: typeof UssdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cases': {
@@ -178,6 +238,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CasesRoute: CasesRoute,
+  HowItWorksRoute: HowItWorksRoute,
+  UssdRoute: UssdRoute,
+  WhatsappRoute: WhatsappRoute,
   YouRoute: YouRoute,
   CandidateCandidateIdRoute: CandidateCandidateIdRoute,
   CandidatesWardIdRoute: CandidatesWardIdRoute,
@@ -187,13 +250,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
