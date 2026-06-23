@@ -1109,6 +1109,9 @@ html, body {
   color: #f6f6f6;
   padding: 0 0 96px;
 }
+@media (min-width: 768px) {
+  .sh-ward { max-width: 720px; margin: 0 auto; border-left: 1px solid #1a1a1a; border-right: 1px solid #1a1a1a; }
+}
 .sh-ward__sign {
   background: var(--accent, #ffd400);
   color: #0a0a0a;
