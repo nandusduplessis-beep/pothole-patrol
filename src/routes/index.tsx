@@ -118,7 +118,7 @@ function HomeRoute() {
           {/* Floating top bar */}
           <div style={{ position: "relative", zIndex: 400 }}>
             <TopBar
-              left={<LogoMark />}
+              left={<LogoMark size={36} />}
               title=""
               right={
                 <button

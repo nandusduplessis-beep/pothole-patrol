@@ -66,12 +66,12 @@ function TabBar() {
   );
 }
 
-export function LogoMark({ size = 28 }: { size?: number }) {
+export function LogoMark({ size = 34 }: { size?: number }) {
   return (
     <img
       src={logoUrl}
       alt="Stophole"
-      style={{ height: size, width: "auto", display: "block", flexShrink: 0 }}
+      style={{ height: size, width: "auto", display: "block", flexShrink: 0, maxWidth: 140 }}
       draggable={false}
     />
   );
