@@ -89,7 +89,7 @@ function HomeRoute() {
       <PhoneShell hideTabBar>
         <div className="sh-splash" style={{ position: "relative", flex: 1, overflow: "hidden" }}>
           {/* Greyscale + blurred map background */}
-          <div className="sh-map-wrap is-greyscale sh-splash__map">
+          <div className="sh-map-wrap is-greyscale sh-home__map">
             <MapEmbed
               cases={allCases}
               center={center}
@@ -102,28 +102,28 @@ function HomeRoute() {
           {/* Centered hero */}
           <button
             type="button"
-            className="sh-splash__hero"
+            className="sh-home__hero"
             onClick={findMyCouncillor}
             disabled={locBusy}
             aria-label="Find your councillor"
           >
-            <span className="sh-splash__tag sh-splash__tag--top">every pothole</span>
-            <span className="sh-splash__mark">
+            <span className="sh-home__tag sh-home__tag--top">every pothole</span>
+            <span className="sh-home__mark">
               <img src={logoUrl} alt="Stophole" draggable={false} />
-              <span className="sh-splash__asterisk" aria-hidden>*</span>
+              <span className="sh-home__asterisk" aria-hidden>*</span>
             </span>
-            <span className="sh-splash__tag sh-splash__tag--bot">
+            <span className="sh-home__tag sh-home__tag--bot">
               {locBusy ? "finding your ward…" : "has an asshole"}
             </span>
           </button>
 
           {/* Minimal 2-item tab bar */}
-          <nav className="sh-splash__tabs" aria-label="Primary">
-            <Link to="/" className="sh-splash__tab is-active">
+          <nav className="sh-home__tabs" aria-label="Primary">
+            <Link to="/" className="sh-home__tab is-active">
               <Camera size={18} />
               <span>Snap</span>
             </Link>
-            <Link to="/you" className="sh-splash__tab">
+            <Link to="/you" className="sh-home__tab">
               <User size={18} />
               <span>You</span>
             </Link>
