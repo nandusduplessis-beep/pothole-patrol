@@ -87,7 +87,7 @@ function HomeRoute() {
     <>
       <SplashIntro />
       <PhoneShell hideTabBar>
-        <div className="sh-splash" style={{ position: "relative", flex: 1, overflow: "hidden" }}>
+        <div className="sh-home" style={{ position: "relative", flex: 1, overflow: "hidden" }}>
           {/* Greyscale + blurred map background */}
           <div className="sh-map-wrap is-greyscale sh-home__map">
             <MapEmbed
