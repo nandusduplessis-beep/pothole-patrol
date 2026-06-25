@@ -1589,11 +1589,10 @@ html, body {
 .sh-player {
   position: relative;
   margin: 14px 0 8px;
-  min-height: 460px;
 }
-.sh-player__stack { position: relative; height: 460px; }
+.sh-player__stack { position: relative; }
 .sh-player__card {
-  position: absolute; inset: 0;
+  position: relative;
   background: #fff;
   border-radius: 22px;
   border: 1px solid #e6e6e6;
