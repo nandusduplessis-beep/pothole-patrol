@@ -19,6 +19,7 @@
 /* Stophole design tokens — split files keep the system browseable */
 @import "./styles/stophole-tokens.css";
 @import "./styles/stophole-app.css";
+@import "./styles/stophole-cardkit.css";
 
 @custom-variant dark (&:is(.dark *));
 
