@@ -1,0 +1,237 @@
+/* Stophole Card Kit — sportscard-style primitives shared across screens.
+   Used by HeroCard / StatRow / ListCard / ActionCard. */
+
+/* ---------- Hero ---------- */
+.shk-hero {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  padding: 22px 20px 24px;
+  color: #fff;
+  background: radial-gradient(120% 90% at 70% 20%, #2a2a2a 0%, #0b0b0b 70%);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.45);
+  border: 1px solid #0b0b0b;
+}
+.shk-hero--yellow {
+  background: #fecd00;
+  color: #0a0a0a;
+  border-color: #0a0a0a;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+.shk-hero__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 700 10.5px/1 var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 18px;
+}
+.shk-hero__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+.shk-hero--yellow .shk-hero__chip {
+  background: rgba(0, 0, 0, 0.08);
+}
+.shk-hero__title {
+  font: 800 28px/1.05 var(--font-display, Inter, system-ui, sans-serif);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.shk-hero__sub {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+.shk-hero__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 22px;
+  gap: 12px;
+}
+.shk-hero__jersey {
+  font: 900 56px/0.9 var(--font-display, Inter, system-ui, sans-serif);
+  letter-spacing: -0.04em;
+}
+.shk-hero__badge {
+  font: 800 11px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(254, 205, 0, 0.95);
+  color: #0a0a0a;
+}
+.shk-hero--yellow .shk-hero__badge {
+  background: #0a0a0a;
+  color: #fecd00;
+}
+
+/* ---------- StatRow ---------- */
+.shk-statrow {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(var(--shk-cols, 3), minmax(0, 1fr));
+}
+.shk-stat {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 14px;
+  padding: 12px 12px 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  min-width: 0;
+}
+.shk-stat__k {
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #888;
+}
+.shk-stat__v {
+  margin-top: 8px;
+  font: 800 22px/1.05 var(--font-display, Inter, system-ui, sans-serif);
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+  overflow-wrap: anywhere;
+}
+.shk-stat__n {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.35;
+}
+
+/* ---------- ListCard ---------- */
+.shk-list {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+.shk-list__h {
+  padding: 14px 18px 6px;
+  font: 700 10.5px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #888;
+}
+.shk-list__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-top: 1px solid #f1f1f1;
+  text-decoration: none;
+  color: #0a0a0a;
+  background: transparent;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.shk-list__row:first-of-type {
+  border-top: 0;
+}
+.shk-list__row:hover {
+  background: #fafafa;
+}
+.shk-list__rowmain {
+  min-width: 0;
+}
+.shk-list__rowtitle {
+  font: 700 15px/1.25 var(--font-display, Inter, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shk-list__rowmeta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #888;
+}
+.shk-list__rowright {
+  font: 800 14px/1 var(--font-display, Inter, system-ui, sans-serif);
+  color: #0a0a0a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------- ActionCard ---------- */
+.shk-actions {
+  display: grid;
+  gap: 10px;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 70% 20%, #1f1f1f 0%, #0b0b0b 70%);
+  padding: 14px;
+  border: 1px solid #0b0b0b;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.45);
+}
+.shk-action {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 0;
+  cursor: pointer;
+  color: #0a0a0a;
+  text-decoration: none;
+  text-align: left;
+  font-family: inherit;
+}
+.shk-action--primary {
+  background: #fecd00;
+}
+.shk-action--dark {
+  background: #161616;
+  color: #fff;
+}
+.shk-action__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.08);
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+}
+.shk-action--dark .shk-action__icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+.shk-action__main {
+  min-width: 0;
+}
+.shk-action__title {
+  font: 800 15px/1.2 var(--font-display, Inter, system-ui, sans-serif);
+  letter-spacing: -0.01em;
+}
+.shk-action__sub {
+  margin-top: 2px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+.shk-action__chev {
+  opacity: 0.7;
+}
+
+/* ---------- Deck spacing (consistent vertical rhythm) ---------- */
+.shk-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 14px 24px;
+}
