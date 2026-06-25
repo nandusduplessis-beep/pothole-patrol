@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ThumbsDown, ThumbsUp, MapPin, Bell, UserPlus, ExternalLink } from "lucide-react";
+import { ThumbsDown, ThumbsUp, MapPin, Bell, UserPlus, ExternalLink, User as UserIcon } from "lucide-react";
 import type { Candidate, Ward } from "@/data/seed";
 import { useStopholeStore } from "@/lib/stophole-store";
 
@@ -90,6 +90,10 @@ function PlayerCard({
 
   const rot = dx * 0.06;
   const initials = candidate.name.split(" ").map((p) => p[0]).slice(0, 2).join("");
+  const [first, ...rest] = candidate.name.split(" ");
+  const last = rest.join(" ");
+  // Two headline stats for the dark hero (mimics "264 Games / 422 Goals").
+  const heroStats = candidate.signals.slice(0, 2);
 
   return (
     <div className="sh-player__stack">
@@ -102,21 +106,53 @@ function PlayerCard({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        <div className="sh-player__head">
-          <span>Ward {ward.number} · {ward.area}</span>
-          <span>{position}/{total}</span>
-        </div>
+        {/* Dark hero — Gareth Bale style */}
+        <div className="sh-player__hero">
+          <div className="sh-player__hero-top">
+            <span className="sh-player__chip">
+              {candidate.isIncumbent ? "Incumbent" : "Challenger"} · Ward {ward.number}
+            </span>
+            <span className="sh-player__count">{position}/{total}</span>
+          </div>
 
-        <div className="sh-player__illus">
-          {initials}
+          <div className="sh-player__hero-body">
+            <h2 className="sh-player__hero-name">
+              <span>{first}</span>
+              {last && <span>{last}</span>}
+            </h2>
+
+            {heroStats.length >= 2 && (
+              <div className="sh-player__hero-stats">
+                <div className="sh-player__hero-stat">
+                  <div className="sh-player__hero-stat-v">{heroStats[0].score}<i>/5</i></div>
+                  <div className="sh-player__hero-stat-k">{heroStats[0].label}</div>
+                </div>
+                <div className="sh-player__hero-stat sh-player__hero-stat--r">
+                  <div className="sh-player__hero-stat-v">{heroStats[1].score}<i>/5</i></div>
+                  <div className="sh-player__hero-stat-k">{heroStats[1].label}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Photo placeholder */}
+            <div className="sh-player__photo" aria-label="Photo placeholder">
+              <UserIcon size={64} strokeWidth={1.4} />
+              <span className="sh-player__photo-tag">Photo</span>
+            </div>
+
+            <div className="sh-player__hero-foot">
+              <div className="sh-player__jersey">{ward.number}</div>
+              <div className="sh-player__badge" title={candidate.party}>
+                {candidate.party.slice(0, 3).toUpperCase()}
+              </div>
+            </div>
+          </div>
+
           <span className="sh-player__swipe-tag left" style={{ opacity: Math.max(0, -dx / 100) }}>Asshole</span>
           <span className="sh-player__swipe-tag right" style={{ opacity: Math.max(0, dx / 100) }}>Goodhole</span>
         </div>
 
         <div className="sh-player__body">
-          <div className="sh-player__name">
-            {candidate.name} {candidate.isIncumbent && <span style={{ color: "#999", fontSize: 12, fontWeight: 700 }}>· incumbent</span>}
-          </div>
           <div className="sh-player__meta">
             {candidate.party} · {candidate.contactability.toUpperCase()}
             {candidate.tenureYears != null && ` · ${candidate.tenureYears}y in office`}
