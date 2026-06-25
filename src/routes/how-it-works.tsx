@@ -123,6 +123,3 @@ function HowItWorksRoute() {
     </PhoneShell>
   );
 }
-
-/* MapPin & Users used by STEPS data above */
-void MapPin; void Users; void VoteIcon;
