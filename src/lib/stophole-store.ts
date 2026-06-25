@@ -17,6 +17,9 @@ interface StopholeState {
   setActiveWard: (wardId: string | null) => void;
   localCases: CaseFile[];
   addLocalCase: (c: CaseFile) => void;
+  verdicts: Record<string, { asshole: number; goodhole: number }>;
+  castVerdict: (candidateId: string, verdict: "asshole" | "goodhole") => void;
+  myVerdicts: Record<string, "asshole" | "goodhole">;
 }
 
 const isBrowser = typeof window !== "undefined";
@@ -47,6 +50,25 @@ export const useStopholeStore = create<StopholeState>()(
         const others = get().localCases.filter((x) => x.id !== c.id);
         set({ localCases: [c, ...others].slice(0, 25) });
       },
+      verdicts: {},
+      myVerdicts: {},
+      castVerdict: (candidateId, verdict) => {
+        const v = get().verdicts;
+        const prevMine = get().myVerdicts[candidateId];
+        const cur = v[candidateId] ?? { asshole: 0, goodhole: 0 };
+        const next = { ...cur };
+        // If changing vote, decrement previous
+        if (prevMine && prevMine !== verdict && next[prevMine] > 0) {
+          next[prevMine] = next[prevMine] - 1;
+        }
+        if (prevMine !== verdict) {
+          next[verdict] = (next[verdict] ?? 0) + 1;
+        }
+        set({
+          verdicts: { ...v, [candidateId]: next },
+          myVerdicts: { ...get().myVerdicts, [candidateId]: verdict },
+        });
+      },
     }),
     {
       name: "stophole-state-v1",
@@ -56,6 +78,8 @@ export const useStopholeStore = create<StopholeState>()(
         recent: s.recent,
         activeWardId: s.activeWardId,
         localCases: s.localCases,
+        verdicts: s.verdicts,
+        myVerdicts: s.myVerdicts,
       }),
       onRehydrateStorage: () => (state) => {
         if (state && isBrowser) {
