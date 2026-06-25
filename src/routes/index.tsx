@@ -5,6 +5,8 @@ import {
   PhoneShell,
   SplashIntro,
   AsshLoader,
+  ActionStack,
+  ActionCard,
 } from "@/components/stophole";
 import logoUrl from "@/assets/stophole/logo.svg?url";
 import { MapEmbed } from "@/components/stophole/MapEmbed";
@@ -144,23 +146,23 @@ function HomeRoute() {
             <span className="sh-home__tag sh-home__tag--bot">has an asshole</span>
 
             <div className="sh-home__cta">
-              <button
-                type="button"
-                className="sh-home__btn sh-home__btn--primary"
-                onClick={() => setShowSnap(true)}
-              >
-                <Camera size={18} />
-                Log a Pothole
-              </button>
-              <button
-                type="button"
-                className="sh-home__btn sh-home__btn--ghost"
-                onClick={findMyCouncillor}
-                disabled={locBusy}
-              >
-                <Crosshair size={18} />
-                {locBusy ? "Finding your ward…" : "Find the Asshole"}
-              </button>
+              <ActionStack>
+                <ActionCard
+                  variant="primary"
+                  icon={<Camera size={18} />}
+                  title="Log a Pothole"
+                  sub="Snap, GPS, severity — 3 taps."
+                  onClick={() => setShowSnap(true)}
+                />
+                <ActionCard
+                  variant="dark"
+                  icon={<Crosshair size={18} />}
+                  title={locBusy ? "Finding your ward…" : "Find the Asshole"}
+                  sub="Use my location · ward councillor card"
+                  onClick={findMyCouncillor}
+                  disabled={locBusy}
+                />
+              </ActionStack>
             </div>
           </div>
 

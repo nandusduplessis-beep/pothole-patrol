@@ -1,15 +1,17 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   LogoMark,
   PhoneShell,
-  Tag,
   TopBar,
-  VerdictBadge,
-  type Verdict,
+  HeroCard,
+  StatRow,
+  ListCard,
+  ListRow,
+  Deck,
 } from "@/components/stophole";
-import { WARDS, type CaseFile } from "@/data/seed";
+import { WARDS } from "@/data/seed";
 import { useStopholeStore } from "@/lib/stophole-store";
 
 export const Route = createFileRoute("/cases")({
@@ -37,9 +39,9 @@ function CasesRoute() {
 
   const fallback = trackedCases.length ? trackedCases : allCases;
 
-  // Split into "this week" (≤14 days open) and "earlier"
   const recent2w = fallback.filter((c) => c.daysOpen <= 14);
   const earlier = fallback.filter((c) => c.daysOpen > 14);
+  const stale = fallback.filter((c) => c.daysOpen > 60).length;
 
   return (
     <PhoneShell>
@@ -52,93 +54,77 @@ function CasesRoute() {
           </button>
         }
       />
-      <div className="sh-scroll">
-        <div className="sh-greet">
-          <Tag>
-            {fallback.length} case{fallback.length === 1 ? "" : "s"} ·{" "}
-            {recent2w.length} fresh
-          </Tag>
-          <h1>Your watchlist.</h1>
-          <p>Cases you've opened or follow.</p>
-        </div>
-
+      <Deck>
+        <HeroCard
+          eyebrow="Watchlist"
+          chip={`${fallback.length} cases`}
+          title="Your watchlist."
+          sub="Cases you've opened or follow."
+          jersey={String(fallback.length)}
+          badge={`${recent2w.length} FRESH`}
+        />
+        <StatRow
+          items={[
+            { k: "This week", v: recent2w.length },
+            { k: "Earlier", v: earlier.length },
+            { k: "Stale 60d+", v: stale },
+          ]}
+        />
         {recent2w.length > 0 && (
-          <div className="sh-daterow">
-            <div className="sh-daterow__label">This week</div>
-            <div className="sh-stack">
-              {recent2w.map((c) => (
-                <CaseRow key={c.id} c={c} />
-              ))}
-            </div>
-          </div>
+          <ListCard heading="This week">
+            {recent2w.map((c) => {
+              const ward = WARDS.find((w) => w.id === c.wardId)!;
+              return (
+                <ListRowLink
+                  key={c.id}
+                  to={c.id}
+                  title={`${c.title} ${c.cross}`}
+                  meta={`Ward ${ward.number} · ${c.daysOpen}d open`}
+                />
+              );
+            })}
+          </ListCard>
         )}
-
         {earlier.length > 0 && (
-          <div className="sh-daterow">
-            <div className="sh-daterow__label">Earlier</div>
-            <div className="sh-stack">
-              {earlier.map((c) => (
-                <CaseRow key={c.id} c={c} />
-              ))}
-            </div>
-          </div>
+          <ListCard heading="Earlier">
+            {earlier.map((c) => {
+              const ward = WARDS.find((w) => w.id === c.wardId)!;
+              return (
+                <ListRowLink
+                  key={c.id}
+                  to={c.id}
+                  title={`${c.title} ${c.cross}`}
+                  meta={`Ward ${ward.number} · ${c.daysOpen}d open`}
+                />
+              );
+            })}
+          </ListCard>
         )}
-      </div>
+      </Deck>
     </PhoneShell>
   );
 }
 
-function CaseRow({ c }: { c: CaseFile }) {
-  const ward = WARDS.find((w) => w.id === c.wardId)!;
-  const verdict: Verdict =
-    c.daysOpen > 60 ? "red" : c.daysOpen > 14 ? "amber" : "green";
-  const label =
-    verdict === "red"
-      ? "Replace"
-      : verdict === "amber"
-        ? "Logged"
-        : "Crew sent";
+function ListRowLink({
+  to,
+  title,
+  meta,
+}: {
+  to: string;
+  title: string;
+  meta: string;
+}) {
   return (
     <Link
       to="/case/$caseId"
-      params={{ caseId: c.id }}
-      className="sh-recent"
+      params={{ caseId: to }}
+      className="shk-list__row"
     >
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          flexShrink: 0,
-          borderRadius: "var(--sh-radius-md)",
-          background: "var(--surface-sunken)",
-          display: "grid",
-          placeItems: "center",
-          color: "var(--text-muted)",
-        }}
-      >
-        <MapPin size={20} />
+      <div className="shk-list__rowmain">
+        <div className="shk-list__rowtitle">{title}</div>
+        <div className="shk-list__rowmeta">{meta}</div>
       </div>
-      <div className="sh-recent__body">
-        <div className="sh-recent__title">
-          {c.title} {c.cross}
-        </div>
-        <div className="sh-recent__meta">
-          <span
-            className="sh-data"
-            style={{ fontSize: 11, color: "var(--text-muted)" }}
-          >
-            WARD {ward.number}
-          </span>
-          <span className="sh-dot-sep" />
-          <span
-            className="sh-data"
-            style={{ fontSize: 11, color: "var(--text-muted)" }}
-          >
-            {c.daysOpen}D OPEN
-          </span>
-        </div>
-      </div>
-      <VerdictBadge verdict={verdict} size="sm" label={label} />
+      <div className="shk-list__rowright">›</div>
     </Link>
   );
 }

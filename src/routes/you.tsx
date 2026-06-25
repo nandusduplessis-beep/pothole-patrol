@@ -1,12 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, BookOpen, MessageCircle, Phone } from "lucide-react";
 import {
-  Button,
-  Card,
   LogoMark,
   PhoneShell,
-  Tag,
   TopBar,
+  HeroCard,
+  StatRow,
+  ListCard,
+  ListRow,
+  ActionStack,
+  ActionCard,
+  Deck,
 } from "@/components/stophole";
 import { useStopholeStore } from "@/lib/stophole-store";
 
@@ -26,69 +30,70 @@ export const Route = createFileRoute("/you")({
 function YouRoute() {
   const theme = useStopholeStore((s) => s.theme);
   const toggleTheme = useStopholeStore((s) => s.toggleTheme);
+  const recent = useStopholeStore((s) => s.recent);
+  const verdicts = useStopholeStore((s) => s.verdicts);
+  const localCases = useStopholeStore((s) => s.localCases);
+
+  const totalVerdicts = Object.values(verdicts).reduce(
+    (a, v) => a + v.asshole + v.goodhole,
+    0,
+  );
 
   return (
     <PhoneShell>
       <TopBar left={<LogoMark />} title="YOU" right={null} />
-      <div className="sh-scroll">
-        <div className="sh-greet">
-          <Tag>Voter profile</Tag>
-          <h1>You vs. the assholes.</h1>
-          <p>One pothole at a time. Logged in as a demo voter in Ward 102.</p>
-        </div>
-
-        <Card style={{ marginTop: 18 }}>
-          <div className="sh-row sh-row--between">
-            <div>
-              <div className="sh-person__name">Appearance</div>
-              <div className="sh-person__role">
-                {theme === "light" ? "Light — daytime road work" : "Dark — OLED, late shift"}
-              </div>
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              leadingIcon={theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
-              onClick={toggleTheme}
-            >
-              {theme === "light" ? "Dark" : "Light"}
-            </Button>
-          </div>
-        </Card>
-
-        <Card variant="dark" padding="lg" style={{ marginTop: 18 }}>
-          <Tag
-            tone="dark"
-            style={{
-              background: "var(--charcoal-700)",
-              color: "var(--grey-150)",
-              borderColor: "transparent",
-            }}
-          >
-            About this build
-          </Tag>
-          <h3 className="sh-cta-h">
-            Demo build.{" "}
-            <span style={{ color: "var(--grey-400)" }}>
-              Real ward polygons, IEC candidates and Treasury financials slot in
-              behind the same UI.
-            </span>
-          </h3>
-          <p
-            style={{
-              color: "var(--grey-400)",
-              fontSize: 12,
-              marginTop: 12,
-              fontFamily: "var(--font-mono)",
-              letterSpacing: "0.04em",
-            }}
-          >
-            DATA SOURCES (TO COME):
-            <br />
-            MUNICIPAL DEMARCATION BOARD · IEC · NATIONAL TREASURY · STATS SA
-          </p>
-        </Card>
-      </div>
+      <Deck>
+        <HeroCard
+          eyebrow="Voter profile"
+          chip="Demo · Ward 102"
+          title="You vs. the assholes."
+          sub="One pothole at a time."
+          jersey="YOU"
+          badge={theme === "light" ? "LIGHT" : "DARK"}
+        />
+        <StatRow
+          items={[
+            { k: "Verdicts cast", v: totalVerdicts },
+            { k: "Cases tracked", v: recent.length },
+            { k: "Snaps logged", v: localCases.length },
+          ]}
+        />
+        <ListCard heading="Settings">
+          <ListRow
+            title="Appearance"
+            meta={theme === "light" ? "Light — daytime road work" : "Dark — OLED, late shift"}
+            right={theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            onClick={toggleTheme}
+          />
+          <ListRow
+            title="How Stophole works"
+            meta="The 4-tap explainer"
+            href="/how-it-works"
+          />
+        </ListCard>
+        <ActionStack>
+          <ActionCard
+            variant="primary"
+            icon={<MessageCircle size={18} />}
+            title="WhatsApp version"
+            sub="Same flow, no app install"
+            href="/whatsapp"
+          />
+          <ActionCard
+            variant="dark"
+            icon={<Phone size={18} />}
+            title="USSD version"
+            sub="Works on any phone"
+            href="/ussd"
+          />
+          <ActionCard
+            icon={<BookOpen size={18} />}
+            title="About this build"
+            sub="Data: AGSA · IEC · Treasury · Stats SA"
+            href="/how-it-works"
+          />
+        </ActionStack>
+      </Deck>
     </PhoneShell>
   );
 }
