@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Camera, User, Crosshair, MapPin } from "lucide-react";
+import { Camera, User, Crosshair } from "lucide-react";
 import {
   PhoneShell,
   SplashIntro,
