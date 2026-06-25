@@ -1,11 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronLeft, Share2, MapPin, Calendar } from "lucide-react";
+import { ChevronLeft, Share2, MapPin, Calendar, UserPlus, ExternalLink } from "lucide-react";
 import {
-  Button,
   PhoneShell,
-  StatTile,
-  Tag,
   TopBar,
+  HeroCard,
+  StatRow,
+  ListCard,
+  ListRow,
+  ActionStack,
+  ActionCard,
+  Deck,
 } from "@/components/stophole";
 import { daysUntilElection, getWard, type Ward } from "@/data/seed";
 
@@ -35,6 +39,15 @@ export const Route = createFileRoute("/vote/$wardId")({
 function VoteRoute() {
   const { ward, daysLeft } = Route.useLoaderData() as { ward: Ward; daysLeft: number };
 
+  const calendarHref = (() => {
+    const date = (ward.electionDate ?? "2026-11-04").replace(/-/g, "");
+    const title = encodeURIComponent(`Vote — Ward ${ward.number} ${ward.area}`);
+    const details = encodeURIComponent(
+      `Local government election day. Voting station: ${ward.votingStation.name}, ${ward.votingStation.address}.`,
+    );
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${date}/${date}&details=${details}`;
+  })();
+
   return (
     <PhoneShell>
       <TopBar
@@ -50,124 +63,55 @@ function VoteRoute() {
           </button>
         }
       />
-      <div className="sh-scroll">
-        <div className="sh-vote__hero">
-          <Tag
-            tone="dark"
-            style={{
-              background: "var(--charcoal-700)",
-              color: "var(--accent)",
-              borderColor: "transparent",
-            }}
-          >
-            Local Election
-          </Tag>
-          <div
-            style={{
-              marginTop: 14,
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "space-between",
-            }}
-          >
-            <div>
-              <div className="sh-vote__date">04 NOV</div>
-              <div
-                className="sh-data"
-                style={{ color: "var(--grey-400)", fontSize: 13, marginTop: 4 }}
-              >
-                2026 · WEDNESDAY
-              </div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div
-                className="sh-data"
-                style={{ color: "var(--accent)", fontSize: 30 }}
-              >
-                {daysLeft}
-              </div>
-              <div
-                className="sh-data"
-                style={{ color: "var(--grey-400)", fontSize: 11 }}
-              >
-                DAYS TO GO
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="sh-block" style={{ marginTop: 18 }}>
-          <span className="sh-eyebrow">Your voting station</span>
-          <div className="sh-station">
-            <div className="sh-station__icon">
-              <MapPin size={20} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div className="sh-person__name">{ward.votingStation.name}</div>
-              <div className="sh-person__role">
-                {ward.votingStation.address} · Ward {ward.number}
-              </div>
-              <div
-                className="sh-data"
-                style={{
-                  fontSize: 11,
-                  color: "var(--text-muted)",
-                  marginTop: 6,
-                }}
-              >
-                OPEN {ward.votingStation.hours} ·{" "}
-                {ward.votingStation.distanceKm}KM AWAY
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="sh-case__stats"
-          style={{ gridTemplateColumns: "1fr 1fr", marginTop: 14 }}
-        >
-          <StatTile label="You are" value="Registered" tone="soft" size="sm" />
-          <StatTile label="Ward" value={ward.number} size="sm" />
-        </div>
-
-        <div style={{ marginTop: 18 }}>
-          <Button
+      <Deck>
+        <HeroCard
+          eyebrow="Local election"
+          chip={`Ward ${ward.number}`}
+          title="04 Nov 2026"
+          sub="Wednesday · polls 07:00–21:00"
+          jersey={`${daysLeft}d`}
+          badge="TO GO"
+        />
+        <StatRow
+          items={[
+            { k: "You are", v: "Registered" },
+            { k: "Ward", v: ward.number },
+            { k: "Distance", v: `${ward.votingStation.distanceKm} km` },
+          ]}
+        />
+        <ListCard heading="Your voting station">
+          <ListRow
+            title={ward.votingStation.name}
+            meta={`${ward.votingStation.address} · open ${ward.votingStation.hours}`}
+            right={<MapPin size={18} />}
+          />
+        </ListCard>
+        <ActionStack>
+          <ActionCard
             variant="primary"
-            size="lg"
-            fullWidth
-            leadingIcon={<Calendar size={18} />}
-          >
-            Remind me on the day
-          </Button>
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          <a
+            icon={<Calendar size={18} />}
+            title="Remind me on the day"
+            sub="Adds to your calendar"
+            href={calendarHref}
+            external
+          />
+          <ActionCard
+            variant="dark"
+            icon={<UserPlus size={18} />}
+            title="Register to vote"
+            sub="IEC online registration"
+            href="https://registertovote.elections.org.za/"
+            external
+          />
+          <ActionCard
+            icon={<ExternalLink size={18} />}
+            title="Check on IEC site"
+            sub="results.elections.org.za"
             href="https://results.elections.org.za/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <Button variant="secondary" size="lg" fullWidth>
-              Check on IEC site
-            </Button>
-          </a>
-        </div>
-
-        <p
-          style={{
-            marginTop: 18,
-            fontSize: 11,
-            color: "var(--text-subtle)",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-          }}
-        >
-          Date confirmed by IEC. Voting station data: demo. Final list confirmed
-          by IEC on results.elections.org.za.
-        </p>
-      </div>
+            external
+          />
+        </ActionStack>
+      </Deck>
     </PhoneShell>
   );
 }
