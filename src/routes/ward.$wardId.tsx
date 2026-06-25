@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { PlayerCardStack } from "@/components/stophole";
 import {
   getWard,
   sortedCandidates,
@@ -73,6 +74,9 @@ function WardCardRoute() {
           {ward.municipalityName}
         </p>
       </header>
+
+      {/* Football-style player card: swipe left = asshole, right = goodhole */}
+      <PlayerCardStack ward={ward} />
 
       {/* INCUMBENT */}
       <Cat title="Incumbent on duty">

@@ -15,3 +15,4 @@ export type { PotholeInputProps } from "./PotholeInput";
 export { PhoneShell, LogoMark, TopBar } from "./PhoneShell";
 export { SplashIntro } from "./SplashIntro";
 export { AsshLoader } from "./AsshLoader";
+export { PlayerCardStack } from "./PlayerCard";
