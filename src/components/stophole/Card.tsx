@@ -11,24 +11,24 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const VARIANTS: Record<CardVariant, { bg: string; bd: string; fg: string }> = {
   default: {
-    bg: "var(--surface-card)",
-    bd: "var(--border-subtle)",
-    fg: "var(--text-body)",
+    bg: "#ffffff",
+    bd: "#1a1a1a",
+    fg: "#111",
   },
   sunken: {
-    bg: "var(--surface-sunken)",
-    bd: "transparent",
-    fg: "var(--text-body)",
+    bg: "#f7f7f7",
+    bd: "#ececec",
+    fg: "#111",
   },
   dark: {
-    bg: "var(--charcoal-900)",
-    bd: "var(--charcoal-900)",
-    fg: "var(--grey-50)",
+    bg: "radial-gradient(120% 90% at 70% 20%, #2a2a2a 0%, #0b0b0b 70%)",
+    bd: "#0b0b0b",
+    fg: "#ffffff",
   },
   yellow: {
-    bg: "var(--accent)",
+    bg: "#fecd00",
     bd: "transparent",
-    fg: "var(--charcoal-900)",
+    fg: "#0a0a0a",
   },
 };
 
@@ -46,12 +46,14 @@ export function Card({
     background: v.bg,
     color: v.fg,
     border: `1px solid ${v.bd}`,
-    borderRadius: "var(--sh-radius-lg)",
+    borderRadius: "22px",
+    boxShadow: variant === "dark" ? "0 16px 38px rgba(0,0,0,.45)" : "0 8px 24px rgba(0,0,0,.18)",
+    overflow: "hidden",
     padding: `${PADS[padding]}px`,
     ...style,
   };
   return (
-    <div style={baseStyle} {...rest}>
+    <div data-sh-card={variant} style={baseStyle} {...rest}>
       {children}
     </div>
   );
