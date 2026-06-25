@@ -1773,3 +1773,215 @@ html, body {
   text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
 }
 .sh-player__voter a:hover { background: #fafafa; border-color: #ccc; }
+
+/* ============================================================
+   SPORTSCARD ALIGNMENT — make the whole app feel like the player card.
+   Dark frame, white "body" cards with a dark gradient hero strip,
+   yellow accent, condensed display type, pill chips, jersey numerals.
+   Loaded LAST so it overrides earlier Airbnb-cleanup rules.
+   ============================================================ */
+
+:root {
+  --sh-hero-grad: radial-gradient(120% 90% at 70% 20%, #2a2a2a 0%, #0b0b0b 70%);
+  --sh-card-radius: 22px;
+  --sh-inner-radius: 12px;
+}
+
+/* ---- Page frame ---- */
+html, body { background: #0a0a0a; color: #f6f6f6; }
+.sh-page, .sh-frame, .sh-phone__screen { background: #0a0a0a; }
+
+/* ---- Tab bar: dark with yellow active pill ---- */
+.sh-tabbar {
+  background: #0a0a0a;
+  border-top: 1px solid #1a1a1a;
+  box-shadow: 0 -2px 16px rgba(0,0,0,.4);
+}
+@media (min-width: 768px) {
+  .sh-tabbar { background: #0a0a0a; border-bottom: 1px solid #1a1a1a; border-top: 0; }
+}
+.sh-tab { color: #8a8a8a; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; font-family: var(--font-mono); font-size: 10.5px; }
+.sh-tab:hover { color: #fff; }
+.sh-tab.is-active { background: #fecd00; color: #0a0a0a; border-radius: 999px; }
+.sh-tab.is-active span { border-bottom: 0; padding-bottom: 0; }
+
+/* ---- Top bar / icon button ---- */
+.sh-topbar__t { color: #8a8a8a; }
+.sh-iconbtn { background: #111; border: 1px solid #222; color: #fff; }
+.sh-iconbtn:hover { background: #181818; }
+
+/* ---- Scroll surface ---- */
+.sh-scroll { color: #f6f6f6; }
+
+/* ---- Reusable card primitive: white body w/ dark hero on top ---- */
+.sh-card-pc {
+  background: #fff;
+  color: #111;
+  border-radius: var(--sh-card-radius);
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 16px 38px rgba(0,0,0,.45);
+  overflow: hidden;
+}
+.sh-hero {
+  background: var(--sh-hero-grad);
+  color: #fff;
+  padding: 16px 18px 14px;
+  position: relative;
+}
+.sh-hero__chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  color: #fecd00; padding: 6px 12px; border-radius: 999px;
+  font: 800 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+}
+.sh-hero__title {
+  margin: 14px 0 0;
+  font: 900 30px/.95 var(--font-body); letter-spacing: -.02em; color: #fff;
+}
+.sh-hero__jersey {
+  font: 900 64px/.85 var(--font-body); letter-spacing: -.04em; color: #fff;
+}
+.sh-hero__badge {
+  width: 44px; height: 44px; border-radius: 999px;
+  background: #fecd00; color: #111;
+  display: grid; place-items: center;
+  font: 900 11px/1 var(--font-mono); letter-spacing: .04em;
+  box-shadow: 0 6px 14px rgba(0,0,0,.4);
+}
+
+/* ---- Stat grid (mirrors .sh-player__stats / sh-player__stat) ---- */
+.sh-statgrid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.sh-statgrid--2 { grid-template-columns: repeat(2, 1fr); }
+.sh-statgrid--3 { grid-template-columns: repeat(3, 1fr); }
+.sh-stat {
+  background: #f7f7f7; border-radius: 10px; padding: 10px 8px; text-align: center;
+}
+.sh-stat-v { font: 900 18px/1 var(--font-body); color: #111; }
+.sh-stat-v small { font-size: 11px; color: #999; font-weight: 700; }
+.sh-stat-k {
+  font: 700 9.5px/1.1 var(--font-mono); letter-spacing: .08em; color: #777;
+  text-transform: uppercase; margin-top: 4px;
+}
+
+/* ---- Action row (black + yellow buttons) ---- */
+.sh-actionrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sh-actionrow > button, .sh-actionrow > a {
+  appearance: none; border: 0; cursor: pointer;
+  padding: 14px; border-radius: 14px;
+  font: 800 14px/1 var(--font-body); letter-spacing: -.01em;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none;
+}
+.sh-actionrow .is-dark  { background: #111; color: #fff; }
+.sh-actionrow .is-yellow { background: #fecd00; color: #111; }
+
+/* ---- Override Card "default"/"dark" component to match ---- */
+.sh-frame [data-sh-card="dark"],
+.sh-frame [data-sh-card="default"] { box-shadow: 0 16px 38px rgba(0,0,0,.45); }
+
+/* ---- Ward sportscard: re-darken (override Airbnb cleanup) ---- */
+.sh-ward { background: #0a0a0a; color: #f6f6f6; }
+@media (min-width: 768px) {
+  .sh-ward { border-left: 1px solid #1a1a1a; border-right: 1px solid #1a1a1a; }
+}
+.sh-ward__topbar { background: rgba(10,10,10,.85); color: #fff; border-bottom: 1px solid #1a1a1a; }
+.sh-ward__back { background: transparent; border: 1px solid #2a2a2a; color: #fff; }
+.sh-ward__sign {
+  background: #fecd00; color: #0a0a0a;
+  padding: 22px 18px 18px; border-bottom: 6px solid #0a0a0a;
+}
+.sh-ward__sign::before, .sh-ward__sign::after {
+  content: ""; display: block; position: absolute; top: 8px;
+  width: 10px; height: 10px; border-radius: 50%; background: #0a0a0a; opacity: .85;
+}
+.sh-ward__sign::before { left: 10px; } .sh-ward__sign::after { right: 10px; }
+.sh-ward__cat { border-bottom: 1px solid #1a1a1a; }
+.sh-ward__cat-h { color: #fecd00; opacity: 1; }
+.sh-ward__cat-h::after { background: linear-gradient(to right, rgba(254,205,0,.5), transparent); }
+.sh-ward__stat { background: #111; border: 1px solid #1d1d1d; }
+.sh-ward__stat-k { color: #8a8a8a; }
+.sh-ward__stat-v { color: #fff; }
+.sh-ward__stat-v--accent { color: #fecd00; }
+.sh-ward__stat-v--bad { color: #ff6a6a; }
+.sh-ward__stat-n { color: #b9b9b9; }
+.sh-ward__chip { background: #111; border: 1px solid #1d1d1d; color: #ddd; }
+.sh-ward__cand { background: #111; border: 1px solid #1d1d1d; color: #fff; }
+.sh-ward__cand-num { background: #0a0a0a; color: #fecd00; }
+.sh-ward__cand-name { color: #fff; }
+.sh-ward__cand-party { color: #aaa; }
+
+/* ---- Cases / Candidates list cards ---- */
+.sh-cand, .sh-recent {
+  background: #111; border: 1px solid #1d1d1d; color: #f6f6f6;
+  border-radius: var(--sh-inner-radius);
+}
+.sh-cand:hover, .sh-recent:hover { border-color: #2a2a2a; background: #161616; }
+.sh-cand__name, .sh-recent__title { color: #fff; }
+.sh-cand__party, .sh-recent__meta { color: #9a9a9a; }
+.sh-cand__rank { color: #fecd00; }
+
+/* ---- Greet / headings on dark ---- */
+.sh-greet h1, .sh-display, .sh-h1 { color: #fff; }
+.sh-greet p, .sh-page__title p, .sh-daterow__label { color: #8a8a8a; }
+
+/* ---- Vote hero stays dark — adjust to use shared gradient ---- */
+.sh-vote__hero { background: var(--sh-hero-grad); border: 1px solid #1a1a1a; }
+.sh-station { background: #111; border: 1px solid #1d1d1d; color: #f6f6f6; }
+.sh-station__icon { background: rgba(254,205,0,.14); color: #fecd00; }
+
+/* ---- Home: dark backdrop, yellow logo accent ---- */
+.sh-home { background: #0a0a0a; }
+.sh-home__map .leaflet-container {
+  filter: grayscale(1) blur(6px) brightness(.6);
+  opacity: .35;
+}
+.sh-home__map::after {
+  background:
+    radial-gradient(120% 80% at 50% 50%, rgba(10,10,10,.45), rgba(10,10,10,.9));
+}
+.sh-home__hero { color: #fff; }
+.sh-home__tag { color: #fff; }
+.sh-home__asterisk { background: #fecd00; color: #0a0a0a; }
+.sh-home__btn--primary {
+  background: #fecd00; color: #0a0a0a;
+  box-shadow: 0 10px 24px rgba(254,205,0,.25), inset 0 -3px 0 rgba(0,0,0,.18);
+}
+.sh-home__btn--ghost {
+  background: #fff; color: #0a0a0a;
+}
+.sh-home__tab { color: #fff; }
+
+/* ---- Bottom sheet — keep white "body card" feel ---- */
+.sh-sheet__card { border-radius: 24px 24px 0 0; }
+.sh-sheet__sev {
+  background: #f7f7f7; border: 1px solid #ececec; border-radius: 10px;
+  font: 800 13px/1 var(--font-body);
+}
+.sh-sheet__sev:hover { background: #efefef; }
+
+/* ---- Person/avatar on dark ---- */
+.sh-person__name { color: #fff; }
+.sh-person__role { color: #9a9a9a; }
+.sh-avatar { background: #fecd00; color: #0a0a0a; }
+
+/* ---- Map search pill: dark ---- */
+.sh-airbar { background: #111; border-color: #222; color: #fff; }
+.sh-airbar input { color: #fff; }
+.sh-airbar input::placeholder { color: #8a8a8a; }
+
+/* ---- Reduce harsh white in note/signal lists ---- */
+.sh-note { border-bottom-color: #1a1a1a; }
+.sh-note__head { color: #8a8a8a; }
+.sh-note__txt { color: #e6e6e6; }
+
+/* ---- Inputs on dark ---- */
+.sh-pill-input {
+  background: #111; color: #ddd; border: 1px dashed #2a2a2a;
+}
+
+/* ---- Splash loader overlay ---- */
+.sh-flip { background: rgba(0,0,0,.92); }
+.sh-airloader { color: #fff; }
+.sh-airloader p { color: #aaa; }
