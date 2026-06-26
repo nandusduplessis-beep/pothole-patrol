@@ -1,0 +1,420 @@
+/* ============================================================
+ * StopHole — Wallet Stack (Apple Wallet style councillor cards)
+ * ============================================================ */
+
+.sh-wallet {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  /* Reserve space for the deepest peeked card */
+  min-height: 720px;
+  padding-bottom: 64px;
+  perspective: 1600px;
+}
+
+.sh-wcard {
+  position: absolute;
+  inset: 0 0 auto 0;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 660px;
+  border-radius: 26px;
+  background: var(--sh-party-grad, #111);
+  color: var(--sh-party-ink, #fff);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 28px 60px -20px rgba(0, 0, 0, 0.65),
+    0 8px 18px -8px rgba(0, 0, 0, 0.45);
+  transition:
+    transform 320ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 240ms ease;
+  will-change: transform;
+  touch-action: pan-y;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* subtle film grain + top inner highlight to kill flatness */
+.sh-wcard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 50% at 50% -10%, rgba(255,255,255,.18), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sh-wcard.is-front {
+  cursor: grab;
+}
+.sh-wcard.is-front:active {
+  cursor: grabbing;
+}
+.sh-wcard.is-peek {
+  cursor: pointer;
+}
+
+/* Color-coded borders: incumbent = red, challenger = yellow stripe on top strip */
+.sh-wcard.is-incumbent {
+  outline: 2px solid #ff2e2e;
+  outline-offset: -2px;
+}
+.sh-wcard.is-incumbent .sh-wcard__strip {
+  background: linear-gradient(180deg, rgba(255,46,46,.22), rgba(255,46,46,.04));
+  border-bottom: 1px solid rgba(255,46,46,.45);
+}
+.sh-wcard.is-challenger .sh-wcard__strip {
+  background: linear-gradient(180deg, rgba(254,205,0,.22), rgba(254,205,0,.04));
+  border-bottom: 1px solid rgba(254,205,0,.55);
+}
+
+/* ----- Flipper ----- */
+.sh-wcard__flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  transform-style: preserve-3d;
+  transition: transform 520ms cubic-bezier(.2,.8,.2,1);
+}
+.sh-wcard.is-flipped .sh-wcard__flipper {
+  transform: rotateY(180deg);
+}
+.sh-wcard__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sh-wcard__face--back {
+  transform: rotateY(180deg);
+}
+
+/* ----- Top strip (visible when peeking) ----- */
+.sh-wcard__strip {
+  position: relative;
+  z-index: 2;
+  height: 54px;
+  flex: 0 0 54px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  font: 700 11px/1 var(--font-mono, ui-monospace, Menlo, monospace);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sh-wcard__status {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 10px;
+}
+.sh-wcard.is-incumbent .sh-wcard__status { background: rgba(255,46,46,.85); color: #fff; }
+.sh-wcard.is-challenger .sh-wcard__status { background: rgba(254,205,0,.9); color: #111; }
+
+.sh-wcard__ward {
+  font-size: 13px;
+  font-weight: 800;
+  opacity: .9;
+}
+.sh-wcard__name-strip {
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 700;
+  font-family: var(--font-sans, "Hanken Grotesk", system-ui);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: .92;
+}
+.sh-wcard__party-strip {
+  font-size: 10.5px;
+  opacity: .8;
+}
+
+/* ----- Hero (front body, only rendered on front card) ----- */
+.sh-wcard__hero {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px 22px;
+  gap: 14px;
+}
+
+.sh-wcard__name-block {
+  font-family: var(--font-display, "Archivo", "Hanken Grotesk", system-ui);
+}
+.sh-wcard__first {
+  font-size: 38px;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.sh-wcard__last {
+  font-size: 38px;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  opacity: .72;
+}
+
+.sh-wcard__quote {
+  position: relative;
+  margin: 0;
+  padding: 10px 14px 12px 30px;
+  border-left: 2px solid rgba(255,255,255,.4);
+  font-size: 13px;
+  line-height: 1.4;
+  font-style: italic;
+  opacity: .88;
+  max-height: 76px;
+  overflow: hidden;
+}
+.sh-wcard__quote-mark {
+  position: absolute;
+  left: 8px;
+  top: -4px;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  opacity: .55;
+}
+
+/* Photo placeholder — centred, hatched, with iconography */
+.sh-wcard__photo {
+  flex: 0 0 auto;
+  height: 130px;
+  border-radius: 14px;
+  background:
+    radial-gradient(60% 60% at 30% 25%, rgba(255,255,255,.12), transparent 70%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 6px, transparent 6px 12px);
+  border: 1px solid rgba(255,255,255,.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.sh-wcard__photo-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font: 700 9px/1 var(--font-mono, monospace);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  opacity: .55;
+}
+
+/* Jersey number + party badge (foil-ish) */
+.sh-wcard__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.sh-wcard__jersey {
+  font-family: var(--font-display, "Archivo");
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,.55) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sh-wcard__party-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.22);
+  font: 800 11px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+/* Bucketed stat grid (replaces long list) */
+.sh-wcard__buckets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.sh-wcard__bucket {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 8px 4px;
+  text-align: center;
+}
+.sh-wcard__bucket-v {
+  font: 800 18px/1 var(--font-display);
+  letter-spacing: -.02em;
+}
+.sh-wcard__bucket-v i {
+  font-style: normal;
+  font-size: 10px;
+  opacity: .55;
+  margin-left: 1px;
+}
+.sh-wcard__bucket-k {
+  margin-top: 4px;
+  font: 700 9px/1 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+/* Verdict buttons */
+.sh-wcard__verdict {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.sh-wcard__vbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.08);
+  color: inherit;
+  font: 800 12px/1 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+.sh-wcard__vbtn:active { transform: scale(.97); }
+.sh-wcard__vbtn--bad:hover { background: rgba(255,46,46,.5); }
+.sh-wcard__vbtn--good:hover { background: rgba(40,180,80,.5); }
+
+.sh-wcard__hint {
+  text-align: center;
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .45;
+  margin-top: -2px;
+}
+
+/* ----- BACK face ----- */
+.sh-wcard__back {
+  flex: 1;
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sh-wcard__back-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.sh-wcard__btile {
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+  border-radius: 12px;
+  padding: 14px;
+}
+.sh-wcard__btile.is-bad { border-color: rgba(255,46,46,.45); background: rgba(255,46,46,.12); }
+.sh-wcard__btile.is-good { border-color: rgba(40,180,80,.45); background: rgba(40,180,80,.12); }
+.sh-wcard__btile-v {
+  font: 800 22px/1 var(--font-display);
+  letter-spacing: -.02em;
+}
+.sh-wcard__btile-k {
+  margin-top: 6px;
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+.sh-wcard__evidence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sh-wcard__evidence li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  opacity: .9;
+}
+.sh-wcard__evidence b {
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .65;
+}
+.sh-wcard__back-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+.sh-wcard__deep {
+  font: 800 11px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+}
+.sh-wcard__flipback {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: transparent;
+  color: inherit;
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.sh-wcard__voter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.sh-wcard__voter a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 6px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  color: inherit;
+  text-decoration: none;
+  font: 700 10.5px/1 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
