@@ -20,6 +20,7 @@
 @import "./styles/stophole-tokens.css";
 @import "./styles/stophole-app.css";
 @import "./styles/stophole-cardkit.css";
+@import "./styles/stophole-wallet.css";
 
 @custom-variant dark (&:is(.dark *));
 
