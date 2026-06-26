@@ -106,8 +106,9 @@ function WalletCard({
   // Peek offsets — front card at top; subsequent cards peek BELOW it with
   // ~32px of header strip exposed per card (Apple Wallet style).
   const FRONT_H = 660;
-  const PEEK = 36;
-  const peekY = depth === 0 ? 0 : FRONT_H - 54 + depth * PEEK;
+  const PEEK = 38;
+  // depth 1 → strip immediately below front; deeper cards stagger down.
+  const peekY = depth === 0 ? 0 : FRONT_H - 8 + (depth - 1) * PEEK;
   const scale = depth === 0 ? 1 : Math.max(0.9, 1 - depth * 0.025);
   // Front sits on top; deeper peeks render above shallower ones so taps land on the topmost peek.
   const z = depth === 0 ? 100 : 50 + depth;
