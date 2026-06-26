@@ -103,10 +103,14 @@ function WalletCard({
   const buckets = bucketsFor(candidate);
   const quote = quoteFor(candidate);
 
-  // Peek offsets — header strip visible for cards behind the front.
-  const peekY = depth === 0 ? 0 : 60 + (depth - 1) * 54;
-  const scale = depth === 0 ? 1 : Math.max(0.86, 1 - depth * 0.04);
-  const z = 100 - depth;
+  // Peek offsets — front card at top; subsequent cards peek BELOW it with
+  // ~32px of header strip exposed per card (Apple Wallet style).
+  const FRONT_H = 660;
+  const PEEK = 36;
+  const peekY = depth === 0 ? 0 : FRONT_H - 54 + depth * PEEK;
+  const scale = depth === 0 ? 1 : Math.max(0.9, 1 - depth * 0.025);
+  // Front sits on top; deeper peeks render above shallower ones so taps land on the topmost peek.
+  const z = depth === 0 ? 100 : 50 + depth;
 
   function onPointerDown(e: React.PointerEvent) {
     if (!isFront) return;
